@@ -247,12 +247,14 @@ void Engine::pre_initialize()
     set_cursor_size(1, false);
     set_title("Console Game Engine");
     currentfps = 0;
-    set_size(Vector2(80, 25));
+    buffer = NULL;
+    console_size.X = 80;
+    console_size.Y = 25;
 }
 
 void Engine::pos_initialize()
 {
-    buffer = new Sprite(console_size);
+    set_size(console_size);
     display_splash();
 }
 
@@ -276,7 +278,7 @@ Engine::Engine(Vector2 position, Vector2 size)
 {
     pre_initialize();
 
-    set_size(size);
+    console_size = size;
     set_position(position);
 
     pos_initialize();
@@ -286,7 +288,7 @@ Engine::Engine(Vector2 size)
 {
     pre_initialize();
 
-    set_size(size);
+    console_size = size;
 
     pos_initialize();
 }
@@ -296,7 +298,7 @@ Engine::Engine(string title, Vector2 size)
     pre_initialize();
 
     set_title(title);
-    set_size(size);
+    console_size = size;
 
     pos_initialize();
 }
@@ -306,7 +308,7 @@ Engine::Engine(string title, Vector2 position, Vector2 size)
     pre_initialize();
 
     set_title(title);
-    set_size(size);
+    console_size = size;
     set_position(position);
 
     pos_initialize();
@@ -391,7 +393,6 @@ Engine::~Engine()
     delete buffer;
 }
 
-
 bool Engine::set_size(Vector2 size)
 {
     //COORD coord = {size.X, size.Y};
@@ -405,6 +406,11 @@ bool Engine::set_size(Vector2 size)
 
     //TODO: verificar o retorno antes de mudar o valor
     console_size = size;
+
+    if(buffer != NULL)
+        delete buffer;
+    buffer = new Sprite(console_size);
+
     return(SetConsoleWindowInfo(output_handle, TRUE, &displayarea));
 }
 
@@ -474,12 +480,12 @@ void Engine::update_console()
             winbuffer[y][x].Char.AsciiChar = buffer->data[x][y].character;
             if(buffer->data[x][y].backcolor == ClearColor)
             {
-                //FIX: Rever, por algum motivo essa função não esta funcionando
+                //FIX: Rever, por algum motivo não esta funcionando
                 winbuffer[y][x].Attributes = buffer->data[x][y].forecolor | buffer->lastclearcolor << 4;
             }
             if(buffer->data[x][y].backcolor == Transparent)
             {
-                //TODO:Este codigo esta gastando muito processamento e é possivel otimizar ele/
+                //TODO:Este codigo esta gastando muito processamento e é possivel otimizalo/
                 //FIX:Codigo com problema
                 COORD coord = {y, x};
                 WORD attr;

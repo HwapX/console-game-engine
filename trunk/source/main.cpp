@@ -13,12 +13,12 @@ string convert_int(int number)
 int main()
 {
     Engine engine("Console Game Engine");
-    engine.set_size(Vector2(80, 45));
+    engine.set_size(Vector2(80, 50));
 
     byte current_color = 0;
-
-    Sprite *document = new Sprite(Vector2(16, 16));
     Vector2 cursor;
+    Sprite *document = new Sprite(Vector2(16, 16));
+    document->clear(White);
 
     while(!Keyboard::get_key(VK_ESCAPE))
     {
@@ -52,11 +52,17 @@ int main()
             document->data[cursor.X][cursor.Y].character = Keyboard::get_key();
         }
         else if(Keyboard::get_key('B'))
+        {
             document->data[cursor.X][cursor.Y].backcolor = (Color)current_color;
+        }
         else if(Keyboard::get_key('F'))
+        {
             document->data[cursor.X][cursor.Y].forecolor = (Color)current_color;
+        }
         else if(Keyboard::get_key('C'))
+        {
             document->fill_backcolor((Color)current_color);
+        }
         else if(Keyboard::get_key('S'))
         {
             engine.buffer->clear();
@@ -95,12 +101,13 @@ int main()
                 if(y == 0 || x == 0 ||
                         y == engine.get_size().Y-1 ||
                         x == engine.get_size().X-1 ||
-                        y == 2 || y == 4 || y == 6 )
+                        y == 2 || y == 4 || y == 6 ||
+                        y == engine.get_size().Y - 3)
                 {
                     engine.buffer->data[x][y].character = '=';
                     engine.buffer->data[x][y].forecolor = LightGrey;
                 }
-                else if(x > engine.get_size().X - 6 && x < engine.get_size().X)   //mostra a cor selecionada atualmente
+                else if(x > engine.get_size().X - 5 && x < engine.get_size().X)   //mostra a cor selecionada atualmente
                 {
                     engine.buffer->data[x][5].backcolor = (Color)current_color;
                 }
@@ -113,7 +120,7 @@ int main()
                     engine.buffer->data[1+x][7+y].forecolor = LightGrey;
                 }
             }
-        engine.buffer->data[engine.get_size().X - 6 ][5].character = '=';
+        engine.buffer->data[engine.get_size().X - 5 ][5].character = '=';
 
         //desenha a palete de cores
         for(byte c = 0; c < 18; ++c)
@@ -138,7 +145,8 @@ int main()
         engine.buffer->draw_text("Colors",  Vector2(1, 3), Black, White);
         engine.buffer->draw_text("{L}oad {S}ave {C}lear {R}esize {W}rite", Vector2(1, 1), Black, White);
         engine.buffer->draw_text("Color {F}orecolor {B}ackcolor {+}next {-}previus", Vector2(1, 5), Black, White);
-        engine.buffer->draw_text_right("Current color", Vector2(engine.get_size().X - 7, 5), Black, White);
+        engine.buffer->draw_text_right("Current color", Vector2(engine.get_size().X - 6, 5), Black, White);
+        engine.buffer->draw_text("Use arrows to move the cursor", Vector2(1, engine.get_size().Y - 2), Black, White);
 
         //Mostra o FPS
         engine.buffer->draw_text_right("FPS:" + convert_int(engine.get_fps()), Vector2(78, engine.get_size().Y -2), engine.get_fps() > 59?LightGreen:LightRed, White);

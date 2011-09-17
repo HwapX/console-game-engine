@@ -423,22 +423,25 @@ Vector2 Engine::get_size()
     return(console_size);
 }
 
-Vector2 Engine::get_screen_resolution(){
+Vector2 Engine::get_screen_resolution()
+{
     Vector2 temp;
     temp.X = GetSystemMetrics(SM_CXSCREEN);
     temp.Y = GetSystemMetrics(SM_CYSCREEN);
     return temp;
 }
 
-bool Engine::focus(){
+bool Engine::focus()
+{
     if(GetForegroundWindow() == console_handle)
         return(true);
     else
         return(false);
 }
 
-void Engine::wait_focus(){
-    while(!focus()){};
+void Engine::wait_focus()
+{
+    while(!focus()) {};
 }
 
 bool Engine::set_text_color (Color forecolor, Color backcolor)
@@ -545,52 +548,6 @@ byte Keyboard::get_next_key()
     }
     while(!key);
     return(key);
-}
-
-char Keyboard::get_next_char()
-{
-//for(char b = 32;b < 127;b++)
-    byte key;
-    do
-    {
-        key = get_next_key();
-        if(!get_key(VK_SHIFT))
-            key = tolower(key);
-
-    }
-    while(key < 30 && key > 0x6F);
-    return(key);
-}
-
-string Keyboard::get_string()
-{
-    return(get_string(254));
-}
-
-string Keyboard::get_string(byte maxsize)
-{
-    string temp;
-    char key;
-    {
-        key = get_next_char();
-        if(key == VK_EXECUTE)
-            return temp;
-        temp+= key;
-
-    }
-    while((key != VK_ESCAPE) || (temp.size() > maxsize));
-
-    return(temp);
-}
-
-int Keyboard::get_numbers(byte maxdigits)
-{
-
-}
-
-int get_numbers(int maxnumber)
-{
-
 }
 
 /*-------------------------*/

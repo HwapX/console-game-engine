@@ -405,7 +405,6 @@ public:
 class Keyboard
 {
 public:
-    //static bool get_key(int key);
     /**
     *check key informed
     *@param key key to check

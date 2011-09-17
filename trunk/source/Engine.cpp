@@ -423,6 +423,24 @@ Vector2 Engine::get_size()
     return(console_size);
 }
 
+Vector2 Engine::get_screen_resolution(){
+    Vector2 temp;
+    temp.X = GetSystemMetrics(SM_CXSCREEN);
+    temp.Y = GetSystemMetrics(SM_CYSCREEN);
+    return temp;
+}
+
+bool Engine::focus(){
+    if(GetForegroundWindow() == console_handle)
+        return(true);
+    else
+        return(false);
+}
+
+void Engine::wait_focus(){
+    while(!focus()){};
+}
+
 bool Engine::set_text_color (Color forecolor, Color backcolor)
 {
     return (SetConsoleTextAttribute (output_handle, forecolor | backcolor << 4) == TRUE);
@@ -443,13 +461,6 @@ bool Engine::set_cursor_size(byte size, bool visible)
 {
     CONSOLE_CURSOR_INFO cursorinfo = { size, visible };
     return (SetConsoleCursorInfo (output_handle, &cursorinfo) == TRUE);
-}
-
-Vector2 Engine::set_fullscreen(bool fullscreen)
-{
-    //SetConsoleDisplayMode(output_handle, fullscreen?CONSOLE_FULLSCREEN_MODE:CONSOLE_WINDOW_MODE, NULL);
-    //TODO: redimencionar o buffer e retornar o seu novo tamanho
-    return Vector2(get_size().X, get_size().Y);
 }
 
 short int Engine::get_fps()
@@ -547,7 +558,7 @@ char Keyboard::get_next_char()
             key = tolower(key);
 
     }
-    while(key < 32 && key > 126);
+    while(key < 30 && key > 0x6F);
     return(key);
 }
 

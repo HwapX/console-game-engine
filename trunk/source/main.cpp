@@ -10,58 +10,43 @@ string convert_int(int number)
     return ss.str();
 }
 
-string show_dialog(Engine &engine, string title){
-    byte key = 0;
-    string str;
-    while(!Keyboard::get_key(VK_ESCAPE))
-    {
-        engine.buffer->draw_text_center("==========================================", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 -2), Black, White);
-        engine.buffer->draw_text_center("=                                        =", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 -1), Black, White);
-        engine.buffer->draw_text_center("==========================================", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2), Black, White);
-        engine.buffer->draw_text_center("=                                        =", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 +1), Black, White);
-        engine.buffer->draw_text_center("==========================================", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 +2), Black, White);
-        engine.buffer->draw_text_center(title, Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 -1), Black, White);
-
-        if(key == VK_BACK && str.size() != 0)
-            str.erase(str.size() -1, 1);
-        else if(key == 13)//VK_EXECUTE)
-            return str;
-        else{
-            str+= key;
-        }
-        engine.buffer->draw_text_center(str, Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 +1), Black, White);
-        engine.update_console();
-        engine.buffer->clear(White);
-
-        key = Keyboard::get_next_key();
-    }
-    return "";
-}
-
 int main()
 {
+<<<<<<< .mine
+    Engine engine("Console Game Engine"); // Sets title;
+=======
     Engine engine("Sprite editor for Console Game Engine");
+>>>>>>> .r9
     engine.set_size(Vector2(80, 50));
 
     byte current_color = 0;
     Vector2 cursor;
-    Sprite *document = new Sprite(Vector2(16, 16));
+    Sprite *document = new Sprite(Vector2(20, 20));
     document->clear(White);
+    bool iswriting = false;
 
     while(!Keyboard::get_key(VK_ESCAPE))
     {
+<<<<<<< .mine
+        if(Keyboard::get_key(VK_ADD) || Keyboard::get_key(VK_OEM_PLUS))
+=======
         engine.wait_focus();
 
         //le o teclado
         if(Keyboard::get_key(VK_ADD) ||
            Keyboard::get_key(VK_OEM_PLUS))
+>>>>>>> .r9
         {
             current_color++;
             if(current_color == 18)
                 current_color = 0;
         }
+<<<<<<< .mine
+        else if(Keyboard::get_key(VK_SUBTRACT) || Keyboard::get_key(VK_OEM_MINUS))
+=======
         else if(Keyboard::get_key(VK_SUBTRACT) ||
                 Keyboard::get_key(VK_OEM_MINUS))
+>>>>>>> .r9
         {
             if(current_color == 0)
                 current_color = 17;
@@ -78,10 +63,29 @@ int main()
 
             //document = new Sprite(temp);
         }
-        else if(Keyboard::get_key('W'))
+        else if(Keyboard::get_key('W') || iswriting)
         {
+            byte key = Keyboard::get_key();
+            iswriting = true;
             engine.set_cursor_pos(Vector2(10 + cursor.X, 3 + cursor.Y));
-            document->data[cursor.X][cursor.Y].character = Keyboard::get_next_key();
+<<<<<<< .mine
+            if(key == (VK_BACK || VK_DELETE)) // Caso o usuario, durante o "writing" queira apagar, backspace ou delete o faz.
+                document->data[cursor.X][cursor.Y].character = ' '; // APAGA!
+            else if(key == VK_RETURN)
+                iswriting = false;
+            else
+            {
+                document->data[cursor.X][cursor.Y].character = key;
+                cursor.X++;
+                if(cursor.X >= document->size.X)
+                {
+                    cursor.Y++;
+                    cursor.X = 0;
+                }
+            }
+=======
+            document->data[cursor.X][cursor.Y].character = Keyboard::get_next_char();
+>>>>>>> .r9
         }
         else if(Keyboard::get_key('B'))
         {
@@ -97,13 +101,14 @@ int main()
         }
         else if(Keyboard::get_key('S'))
         {
-
-            document->save("./" + show_dialog(engine, "enter the filename to save"));
+            engine.buffer->clear();
+            engine.update_console();
+            document->save("./sprite.cges");
         }
         else if(Keyboard::get_key('L'))
         {
             delete document;
-            document = new Sprite("./" + show_dialog(engine, "enter the filename to load"));
+            document = new Sprite("./sprite.cges");
         }
         if(Keyboard::get_key(VK_UP))
         {
@@ -124,6 +129,15 @@ int main()
         {
             if(cursor.X < document->size.X-1)
                 cursor.X++;
+        }
+        else if(Keyboard::get_key(VK_BACK)) // Consiste em usar o BACKSPACE pra apagar letras
+        {
+            if(cursor.X > 0) // Verifica se o cursor está no canto da tela do document.
+                if(document->data[cursor.X-1][cursor.Y].character != ' ') // Caso exista uma letra à uma posição antes do cursor
+                {
+                    document->data[cursor.X-1][cursor.Y].character = ' ';  // APAGA!
+                    cursor.X--;
+                }
         }
 
         //desenha toda a grade da janela

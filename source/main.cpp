@@ -10,6 +10,34 @@ string convert_int(int number)
     return ss.str();
 }
 
+string show_dialog(Engine &engine, string title){
+    byte key = 0;
+    string str;
+    while(!Keyboard::get_key(VK_ESCAPE))
+    {
+        engine.buffer->draw_text_center("==========================================", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 -2), Black, White);
+        engine.buffer->draw_text_center("=                                        =", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 -1), Black, White);
+        engine.buffer->draw_text_center("==========================================", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2), Black, White);
+        engine.buffer->draw_text_center("=                                        =", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 +1), Black, White);
+        engine.buffer->draw_text_center("==========================================", Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 +2), Black, White);
+        engine.buffer->draw_text_center(title, Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 -1), Black, White);
+
+        if(key == VK_BACK && str.size() != 0)
+            str.erase(str.size() -1, 1);
+        else if(key == 13)//VK_EXECUTE)
+            return str;
+        else{
+            str+= key;
+        }
+        engine.buffer->draw_text_center(str, Vector2(engine.get_size().X / 2, engine.get_size().Y / 2 +1), Black, White);
+        engine.update_console();
+        engine.buffer->clear(White);
+
+        key = Keyboard::get_next_key();
+    }
+    return "";
+}
+
 int main()
 {
     Engine engine("Sprite editor for Console Game Engine");
@@ -53,7 +81,7 @@ int main()
         else if(Keyboard::get_key('W'))
         {
             engine.set_cursor_pos(Vector2(10 + cursor.X, 3 + cursor.Y));
-            document->data[cursor.X][cursor.Y].character = Keyboard::get_next_char();
+            document->data[cursor.X][cursor.Y].character = Keyboard::get_next_key();
         }
         else if(Keyboard::get_key('B'))
         {
@@ -69,14 +97,13 @@ int main()
         }
         else if(Keyboard::get_key('S'))
         {
-            engine.buffer->clear();
-            engine.update_console();
-            document->save("./sprite.cges");
+
+            document->save("./" + show_dialog(engine, "enter the filename to save"));
         }
         else if(Keyboard::get_key('L'))
         {
             delete document;
-            document = new Sprite("./sprite.cges");
+            document = new Sprite("./" + show_dialog(engine, "enter the filename to load"));
         }
         if(Keyboard::get_key(VK_UP))
         {

@@ -357,7 +357,7 @@ public:
     Vector2 get_size();
     /**
     *get primary monitor resolution
-    *@return return scren resolution
+    *@return return screen resolution
     */
     Vector2 get_screen_resolution();
     /**
@@ -417,7 +417,7 @@ public:
     *@return return true if are pressed or false otherwise
     */
     static bool get_key_down(int key);
-    //checar as funções abaixo da classe
+    //revisar as funções abaixo da classe
     static byte get_key();
     static byte get_next_key();
     static string get_string();

@@ -113,7 +113,14 @@ void Sprite::fill_backcolor(Color backcolor)
     //TODO: Esta função deve deixar todas as propriedades backcolor do sprite da cor informada
     for(byte x = 0; x < size.X; ++x)
         for(byte y = 0; y < size.Y; ++y)
+        {
             data[x][y].backcolor = backcolor;
+            byte cur_char = data[x][y].character;
+            if(cur_char != ' ' && backcolor != White) // Altera a cor da letra, para que a letra não fique "oculta".
+                data[x][y].forecolor = White;
+            else
+                data[x][y].forecolor = Black;
+        }
 }
 
 void Sprite::fill_forecolor(Color forecolor)
@@ -423,25 +430,22 @@ Vector2 Engine::get_size()
     return(console_size);
 }
 
-Vector2 Engine::get_screen_resolution()
-{
+Vector2 Engine::get_screen_resolution(){
     Vector2 temp;
     temp.X = GetSystemMetrics(SM_CXSCREEN);
     temp.Y = GetSystemMetrics(SM_CYSCREEN);
     return temp;
 }
 
-bool Engine::focus()
-{
+bool Engine::focus(){
     if(GetForegroundWindow() == console_handle)
         return(true);
     else
         return(false);
 }
 
-void Engine::wait_focus()
-{
-    while(!focus()) {};
+void Engine::wait_focus(){
+    while(!focus()){};
 }
 
 bool Engine::set_text_color (Color forecolor, Color backcolor)
@@ -547,7 +551,42 @@ byte Keyboard::get_next_key()
         key = get_key();
     }
     while(!key);
+    return key;
+}
+
+char Keyboard::get_next_char()
+{
+//for(char b = 32;b < 127;b++)
+    byte key;
+    do
+    {
+        key = get_next_key();
+        if(!get_key(VK_SHIFT))
+            key = tolower(key);
+
+    }
+    while(key < 30 && key > 0x6F);
     return(key);
+}
+
+string Keyboard::get_string()
+{
+    return(get_string(254));
+}
+
+string Keyboard::get_string(byte maxsize)
+{
+    return 0;
+}
+
+int Keyboard::get_numbers(byte maxdigits)
+{
+
+}
+
+int get_numbers(int maxnumber)
+{
+
 }
 
 /*-------------------------*/

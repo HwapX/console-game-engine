@@ -4,7 +4,7 @@
 #include <fstream>
 
 /*Sobre escreve a versão informada em windows.h*/
-#define WINVER 0x0500
+#define WINVER 0x0501
 #include <windows.h>
 /*---------------------------------------------*/
 
@@ -324,14 +324,20 @@ public:
     *destructor
     */
     ~Engine();
-
-    //não lembro porque coloquei essas funções mais até lembrar vou deixalas comentadas
-    //void create_buffer();
-    //void delete_buffer();
     /**
     *draw engine splash
     */
     void display_splash();
+    /**
+    *check if window has focus
+    *@return return true if window is in focus or false otherwise
+    */
+    bool focus();
+    /**
+    *wait window focus
+    *this function returns only when the window is in focus
+    */
+    void wait_focus();
     /**
     *set console window size.
     *@param size new size.
@@ -349,6 +355,11 @@ public:
     *@return window size
     */
     Vector2 get_size();
+    /**
+    *get primary monitor resolution
+    *@return return scren resolution
+    */
+    Vector2 get_screen_resolution();
     /**
     *set console window title
     *@param title new title
@@ -379,10 +390,6 @@ public:
     *copy buffer to console
     */
     void update_console();
-    /**
-    *nothing actually
-    */
-    Vector2 set_fullscreen(bool fullscreen);
     /**
     *get current frame rate per second
     */

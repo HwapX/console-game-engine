@@ -12,7 +12,7 @@ string convert_int(int number)
 
 int main()
 {
-    Engine engine("Console Game Engine");
+    Engine engine("Sprite editor for Console Game Engine");
     engine.set_size(Vector2(80, 50));
 
     byte current_color = 0;
@@ -22,14 +22,18 @@ int main()
 
     while(!Keyboard::get_key(VK_ESCAPE))
     {
+        engine.wait_focus();
+
         //le o teclado
-        if(Keyboard::get_key(VK_ADD))
+        if(Keyboard::get_key(VK_ADD) ||
+           Keyboard::get_key(VK_OEM_PLUS))
         {
             current_color++;
             if(current_color == 18)
                 current_color = 0;
         }
-        else if(Keyboard::get_key(VK_SUBTRACT))
+        else if(Keyboard::get_key(VK_SUBTRACT) ||
+                Keyboard::get_key(VK_OEM_MINUS))
         {
             if(current_color == 0)
                 current_color = 17;
@@ -49,7 +53,7 @@ int main()
         else if(Keyboard::get_key('W'))
         {
             engine.set_cursor_pos(Vector2(10 + cursor.X, 3 + cursor.Y));
-            document->data[cursor.X][cursor.Y].character = Keyboard::get_key();
+            document->data[cursor.X][cursor.Y].character = Keyboard::get_next_char();
         }
         else if(Keyboard::get_key('B'))
         {
@@ -95,6 +99,7 @@ int main()
                 cursor.X++;
         }
 
+        //desenha toda a grade da janela
         for(byte x = 0; x < engine.get_size().X; ++x)
             for(byte y = 0; y < engine.get_size().Y; ++y)
             {
@@ -106,7 +111,7 @@ int main()
                 {
                     engine.buffer->data[x][y].character = '=';
                     engine.buffer->data[x][y].forecolor = LightGrey;
-                }
+                }//verifica se x esta a uma posição inferior a 4 da borda direita da janela
                 else if(x > engine.get_size().X - 5 && x < engine.get_size().X)   //mostra a cor selecionada atualmente
                 {
                     engine.buffer->data[x][5].backcolor = (Color)current_color;
@@ -116,6 +121,7 @@ int main()
                 if((x == document->size.X && y <= document->size.Y) ||
                         (y == document->size.Y && x <= document->size.X))
                 {
+                    //as constantes são a posição onde o documento sera desenhado
                     engine.buffer->data[1+x][7+y].character = '=';
                     engine.buffer->data[1+x][7+y].forecolor = LightGrey;
                 }
@@ -144,7 +150,7 @@ int main()
         //desenha a legenda
         engine.buffer->draw_text("Colors",  Vector2(1, 3), Black, White);
         engine.buffer->draw_text("{L}oad {S}ave {C}lear {R}esize {W}rite", Vector2(1, 1), Black, White);
-        engine.buffer->draw_text("Color {F}orecolor {B}ackcolor {+}next {-}previus", Vector2(1, 5), Black, White);
+        engine.buffer->draw_text("Color {F}orecolor {B}ackcolor {-}previus {+}next", Vector2(1, 5), Black, White);
         engine.buffer->draw_text_right("Current color", Vector2(engine.get_size().X - 6, 5), Black, White);
         engine.buffer->draw_text("Use arrows to move the cursor", Vector2(1, engine.get_size().Y - 2), Black, White);
 

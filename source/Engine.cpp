@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-using namespace Console_Engine;
+using namespace Console_Game_Engine;
 
 /*---------------------------*/
 /*----------Vector2----------*/

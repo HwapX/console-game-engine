@@ -1,7 +1,9 @@
 #include "Engine.h"
 #include <sstream>
 
-using namespace Console_Engine;
+int Game();
+
+using namespace Console_Game_Engine;
 
 string convert_int(int number)
 {
@@ -104,6 +106,10 @@ int main()
         {
             delete document;
             document = new Sprite("./" + show_dialog(engine, "enter the filename to load"));
+        }else if(Keyboard::get_key('G'))
+        {
+            Game();
+            engine.set_size(Vector2(80, 50));
         }
         if(Keyboard::get_key(VK_UP))
         {

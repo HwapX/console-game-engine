@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace Console_Engine
+namespace Console_Game_Engine
 {
 /**
 *A enum with all console colors

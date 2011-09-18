@@ -369,9 +369,8 @@ void Engine::display_splash()
         buffer->data[60][11].forecolor = LightBlue;
         //effect
 
-        buffer->draw_text("Developed by", Vector2(2, 21), White, Black);
-        buffer->draw_text("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, 22), White, Black);
-        buffer->draw_text("PBassut->Patrick Bassut", Vector2(2, 23), White, Black);
+        buffer->draw_text("Developed by", Vector2(2, get_size().Y -3), White, Black);
+        buffer->draw_text("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, get_size().Y -2), White, Black);
 
         buffer->draw_text_right("Version 0.6",Vector2(get_size().X-2, get_size().Y-2), White, Black);
 

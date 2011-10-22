@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-using namespace Console_Game_Engine;
+using namespace ConsoleGameEngine;
 
 /*---------------------------*/
 /*----------Vector2----------*/
@@ -37,10 +37,10 @@ byte Vector2::operator[](const int i)
 
 Pixel::Pixel()
 {
-    reset();
+    Reset();
 }
 
-void Pixel::reset()
+void Pixel::Reset()
 {
     character = ' ';
     forecolor = LightGrey;
@@ -57,7 +57,7 @@ Sprite::Sprite(string filename)
     ifstream stream(filename.c_str(), ios_base::binary);
     char temp = 0;
     stream >> size.X >> size.Y;
-    alloc_data();
+    AllocData();
     for(byte x = 0; x < size.X; ++x)
         for(byte y = 0; y < size.Y; ++y)
         {
@@ -69,21 +69,26 @@ Sprite::Sprite(string filename)
         }
 
     stream.close();
-    lastclearcolor = Black;
+    lastClearcolor = Black;
 }
 
 Sprite::Sprite(Vector2 sprite_size)
 {
     size = sprite_size;
-    alloc_data();
-    lastclearcolor = Black;
+    AllocData();
+    lastClearcolor = Black;
 }
 
-void Sprite::alloc_data()
+void Sprite::AllocData()
 {
     data = new Pixel*[size.X];
     for(byte b = 0; b < size.X; ++b)
         data[b] = new Pixel[size.Y];
+}
+
+Vector2 Sprite::GetSize()
+{
+    return(size);
 }
 
 Sprite::~Sprite()
@@ -93,7 +98,7 @@ Sprite::~Sprite()
     delete [] data;
 }
 
-bool Sprite::draw_sprite(const Sprite &sprite, const Vector2 position)
+bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 position)
 {
     for(register byte x = 0; x < sprite.size.X; ++x)
         for(register byte y = 0; y < sprite.size.Y; ++y)
@@ -103,12 +108,12 @@ bool Sprite::draw_sprite(const Sprite &sprite, const Vector2 position)
     return true;
 }
 
-bool Sprite::draw_sprite_center(const Sprite &sprite, const Vector2 position)
+bool Sprite::DrawSpriteCenter(const Sprite &sprite, const Vector2 position)
 {
-    return(draw_sprite(sprite, Vector2(((position.X / 2) - (sprite.size.X / 2)), ((position.Y / 2) - (sprite.size.Y / 2)))));
+    return(DrawSprite(sprite, Vector2(((position.X / 2) - (sprite.size.X / 2)), ((position.Y / 2) - (sprite.size.Y / 2)))));
 }
 
-void Sprite::fill_backcolor(Color backcolor)
+void Sprite::FillBackcolor(Color backcolor)
 {
     //TODO: Esta função deve deixar todas as propriedades backcolor do sprite da cor informada
     for(byte x = 0; x < size.X; ++x)
@@ -116,7 +121,7 @@ void Sprite::fill_backcolor(Color backcolor)
             data[x][y].backcolor = backcolor;
 }
 
-void Sprite::fill_forecolor(Color forecolor)
+void Sprite::FillForecolor(Color forecolor)
 {
     //TODO: Esta função deve deixar todas as propriedades forecolor do sprite da cor informada
     for(byte x = 0; x < size.X; ++x)
@@ -124,7 +129,7 @@ void Sprite::fill_forecolor(Color forecolor)
             data[x][y].forecolor = forecolor;
 }
 
-byte Sprite::draw_text(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawText(const string text, const Vector2 position, Color forecolor, Color backcolor)
 {
     byte len = text.size();
     register byte b;
@@ -137,23 +142,24 @@ byte Sprite::draw_text(const string text, const Vector2 position, Color forecolo
         if((position.X + b) >= size.X)
             return(b);
         data[position.X + b][position.Y].character = text[b];
-        data[position.X + b][position.Y].backcolor = backcolor;
+        if(backcolor != Transparent)
+            data[position.X + b][position.Y].backcolor = backcolor;
         data[position.X + b][position.Y].forecolor = forecolor;
     }
     return b;
 }
 
-byte Sprite::draw_text_right(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawText_right(const string text, const Vector2 position, Color forecolor, Color backcolor)
 {
-    return(draw_text(text, Vector2((position.X - (text.size() -1)), position.Y), forecolor, backcolor));
+    return(DrawText(text, Vector2((position.X - (text.size() -1)), position.Y), forecolor, backcolor));
 }
 
-byte Sprite::draw_text_center(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextCenter(const string text, const Vector2 position, Color forecolor, Color backcolor)
 {
-    return(draw_text(text, Vector2(position.X - ((text.size() -1) / 2), position.Y), forecolor, backcolor));
+    return(DrawText(text, Vector2(position.X - ((text.size() -1) / 2), position.Y), forecolor, backcolor));
 }
 
-byte Sprite::draw_text_vert(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawText_vert(const string text, const Vector2 position, Color forecolor, Color backcolor)
 {
     byte len = text.size();
     register byte b;
@@ -166,39 +172,40 @@ byte Sprite::draw_text_vert(const string text, const Vector2 position, Color for
         if((position.Y + b) >= size.Y)
             return(b);
         data[position.X][position.Y + b].character = text[b];
-        data[position.X][position.Y + b].backcolor = backcolor;
+        if(backcolor != Transparent)
+            data[position.X][position.Y + b].backcolor = backcolor;
         data[position.X][position.Y + b].forecolor = forecolor;
     }
     return b;
 }
 
-byte Sprite::draw_text_vert_center(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextVertCenter(const string text, const Vector2 position, Color forecolor, Color backcolor)
 {
-    return (draw_text_vert(text, Vector2(position.X, (position.Y / (text.size() -1))), forecolor, backcolor));
+    return (DrawText_vert(text, Vector2(position.X, (position.Y / (text.size() -1))), forecolor, backcolor));
 }
 
-byte Sprite::draw_text_vert_top(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextVertTop(const string text, const Vector2 position, Color forecolor, Color backcolor)
 {
-    return (draw_text_vert(text, Vector2(position.X, (position.Y - (text.size() -1))), forecolor, backcolor));
+    return (DrawText_vert(text, Vector2(position.X, (position.Y - (text.size() -1))), forecolor, backcolor));
 }
 
-void Sprite::clear()
+void Sprite::Clear()
 {
-    clear(Black);
+    Clear(Black);
 }
 
-void Sprite::clear(Color backcolor)
+void Sprite::Clear(Color backcolor)
 {
-    lastclearcolor = backcolor;
+    lastClearcolor = backcolor;
     for(register byte x = 0; x < size.X; ++x)
         for(register byte y = 0; y < size.Y; ++y)
         {
-            data[x][y].reset();
+            data[x][y].Reset();
             data[x][y].backcolor = backcolor;
         }
 }
 
-bool Sprite::does_itfit(Sprite& sprite, Vector2 position)
+bool Sprite::DoesItFit(Sprite& sprite, Vector2 position)
 {
     if(((position.X + sprite.size.X) >= size.X) &&
             ((position.Y + sprite.size.Y) >= size.Y))
@@ -207,12 +214,12 @@ bool Sprite::does_itfit(Sprite& sprite, Vector2 position)
         return true;
 }
 
-void Sprite::rotate(short int graus)
+void Sprite::Rotate(short int graus)
 {
     //Todo: Esta função deve fazer a rotação do sprite
 }
 
-void Sprite::save(string filename)
+void Sprite::Save(string filename)
 {
 
     DeleteFile(filename.c_str());
@@ -239,127 +246,265 @@ void Sprite::save(string filename)
 /*----------Engine----------*/
 /*--------------------------*/
 
-void Engine::pre_initialize()
+void Engine::PreInit()
 {
     output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     console_handle = GetConsoleWindow();
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
-    set_cursor_size(1, false);
-    set_title("Console Game Engine");
+    SetCursorSize(1, false);
+    SetWindowTitle("Console Game Engine");
     currentfps = 0;
     buffer = NULL;
     console_size.X = 80;
     console_size.Y = 25;
 }
 
-void Engine::pos_initialize()
+void Engine::PosInit()
 {
-    set_size(console_size);
-    display_splash();
+    SetWindowSize(console_size);
+    ShowLogo();
 }
 
 Engine::Engine()
 {
-    pre_initialize();
+    PreInit();
 
-    pos_initialize();
+    PosInit();
 }
 
 Engine::Engine(string title)
 {
-    pre_initialize();
+    PreInit();
 
-    set_title(title);
+    SetWindowTitle(title);
 
-    pos_initialize();
+    PosInit();
 }
 
 Engine::Engine(Vector2 position, Vector2 size)
 {
-    pre_initialize();
+    PreInit();
 
     console_size = size;
-    set_position(position);
+    SetWindowPosition(position);
 
-    pos_initialize();
+    PosInit();
 }
 
 Engine::Engine(Vector2 size)
 {
-    pre_initialize();
+    PreInit();
 
     console_size = size;
 
-    pos_initialize();
+    PosInit();
 }
 
 Engine::Engine(string title, Vector2 size)
 {
-    pre_initialize();
+    PreInit();
 
-    set_title(title);
+    SetWindowTitle(title);
     console_size = size;
 
-    pos_initialize();
+    PosInit();
 }
 
 Engine::Engine(string title, Vector2 position, Vector2 size)
 {
-    pre_initialize();
+    PreInit();
 
-    set_title(title);
+    SetWindowTitle(title);
     console_size = size;
-    set_position(position);
+    SetWindowPosition(position);
 
-    pos_initialize();
+    PosInit();
 }
 
-void Engine::display_splash()
+void Engine::ShowLogo()
 {
     //TODO: Refazer função, mostrar os creditos, logo, versão e nome dos desenvolvedores
 
+#ifdef NEWLOGO
+    byte colc = 0, colg = 0, effect = 0;
+    Sprite logo = Sprite(Vector2(80, 14)), blood = Sprite(Vector2(78, 23));
+    int lasttick = GetTickCount(), blinktick = GetTickCount();
+    bool blink = false;
+
+    std::srand(GetTickCount());
+
+    logo.DrawTextCenter("  ______                       _       ",     Vector2(logo.GetSize().X / 2, 0), LightBlue, White);
+    logo.DrawTextCenter(" / _____)                     | |      ",     Vector2(logo.GetSize().X / 2, 1), LightBlue, White);
+    logo.DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(logo.GetSize().X / 2, 2), LightBlue, White);
+    logo.DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(logo.GetSize().X / 2, 3), LightBlue, White);
+    logo.DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(logo.GetSize().X / 2, 4), LightBlue, White);
+    logo.DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(logo.GetSize().X / 2, 5), LightBlue, White);
+
+    logo.DrawTextCenter("  ______                      _______             _             ",        Vector2(logo.GetSize().X / 2, 7), LightGreen, White);
+    logo.DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(logo.GetSize().X / 2, 8), LightGreen, White);
+    logo.DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(logo.GetSize().X / 2, 9), LightGreen, White);
+    logo.DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(logo.GetSize().X / 2, 10), LightGreen, White);
+    logo.DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(logo.GetSize().X / 2, 11), LightGreen, White);
+    logo.DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(logo.GetSize().X / 2, 12), LightGreen, White);
+    logo.DrawTextCenter("                                           (_____|              ",        Vector2(logo.GetSize().X / 2, 13), LightGreen, White);
+
+    while(!Keyboard::GetKey(VK_SPACE) || effect < 2)
+    {
+        if((GetTickCount() - lasttick) > 30)
+        {
+            lasttick = GetTickCount();
+
+            //blood effect
+            if(effect > 1)
+            {
+                byte count = 0;
+                for(byte x = 0; x < blood.GetSize().X; ++x)
+                {
+                    for(byte y = 0; y < blood.GetSize().Y; ++y)
+                    {
+                        if(blood.data[x][y].backcolor != LightRed)
+                        {
+                            if((std::rand() % 125) == 0)
+                            {
+                                blood.data[x][y].backcolor = LightRed;
+                                ++count;
+                            }
+                            break;
+                        }
+                    }
+                    if(count > 5)
+                    {
+                        break;
+                    }
+                }
+
+            }
+
+            buffer->DrawSprite(blood, Vector2(1, 1));
+
+            //console effect
+            for(byte row = 2; row < 9; ++row)
+            {
+                for(byte x = 20; x < colc; ++x)
+                {
+                    if(row % 2)
+                    {
+                        buffer->data[x][row].character = logo.data[x][row - 2].character;
+                        buffer->data[x][row].forecolor = logo.data[x][row - 2].forecolor;
+                    }
+                    else
+                    {
+                        buffer->data[logo.GetSize().X - 1 - x][row].character = logo.data[logo.GetSize().X - 1 - x][row - 2].character;
+                        buffer->data[logo.GetSize().X - 1 - x][row].forecolor = logo.data[logo.GetSize().X - 1 - x][row - 2].forecolor;
+                    }
+                }
+            }
+
+            if(colc < logo.GetSize().X - 6)
+                ++colc;
+            else
+                effect = 1;
+
+            if(effect > 0)
+            {
+                for(byte row = 9; row < 16; ++row)
+                {
+                    for(byte x = 6; x < colg; ++x)
+                    {
+                        if(row % 2)
+                        {
+                            buffer->data[x][row].character = logo.data[x][row - 2].character;
+                            buffer->data[x][row].forecolor = logo.data[x][row - 2].forecolor;
+                        }
+                        else
+                        {
+                            buffer->data[logo.GetSize().X - 1 - x][row].character = logo.data[logo.GetSize().X - 1 - x][row - 2].character;
+                            buffer->data[logo.GetSize().X - 1 - x][row].forecolor = logo.data[logo.GetSize().X - 1 - x][row - 2].forecolor;
+                        }
+                    }
+                }
+
+                if(colg < logo.GetSize().X - 6)
+                    ++colg;
+                else
+                    effect = 2;
+            }
+
+            for(byte x = 0; x < GetWindowSize().X; ++x)
+                for(byte y = 0; y < GetWindowSize().Y; ++y)
+                    if(y == 0 || x == 0 || y == GetWindowSize().Y-1 || x == GetWindowSize().X-1)
+                    {
+                        buffer->data[x][y].character = '°';
+                        buffer->data[x][y].forecolor = LightRed;
+                    }
+
+            if((GetTickCount() - blinktick) > 1000)
+            {
+                blinktick = GetTickCount();
+                blink = !blink;
+            }
+
+            if(effect > 1)
+            {
+                if(blink)
+                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().X / 2, 19), White, Transparent);
+            }
+
+            buffer->DrawText("Developed by", Vector2(2, GetWindowSize().Y -3), White, Black);
+            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().Y -2), White, Black);
+
+            buffer->DrawText_right("Version 0.6",Vector2(GetWindowSize().X-2, GetWindowSize().Y-2), White, Black);
+
+            UpdateConsole();
+        }
+    }
+
+#else
+
     byte col = 0;
 
-    while(!Keyboard::get_key(VK_SPACE))
+    while(!Keyboard::GetKey(VK_SPACE))
     {
 
-        for(byte x = 0; x < get_size().X; ++x)
-            for(byte y = 0; y < get_size().Y; ++y)
-                if(y == 0 || x == 0 || y == get_size().Y-1 || x == get_size().X-1)
+        for(byte x = 0; x < GetWindowSize().X; ++x)
+            for(byte y = 0; y < GetWindowSize().Y; ++y)
+                if(y == 0 || x == 0 || y == GetWindowSize().Y-1 || x == GetWindowSize().X-1)
                 {
                     buffer->data[x][y].character = '*';
                     buffer->data[x][y].forecolor = LightBlue;
                 }
 
-        buffer->draw_text_center("  ______                       _       ",     Vector2(get_size().X / 2, 2), White, Black);
-        buffer->draw_text_center(" / _____)                     | |      ",     Vector2(get_size().X / 2, 3), White, Black);
-        buffer->draw_text_center("| /      ___  ____   ___  ___ | | ____ ",     Vector2(get_size().X / 2, 4), White, Black);
-        buffer->draw_text_center("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(get_size().X / 2, 5), White, Black);
-        buffer->draw_text_center("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(get_size().X / 2, 6), White, Black);
-        buffer->draw_text_center(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(get_size().X / 2, 7), White, Black);
+        buffer->DrawTextCenter("  ______                       _       ",     Vector2(GetWindowSize().X / 2, 2), White, Black);
+        buffer->DrawTextCenter(" / _____)                     | |      ",     Vector2(GetWindowSize().X / 2, 3), White, Black);
+        buffer->DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetWindowSize().X / 2, 4), White, Black);
+        buffer->DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetWindowSize().X / 2, 5), White, Black);
+        buffer->DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetWindowSize().X / 2, 6), White, Black);
+        buffer->DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetWindowSize().X / 2, 7), White, Black);
 
-        buffer->draw_text_center("  ______                      _______             _             ",        Vector2(get_size().X / 2, 10), White, Black);
-        buffer->draw_text_center(" / _____)                    (_______)           (_)            ",        Vector2(get_size().X / 2, 11), White, Black);
-        buffer->draw_text_center("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(get_size().X / 2, 12), White, Black);
-        buffer->draw_text_center("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(get_size().X / 2, 13), White, Black);
-        buffer->draw_text_center("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(get_size().X / 2, 14), White, Black);
-        buffer->draw_text_center(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(get_size().X / 2, 15), White, Black);
-        buffer->draw_text_center("                                           (_____|              ",        Vector2(get_size().X / 2, 16), White, Black);
+        buffer->DrawTextCenter("  ______                      _______             _             ",        Vector2(GetWindowSize().X / 2, 10), White, Black);
+        buffer->DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetWindowSize().X / 2, 11), White, Black);
+        buffer->DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetWindowSize().X / 2, 12), White, Black);
+        buffer->DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetWindowSize().X / 2, 13), White, Black);
+        buffer->DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetWindowSize().X / 2, 14), White, Black);
+        buffer->DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetWindowSize().X / 2, 15), White, Black);
+        buffer->DrawTextCenter("                                           (_____|              ",        Vector2(GetWindowSize().X / 2, 16), White, Black);
 
         //effect
-        static int lastpp;
-        if(((GetTickCount() - lastpp) > 100) && (col < (get_size().X / 2)))
+        static int lastpp = 0;
+
+        if(((GetTickCount() - lastpp) > 100) && (col < (GetWindowSize().X / 2)))
         {
             lastpp = GetTickCount();
             ++col;
         }
+
         for(byte y = 2; y < 17; ++y)
-            for(byte x = 2; x < get_size().X; ++x)
+            for(byte x = 2; x < GetWindowSize().X; ++x)
             {
-                if((col <= (get_size().X / 2)) && x < col)
+                if((col <= (GetWindowSize().X / 2)) && x < col)
                 {
                     buffer->data[x][y].forecolor = Green;
-                    buffer->data[(get_size().X-1) - x][y].forecolor = Yellow;
+                    buffer->data[(GetWindowSize().X-1) - x][y].forecolor = Yellow;
                 }
             }
 
@@ -369,20 +514,21 @@ void Engine::display_splash()
         buffer->data[60][11].forecolor = LightBlue;
         //effect
 
-        buffer->draw_text("Developed by", Vector2(2, get_size().Y -3), White, Black);
-        buffer->draw_text("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, get_size().Y -2), White, Black);
+        buffer->DrawText("Developed by", Vector2(2, GetWindowSize().Y -3), White, Black);
+        buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().Y -2), White, Black);
 
-        buffer->draw_text_right("Version 0.6",Vector2(get_size().X-2, get_size().Y-2), White, Black);
+        buffer->DrawText_right("Version 0.6",Vector2(GetWindowSize().X-2, GetWindowSize().Y-2), White, Black);
 
-        buffer->draw_text_center("Press space", Vector2(get_size().X / 2, 19), White, Black);
+        buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().X / 2, 19), White, Black);
 
-        update_console();
-        buffer->clear();
+        UpdateConsole();
+        buffer->Clear();
     }
 
+#endif
 }
 
-bool Engine::set_position(Vector2 position)
+bool Engine::SetWindowPosition(Vector2 position)
 {
     return(SetWindowPos(console_handle, HWND_TOP, position.X, position.Y, NULL, NULL, SWP_NOSIZE));
 }
@@ -392,7 +538,7 @@ Engine::~Engine()
     delete buffer;
 }
 
-bool Engine::set_size(Vector2 size)
+bool Engine::SetWindowSize(Vector2 size)
 {
     //COORD coord = {size.X, size.Y};
     //return(SetConsoleScreenBufferSize(output_handle, coord));
@@ -413,7 +559,7 @@ bool Engine::set_size(Vector2 size)
     return(SetConsoleWindowInfo(output_handle, TRUE, &displayarea));
 }
 
-Vector2 Engine::get_size()
+Vector2 Engine::GetWindowSize()
 {
     /*CONSOLE_SCREEN_BUFFER_INFO coninfo;
 
@@ -422,7 +568,7 @@ Vector2 Engine::get_size()
     return(console_size);
 }
 
-Vector2 Engine::get_screen_resolution()
+Vector2 Engine::GetScreenResolution()
 {
     Vector2 temp;
     temp.X = GetSystemMetrics(SM_CXSCREEN);
@@ -430,7 +576,7 @@ Vector2 Engine::get_screen_resolution()
     return temp;
 }
 
-bool Engine::focus()
+bool Engine::Focus()
 {
     if(GetForegroundWindow() == console_handle)
         return(true);
@@ -438,41 +584,41 @@ bool Engine::focus()
         return(false);
 }
 
-void Engine::wait_focus()
+void Engine::WaitFocus()
 {
-    while(!focus()) {};
+    while(!Focus()) {};
 }
 
-bool Engine::set_text_color (Color forecolor, Color backcolor)
+bool Engine::SetTextColor (Color forecolor, Color backcolor)
 {
     return (SetConsoleTextAttribute (output_handle, forecolor | backcolor << 4) == TRUE);
 }
 
-bool Engine::set_cursor_pos(Vector2 position)
+bool Engine::SetCursorPosition(Vector2 position)
 {
     COORD coord = {position.X, position.Y};
     return (SetConsoleCursorPosition(output_handle, coord) == TRUE);
 }
 
-bool Engine::set_title(string title)
+bool Engine::SetWindowTitle(string title)
 {
     return SetConsoleTitle ((LPCSTR)title.c_str());
 }
 
-bool Engine::set_cursor_size(byte size, bool visible)
+bool Engine::SetCursorSize(byte size, bool visible)
 {
     CONSOLE_CURSOR_INFO cursorinfo = { size, visible };
     return (SetConsoleCursorInfo (output_handle, &cursorinfo) == TRUE);
 }
 
-short int Engine::get_fps()
+short int Engine::GetCurrentFps()
 {
     return(currentfps);
 }
 
-void Engine::update_console()
+void Engine::UpdateConsole()
 {
-    set_cursor_pos(Vector2(0, 0));
+    SetCursorPosition(Vector2(0, 0));
     //TODO: fazer backup da posição anterior do cursor e restaurar novamente no final da função
     CHAR_INFO winbuffer[console_size.Y][console_size.X];
 
@@ -494,7 +640,7 @@ void Engine::update_console()
             if(buffer->data[x][y].backcolor == ClearColor)
             {
                 //FIX: Rever, por algum motivo não esta funcionando
-                winbuffer[y][x].Attributes = buffer->data[x][y].forecolor | buffer->lastclearcolor << 4;
+                winbuffer[y][x].Attributes = buffer->data[x][y].forecolor | buffer->lastClearcolor << 4;
             }
             if(buffer->data[x][y].backcolor == Transparent)
             {
@@ -519,31 +665,31 @@ void Engine::update_console()
 /*----------Keyboard----------*/
 /*----------------------------*/
 
-bool Keyboard::get_key(int key)
+bool Keyboard::GetKey(int key)
 {
     return(GetAsyncKeyState(key) == -32767);
 }
 
-bool Keyboard::get_key_down(int key)
+bool Keyboard::GetKey_down(int key)
 {
     return((GetAsyncKeyState(key) == -32768));
 }
 
-byte Keyboard::get_key()
+byte Keyboard::GetKey()
 {
     //for(char b = 32;b < 127;b++)
     for(byte b = 1; b < 256; b++)
-        if(get_key(b))
+        if(GetKey(b))
             return b;
     return(0);
 }
 
-byte Keyboard::get_next_key()
+byte Keyboard::GetNextKey()
 {
     byte key = 0;
     do
     {
-        key = get_key();
+        key = GetKey();
     }
     while(!key);
     return(key);
@@ -558,24 +704,24 @@ Sound::Sound(string filename)
     filepath = filename;
 }
 
-bool Sound::play()
+bool Sound::Play()
 {
-    return(play_sound(filepath));
+    return(PlaySound(filepath));
 }
 
-bool Sound::play_sound(string filename)
+bool Sound::PlaySound(string filename)
 {
     filename = "play " + filename;
     //return(mciSendString(filename.c_str(), NULL, NULL, NULL) << 4);
     return true;
 }
 
-bool Sound::stop()
+bool Sound::Stop()
 {
-    return(stop_sound(filepath));
+    return(StopSound(filepath));
 }
 
-bool Sound::stop_sound(string filename)
+bool Sound::StopSound(string filename)
 {
     filename = "stop " + filename;
     //return(mciSendString(filename.c_str(), NULL, NULL, NULL) << 4);

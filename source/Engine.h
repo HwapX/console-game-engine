@@ -2,15 +2,18 @@
 #define ENGINE_H_INCLUDED
 
 #include <fstream>
+#include <cstdlib>
 
 /*Sobre escreve a versão informada em windows.h*/
 #define WINVER 0x0501
 #include <windows.h>
 /*---------------------------------------------*/
 
+#define NEWLOGO
+
 using namespace std;
 
-namespace Console_Game_Engine
+namespace ConsoleGameEngine
 {
 /**
 *A enum with all console colors
@@ -79,7 +82,7 @@ public:
     /**
     *this function reset the pixel to default values
     */
-    void reset();
+    void Reset();
 };
 
 /**
@@ -89,16 +92,17 @@ public:
 class Sprite
 {
 private:
-    void alloc_data();
+    void AllocData();
+    Vector2 size;
 public:
     /**
-    *last color with the clear function is called.
+    *last color with the Clear function is called.
     */
-    byte lastclearcolor;
+    byte lastClearcolor;
     /**
     *deixar essa variavel privada futuramente e criar uma função para pegar o valor dela
     */
-    Vector2 size;
+    Vector2 GetSize();
     /**
     *a two-dimensional matrix of pixel, that represent all pixels of sprite.
     */
@@ -120,15 +124,15 @@ public:
     *@param position the position to draw
     *@return return true if the draw as succeeded or false if fail
     */
-    bool draw_sprite(const Sprite &sprite, const Vector2 position);
+    bool DrawSprite(const Sprite &sprite, const Vector2 position);
     /**
     *this function draw a sprite on center of relative position informed.
     *@param sprite the sprite to draw
     *@param position the position to draw
     *@return return true if the draw as succeeded or false if fail
-    *@see draw_sprite
+    *@see DrawSprite
     */
-    bool draw_sprite_center(const Sprite &sprite, const Vector2 position);
+    bool DrawSpriteCenter(const Sprite &sprite, const Vector2 position);
     /**
     *Draw a text
     *this function draw a text on position informed, containing its forecolor and backcolor informed.
@@ -138,13 +142,13 @@ public:
     *@param backcolor the text backcolor
     *@return return number of chars written
     *@see Pixel
-    *@see draw_text_center
-    *@see draw_text_right
-    *@see draw_text_vert
-    *@see draw_text_vert_top
-    *@see draw_text_vert_center
+    *@see DrawTextCenter
+    *@see DrawText_right
+    *@see DrawText_vert
+    *@see DrawTextVertTop
+    *@see DrawTextVertCenter
     */
-    byte draw_text(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawText(const string text, const Vector2 position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a vectical text on informed position, containing its forecolor and backcolor informed.
@@ -154,13 +158,13 @@ public:
     *@param backcolor the text backcolor
     *@return return number of chars written
     *@see Pixel
-    *@see draw_text_center
-    *@see draw_text_right
-    *@see draw_text_vert_top
-    *@see draw_text_vert_center
-    *@see draw_text
+    *@see DrawTextCenter
+    *@see DrawText_right
+    *@see DrawTextVertTop
+    *@see DrawTextVertCenter
+    *@see DrawText
     */
-    byte draw_text_vert(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawText_vert(const string text, const Vector2 position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a text on right of position informed, containing its forecolor and backcolor informed.
@@ -170,13 +174,13 @@ public:
     *@param backcolor the text backcolor
     *@return return number of chars written
     *@see Pixel
-    *@see draw_text_center
-    *@see draw_text_vert
-    *@see draw_text_vert_top
-    *@see draw_text_vert_center
-    *@see draw_text
+    *@see DrawTextCenter
+    *@see DrawText_vert
+    *@see DrawTextVertTop
+    *@see DrawTextVertCenter
+    *@see DrawText
     */
-    byte draw_text_right(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawText_right(const string text, const Vector2 position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a text in a center relative position, containing its forecolor and backcolor informed.
@@ -186,13 +190,13 @@ public:
     *@param backcolor the text backcolor
     *@return return number of chars written
     *@see Pixel
-    *@see draw_text_right
-    *@see draw_text_vert
-    *@see draw_text_vert_top
-    *@see draw_text_vert_center
-    *@see draw_text
+    *@see DrawText_right
+    *@see DrawText_vert
+    *@see DrawTextVertTop
+    *@see DrawTextVertCenter
+    *@see DrawText
     */
-    byte draw_text_center(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawTextCenter(const string text, const Vector2 position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a vectical text in a given vectical relative position, containing its forecolor and backcolor informed.
@@ -202,13 +206,13 @@ public:
     *@param backcolor the text backcolor
     *@return return number of chars written
     *@see Pixel
-    *@see draw_text_center
-    *@see draw_text_right
-    *@see draw_text_vert
-    *@see draw_text_vert_top
-    *@see draw_text
+    *@see DrawTextCenter
+    *@see DrawText_right
+    *@see DrawText_vert
+    *@see DrawTextVertTop
+    *@see DrawText
     */
-    byte draw_text_vert_center(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawTextVertCenter(const string text, const Vector2 position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a text on top of informed position, containing its forecolor and backcolor informed.
@@ -218,49 +222,53 @@ public:
     *@param backcolor the text backcolor
     *@return return number of chars written
     *@see Pixel
-    *@see draw_text_center
-    *@see draw_text_right
-    *@see draw_text_vert
-    *@see draw_text_vert_center
-    *@see draw_text
+    *@see DrawTextCenter
+    *@see DrawText_right
+    *@see DrawText_vert
+    *@see DrawTextVertCenter
+    *@see DrawText
     */
-    byte draw_text_vert_top(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawTextVertTop(const string text, const Vector2 position, Color forecolor, Color backcolor);
     /**
     *this function check if a sprite fit this drawing in a informed position.
     *@param sprite the sprite to check
     *@param position the position to test
     *@return return true if fit  or false if not;
     */
-    bool does_itfit(Sprite& sprite, Vector2 position);
+    bool DoesItFit(Sprite& sprite, Vector2 position);
     /**
     *nothing actually
     */
-    void rotate(short int graus);
+    void Rotate(short int graus);
     /**
     *fill all sprite background color with color informed.
     *@param backcolor background color to fill
-    *@see fill_backcolor
+    *@see FillBackcolor
     */
-    void fill_backcolor(Color backcolor);
+    void FillBackcolor(Color backcolor);
     /**
     *fill all sprite foreground color with color informed.
     *@param forecolor foreground color to fill
-    *@see fill_forecolor
+    *@see FillForecolor
     */
-    void fill_forecolor(Color forecolor);
+    void FillForecolor(Color forecolor);
     /**
-    *clear all sprite and fill with color informed.
+    *Clear all sprite with backcolor and forecolor informed.
     */
-    void clear(Color backcolor);
+    void Clear(Color backcolor, Color forecolor);
     /**
-    *clear all sprite and fill with black color.
+    *Clear all sprite and fill with color informed.
     */
-    void clear();
+    void Clear(Color backcolor);
     /**
-    *save sprite with file name informed.
+    *Clear all sprite and fill with black color.
+    */
+    void Clear();
+    /**
+    *Save sprite with file name informed.
     *@param savename name that the file should be saved
     */
-    void save(string savename);
+    void Save(string savename);
 };
 
 
@@ -273,8 +281,8 @@ private:
     HANDLE output_handle;
     HWND console_handle;
 
-    void pre_initialize();
-    void pos_initialize();
+    void PreInit();
+    void PosInit();
 
     short int currentfps;
 
@@ -327,73 +335,73 @@ public:
     /**
     *draw engine splash
     */
-    void display_splash();
+    void ShowLogo();
     /**
     *check if window has focus
     *@return return true if window is in focus or false otherwise
     */
-    bool focus();
+    bool Focus();
     /**
     *wait window focus
     *this function returns only when the window is in focus
     */
-    void wait_focus();
+    void WaitFocus();
     /**
     *set console window size.
     *@param size new size.
     *@return return true if success or false otherwise
     */
-    bool set_size(Vector2 size);
+    bool SetWindowSize(Vector2 size);
     /**
     *set console window position
     *@param position new position
     *@return return true if success or false otherwise
     */
-    bool set_position(Vector2 position);
+    bool SetWindowPosition(Vector2 position);
     /**
     *get console window size
     *@return window size
     */
-    Vector2 get_size();
+    Vector2 GetWindowSize();
     /**
     *get primary monitor resolution
     *@return return screen resolution
     */
-    Vector2 get_screen_resolution();
+    Vector2 GetScreenResolution();
     /**
     *set console window title
     *@param title new title
     *@return return true if success or false otherwise
     */
-    bool set_title(string title);
+    bool SetWindowTitle(string title);
     /**
     *set console cursor position
     *@param position new position
     *@return return true if success or false otherwise
     */
-    bool set_cursor_pos(Vector2 position);
+    bool SetCursorPosition(Vector2 position);
     /**
     *set next write forecolor and backcolor in console
     *@param forecolor foreground color
     *@param backcolor background color
     *@return return true if success or false otherwise
     */
-    bool set_text_color (Color forecolor, Color backcolor);
+    bool SetTextColor (Color forecolor, Color backcolor);
     /**
     *set cursor size and visible state
     *@param size new cursor size
     *@param visible visible state
     *@return return true if success or false otherwise
     */
-    bool set_cursor_size(byte size, bool visible);
+    bool SetCursorSize(byte size, bool visible);
     /**
     *copy buffer to console
     */
-    void update_console();
+    void UpdateConsole();
     /**
     *get current frame rate per second
     */
-    short int get_fps();
+    short int GetCurrentFps();
     //set font
     //get console size
     //get console position
@@ -410,21 +418,16 @@ public:
     *@param key key to check
     *@return ?
     */
-    static bool get_key(int key);
+    static bool GetKey(int key);
     /**
     *check key if key informed are down
     *@param key key to check
     *@return return true if are pressed or false otherwise
     */
-    static bool get_key_down(int key);
+    static bool GetKey_down(int key);
     //revisar as funções abaixo da classe
-    static byte get_key();
-    static byte get_next_key();
-    static string get_string();
-    static char get_next_char();
-    static string get_string(byte maxsize);
-    static int get_numbers(byte maxdigits);
-    static int get_numbers(int maxnumber);
+    static byte GetKey();
+    static byte GetNextKey();
 };
 /**
 *nothing currently
@@ -435,10 +438,10 @@ private:
     string filepath;
 public:
     Sound(string filename);
-    bool play();
-    bool stop();
-    static bool play_sound(string filename);
-    static bool stop_sound(string filename);
+    bool Play();
+    bool Stop();
+    static bool PlaySound(string filename);
+    static bool StopSound(string filename);
 };
 }
 

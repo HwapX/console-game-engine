@@ -61,7 +61,7 @@ Sprite::Sprite(string filename)
     for(byte x = 0; x < size.X; ++x)
         for(byte y = 0; y < size.Y; ++y)
         {
-            stream.get(data[x][y].character = temp);
+            stream.get(data[x][y].character);
             stream.get(temp);
             data[x][y].forecolor = (Color)temp;
             stream.get(temp);

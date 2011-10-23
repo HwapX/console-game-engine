@@ -124,7 +124,7 @@ public:
     *@param position the position to draw
     *@return return true if the draw as succeeded or false if fail
     */
-    bool DrawSprite(const Sprite &sprite, const Vector2 position);
+    bool DrawSprite(const Sprite &sprite, const Vector2 &position);
     /**
     *this function draw a sprite on center of relative position informed.
     *@param sprite the sprite to draw
@@ -132,7 +132,7 @@ public:
     *@return return true if the draw as succeeded or false if fail
     *@see DrawSprite
     */
-    bool DrawSpriteCenter(const Sprite &sprite, const Vector2 position);
+    bool DrawSpriteCenter(const Sprite &sprite, const Vector2 &position);
     /**
     *Draw a text
     *this function draw a text on position informed, containing its forecolor and backcolor informed.
@@ -148,7 +148,7 @@ public:
     *@see DrawTextVertTop
     *@see DrawTextVertCenter
     */
-    byte DrawText(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawText(const string text, const Vector2 &position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a vectical text on informed position, containing its forecolor and backcolor informed.
@@ -164,7 +164,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawText_vert(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawText_vert(const string text, const Vector2 &position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a text on right of position informed, containing its forecolor and backcolor informed.
@@ -180,7 +180,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawText_right(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawText_right(const string text, const Vector2 &position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a text in a center relative position, containing its forecolor and backcolor informed.
@@ -196,7 +196,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawTextCenter(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawTextCenter(const string text, const Vector2 &position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a vectical text in a given vectical relative position, containing its forecolor and backcolor informed.
@@ -212,7 +212,7 @@ public:
     *@see DrawTextVertTop
     *@see DrawText
     */
-    byte DrawTextVertCenter(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawTextVertCenter(const string text, const Vector2 &position, Color forecolor, Color backcolor);
     /**
     *Draw a text
     *this function draw a text on top of informed position, containing its forecolor and backcolor informed.
@@ -228,7 +228,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawTextVertTop(const string text, const Vector2 position, Color forecolor, Color backcolor);
+    byte DrawTextVertTop(const string text, const Vector2 &position, Color forecolor, Color backcolor);
     /**
     *this function check if a sprite fit this drawing in a informed position.
     *@param sprite the sprite to check

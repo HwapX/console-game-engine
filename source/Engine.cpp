@@ -61,7 +61,7 @@ Sprite::Sprite(string filename)
     for(byte x = 0; x < size.X; ++x)
         for(byte y = 0; y < size.Y; ++y)
         {
-            stream.get(data[x][y].character);
+            stream.get(data[x][y].character = temp);
             stream.get(temp);
             data[x][y].forecolor = (Color)temp;
             stream.get(temp);
@@ -98,7 +98,7 @@ Sprite::~Sprite()
     delete [] data;
 }
 
-bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 position)
+bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position)
 {
     for(register byte x = 0; x < sprite.size.X; ++x)
         for(register byte y = 0; y < sprite.size.Y; ++y)
@@ -108,7 +108,7 @@ bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 position)
     return true;
 }
 
-bool Sprite::DrawSpriteCenter(const Sprite &sprite, const Vector2 position)
+bool Sprite::DrawSpriteCenter(const Sprite &sprite, const Vector2 &position)
 {
     return(DrawSprite(sprite, Vector2(((position.X / 2) - (sprite.size.X / 2)), ((position.Y / 2) - (sprite.size.Y / 2)))));
 }
@@ -129,7 +129,7 @@ void Sprite::FillForecolor(Color forecolor)
             data[x][y].forecolor = forecolor;
 }
 
-byte Sprite::DrawText(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawText(const string text, const Vector2 &position, Color forecolor, Color backcolor)
 {
     byte len = text.size();
     register byte b;
@@ -149,17 +149,17 @@ byte Sprite::DrawText(const string text, const Vector2 position, Color forecolor
     return b;
 }
 
-byte Sprite::DrawText_right(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawText_right(const string text, const Vector2 &position, Color forecolor, Color backcolor)
 {
     return(DrawText(text, Vector2((position.X - (text.size() -1)), position.Y), forecolor, backcolor));
 }
 
-byte Sprite::DrawTextCenter(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextCenter(const string text, const Vector2 &position, Color forecolor, Color backcolor)
 {
     return(DrawText(text, Vector2(position.X - ((text.size() -1) / 2), position.Y), forecolor, backcolor));
 }
 
-byte Sprite::DrawText_vert(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawText_vert(const string text, const Vector2 &position, Color forecolor, Color backcolor)
 {
     byte len = text.size();
     register byte b;
@@ -179,12 +179,12 @@ byte Sprite::DrawText_vert(const string text, const Vector2 position, Color fore
     return b;
 }
 
-byte Sprite::DrawTextVertCenter(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextVertCenter(const string text, const Vector2 &position, Color forecolor, Color backcolor)
 {
     return (DrawText_vert(text, Vector2(position.X, (position.Y / (text.size() -1))), forecolor, backcolor));
 }
 
-byte Sprite::DrawTextVertTop(const string text, const Vector2 position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextVertTop(const string text, const Vector2 &position, Color forecolor, Color backcolor)
 {
     return (DrawText_vert(text, Vector2(position.X, (position.Y - (text.size() -1))), forecolor, backcolor));
 }
@@ -221,23 +221,24 @@ void Sprite::Rotate(short int graus)
 
 void Sprite::Save(string filename)
 {
-
-    DeleteFile(filename.c_str());
+    //DeleteFile(filename.c_str());
 
     ofstream stream(filename.c_str(), ios_base::out);
     stream << size.X << size.Y;
 
-    char temp = 0;
+    byte temp = 0;
 
     for(byte x = 0; x < size.X; ++x)
+    {
         for(byte y = 0; y < size.Y; ++y)
         {
             stream << data[x][y].character;
-            temp = data[x][y].forecolor;
+            temp = (byte)data[x][y].forecolor;
             stream << temp;
-            temp = data[x][y].backcolor;
+            temp = (byte)data[x][y].backcolor;
             stream << temp;
         }
+    }
 
     stream.close();
 }
@@ -327,7 +328,7 @@ void Engine::ShowLogo()
 
 #ifdef NEWLOGO
     byte colc = 0, colg = 0, effect = 0;
-    Sprite logo = Sprite(Vector2(80, 14)), blood = Sprite(Vector2(78, 23));
+    Sprite logo = Sprite(Vector2(buffer->GetSize().X, 14)), blood = Sprite(Vector2(buffer->GetSize().X - 2, buffer->GetSize().Y- 2));
     int lasttick = GetTickCount(), blinktick = GetTickCount();
     bool blink = false;
 
@@ -350,12 +351,13 @@ void Engine::ShowLogo()
 
     while(!Keyboard::GetKey(VK_SPACE) || effect < 2)
     {
-        if((GetTickCount() - lasttick) > 30)
+        if((GetTickCount() - lasttick) > 25)
         {
             lasttick = GetTickCount();
 
             //blood effect
-            if(effect > 1)
+            static bool bleed = true;
+            if(effect > 1 && bleed)
             {
                 byte count = 0;
                 for(byte x = 0; x < blood.GetSize().X; ++x)
@@ -364,15 +366,17 @@ void Engine::ShowLogo()
                     {
                         if(blood.data[x][y].backcolor != LightRed)
                         {
-                            if((std::rand() % 125) == 0)
+                            if((std::rand() % 101) == 0)
                             {
                                 blood.data[x][y].backcolor = LightRed;
                                 ++count;
+                                if(y > 10)
+                                    bleed = false;
                             }
                             break;
                         }
                     }
-                    if(count > 5)
+                    if(count > 2)
                     {
                         break;
                     }
@@ -431,12 +435,16 @@ void Engine::ShowLogo()
             }
 
             for(byte x = 0; x < GetWindowSize().X; ++x)
+            {
                 for(byte y = 0; y < GetWindowSize().Y; ++y)
+                {
                     if(y == 0 || x == 0 || y == GetWindowSize().Y-1 || x == GetWindowSize().X-1)
                     {
                         buffer->data[x][y].character = '°';
                         buffer->data[x][y].forecolor = LightRed;
                     }
+                }
+            }
 
             if((GetTickCount() - blinktick) > 1000)
             {
@@ -447,13 +455,18 @@ void Engine::ShowLogo()
             if(effect > 1)
             {
                 if(blink)
-                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().X / 2, 19), White, Transparent);
+                {
+                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().X / 2, 17), Red, Transparent);
+                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().X / 2, 18), Red, Transparent);
+                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().X / 2, 18), White, Transparent);
+                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().X / 2, 19), Red, Transparent);
+                }
             }
 
-            buffer->DrawText("Developed by", Vector2(2, GetWindowSize().Y -3), White, Black);
-            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().Y -2), White, Black);
+            buffer->DrawText("Developed by", Vector2(2, GetWindowSize().Y -3), White, Transparent);
+            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().Y -2), White, Transparent);
 
-            buffer->DrawText_right("Version 0.6",Vector2(GetWindowSize().X-2, GetWindowSize().Y-2), White, Black);
+            buffer->DrawText_right("Version 0.6",Vector2(GetWindowSize().X-2, GetWindowSize().Y-2), White, Transparent);
 
             UpdateConsole();
         }

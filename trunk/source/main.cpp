@@ -12,7 +12,8 @@ string convert_int(int number)
     return ss.str();
 }
 
-string show_dialog(Engine &engine, string title){
+string show_dialog(Engine &engine, string title)
+{
     byte key = 0;
     string str;
     while(!Keyboard::GetKey(VK_ESCAPE))
@@ -28,7 +29,8 @@ string show_dialog(Engine &engine, string title){
             str.erase(str.size() -1, 1);
         else if(key == 13)//VK_EXECUTE)
             return str;
-        else{
+        else
+        {
             str+= key;
         }
         engine.buffer->DrawTextCenter(str, Vector2(engine.GetWindowSize().X / 2, engine.GetWindowSize().Y / 2), Black, White);
@@ -43,12 +45,14 @@ string show_dialog(Engine &engine, string title){
 int main()
 {
     Engine engine("Sprite editor for Console Game Engine");
-    engine.SetWindowSize(Vector2(80, 50));
+    engine.SetWindowSize(Vector2(80, 40));
 
     byte current_color = 0;
     Vector2 cursor;
-    Sprite *document = new Sprite(Vector2(30, 12));
+    Sprite *document = new Sprite(Vector2(8, 8));//(66, 64));
     document->Clear(White);
+
+    int saveid = 0;
 
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
@@ -56,7 +60,7 @@ int main()
 
         //le o teclado
         if(Keyboard::GetKey(VK_ADD) ||
-           Keyboard::GetKey(VK_OEM_PLUS))
+                Keyboard::GetKey(VK_OEM_PLUS))
         {
             current_color++;
             if(current_color == 18)
@@ -99,14 +103,16 @@ int main()
         }
         else if(Keyboard::GetKey('S'))
         {
-
-            document->Save("./" + show_dialog(engine, "enter the filename to save"));
+            ++saveid;
+            document->Save("./sprite_" + convert_int(saveid) + ".cges");
+            //document->Save("c:/mod/" + show_dialog(engine, "enter the filename to save") + ".ces");
         }
         else if(Keyboard::GetKey('L'))
         {
             delete document;
-            document = new Sprite("./" + show_dialog(engine, "enter the filename to load"));
-        }else if(Keyboard::GetKey('G'))
+            document = new Sprite("./sprite_" + convert_int(saveid) + ".cges");//"./" + show_dialog(engine, "enter the filename to load"));
+        }
+        else if(Keyboard::GetKey('G'))
         {
             Game();
             engine.SetWindowSize(Vector2(80, 50));
@@ -155,8 +161,8 @@ int main()
                         (y == document->GetSize().Y && x <= document->GetSize().X))
                 {
                     //as constantes são a posição onde o documento sera desenhado
-                    engine.buffer->data[1+x][7+y].character = '=';
-                    engine.buffer->data[1+x][7+y].forecolor = LightGrey;
+                    engine.buffer->data[1 + x][7 + y].character = '=';
+                    engine.buffer->data[1 + x][7 + y].forecolor = LightGrey;
                 }
             }
         engine.buffer->data[engine.GetWindowSize().X - 5 ][5].character = '=';
@@ -185,7 +191,7 @@ int main()
         engine.buffer->DrawText("{L}oad {S}ave {C}lear {R}esize {W}rite", Vector2(1, 1), Black, White);
         engine.buffer->DrawText("Color {F}orecolor {B}ackcolor {-}previus {+}next", Vector2(1, 5), Black, White);
         engine.buffer->DrawText_right("Current color", Vector2(engine.GetWindowSize().X - 6, 5), Black, White);
-        engine.buffer->DrawText("Use arrows to move the cursor", Vector2(1, engine.GetWindowSize().Y - 2), Black, White);
+        engine.buffer->DrawText("Use arrows to move the cursor = current save is " + convert_int(saveid), Vector2(1, engine.GetWindowSize().Y - 2), Black, White);
 
         //Mostra o FPS
         engine.buffer->DrawText_right("FPS:" + convert_int(engine.GetCurrentFps()), Vector2(78, engine.GetWindowSize().Y -2), engine.GetCurrentFps() > 59?LightGreen:LightRed, White);

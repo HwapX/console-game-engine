@@ -4,8 +4,6 @@ using namespace ConsoleGameEngine;
 
 Sprite::Sprite(const string &filename)
 {
-    //Todo: Esta função deve carregar o sprite do arquivo
-
     byte temp = 0;
     std::FILE* in = fopen(filename.c_str(), "r");
 
@@ -16,9 +14,9 @@ Sprite::Sprite(const string &filename)
     std::fread((void*)&size.y, 2, 1, in);
 
     AllocData();
-    for(uint16_t x = 0; x < size.x; ++x)
+    for(register uint16_t x = 0; x < size.x; ++x)
     {
-        for(uint16_t y = 0; y < size.y; ++y)
+        for(register uint16_t y = 0; y < size.y; ++y)
         {
             std::fread((void*)&data[x][y].character, 1, 1, in);
 
@@ -86,7 +84,7 @@ Sprite::Sprite(const Vector2 &sprite_size)
 void Sprite::AllocData()
 {
     data = new Pixel*[size.x];
-    for(uint16_t i = 0; i < size.x; ++i)
+    for(register uint16_t i = 0; i < size.x; ++i)
     {
         data[i] = new Pixel[size.y];
         //verificar a memoria alocada
@@ -100,7 +98,7 @@ Vector2 Sprite::GetSize()
 
 Sprite::~Sprite()
 {
-    for(uint16_t b = 0; b < size.x; ++b)
+    for(register uint16_t b = 0; b < size.x; ++b)
     {
         delete [] data[b];
     }
@@ -152,17 +150,15 @@ bool Sprite::DrawSpriteCenter(const Sprite &sprite, const Vector2 &position)
 
 void Sprite::FillBackcolor(color backcolor)
 {
-    //TODO: Esta função deve deixar todas as propriedades backcolor do sprite da cor informada
-    for(uint16_t x = 0; x < size.x; ++x)
-        for(uint16_t y = 0; y < size.y; ++y)
+    for(register uint16_t x = 0; x < size.x; ++x)
+        for(register uint16_t y = 0; y < size.y; ++y)
             data[x][y].backcolor = backcolor;
 }
 
 void Sprite::FillForecolor(color forecolor)
 {
-    //TODO: Esta função deve deixar todas as propriedades forecolor do sprite da cor informada
-    for(uint16_t x = 0; x < size.x; ++x)
-        for(uint16_t y = 0; y < size.y; ++y)
+    for(register uint16_t x = 0; x < size.x; ++x)
+        for(register uint16_t y = 0; y < size.y; ++y)
             data[x][y].forecolor = forecolor;
 }
 
@@ -292,9 +288,9 @@ void Sprite::Save(const string &filename)
     if(out == NULL)
         std::fprintf(stderr, "Can't save sprite file");
 
-    for(uint16_t x = 0; x < size.x; ++x)
+    for(register uint16_t x = 0; x < size.x; ++x)
     {
-        for(uint16_t y = 0; y < size.y; ++y)
+        for(register uint16_t y = 0; y < size.y; ++y)
         {
             std::fwrite((void*)&data[x][y].character, 1, 1, out);
 

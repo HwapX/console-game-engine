@@ -6,15 +6,24 @@
 #include <cstdio>
 
 /*Necessario para VK_OEM_PLUS e VK_OEM_MINUS*/
+#ifndef WINVER
+
 #define WINVER 0x0501
+
+#endif
 #include <windows.h>
 
 using namespace std;
 
 #include "Misc.h"
 #include "Sprite.h"
+#include "Animation.h"
 #include "Input.h"
 #include "Sound.h"
+
+#define NEWLOGO
+
+#define VERSION "Version beta 0.7"
 
 namespace ConsoleGameEngine
 {
@@ -86,11 +95,11 @@ public:
     /**
     *Show a Error Message
     */
-    void ShowError(const string &text);
+    void ShowError(const string &text, const bool close);
 
 
 
-    int GetTick();
+    static int GetTick();
     /**
     *check if window has focus
     *@return return true if window is in focus or false otherwise

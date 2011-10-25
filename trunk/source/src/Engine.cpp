@@ -37,7 +37,7 @@ Engine::Engine(const string &title)
     PosInit();
 }
 
-Engine::Engine(const Vector2 position, const Vector2 size)
+Engine::Engine(const Vector2 &position, const Vector2 &size)
 {
     PreInit();
 
@@ -47,7 +47,7 @@ Engine::Engine(const Vector2 position, const Vector2 size)
     PosInit();
 }
 
-Engine::Engine(Vector2 size)
+Engine::Engine(const Vector2 &size)
 {
     PreInit();
 

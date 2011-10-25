@@ -44,7 +44,7 @@ string show_dialog(Engine &engine, string title)
 
 int main()
 {
-    Engine engine("Sprite editor for Console Game Engine");
+    Engine engine("Console Game Engine Sprite Editor");
     engine.SetWindowSize(Vector2(80, 75));
 
     color current_color = 0;
@@ -142,7 +142,7 @@ int main()
                 cursor.x++;
         }
 
-        //desenha toda a grade da janela
+        //draw editor grid
         for(byte x = 0; x < engine.GetWindowSize().x; ++x)
             for(byte y = 0; y < engine.GetWindowSize().y; ++y)
             {
@@ -154,17 +154,16 @@ int main()
                 {
                     engine.buffer->data[x][y].character = '=';
                     engine.buffer->data[x][y].forecolor = Colors::Gray;
-                }//verifica se x esta a uma posição inferior a 4 da borda direita da janela
-                else if(x > engine.GetWindowSize().x - 6 && x < engine.GetWindowSize().x -1)   //mostra a cor selecionada atualmente
+                }
+                else if(x > engine.GetWindowSize().x - 6 && x < engine.GetWindowSize().x -1)   //show selected color
                 {
                     engine.buffer->data[x][3].backcolor = current_color;
                 }
 
-                //desenha o contorno do documento
+                //draw document delimitations
                 if((x == document->GetSize().x && y <= document->GetSize().y) ||
                         (y == document->GetSize().y && x <= document->GetSize().x))
                 {
-                    //as constantes são a posição onde o documento sera desenhado
                     engine.buffer->data[1 + x][7 + y].character = '=';
                     engine.buffer->data[1 + x][7 + y].forecolor = Colors::Gray;
                 }
@@ -172,7 +171,7 @@ int main()
         engine.buffer->data[engine.GetWindowSize().x - 6][3].character = '=';
         engine.buffer->data[engine.GetWindowSize().x - 12][3].character = '=';
 
-        //desenha a palete de cores
+        //draw the color palette
         for(byte c = 0; c < 17; ++c)
             for(byte x = 0; x < 3; ++x)
             {
@@ -181,24 +180,25 @@ int main()
                     engine.buffer->data[x+(1+4*c)][3].character = '°';
             }
 
-        //desenha o documento
+        //draw the document
         engine.buffer->DrawSprite(*document, Vector2(1, 7));
 
-        //desenha o cursor
+        //Show the cursor
         engine.buffer->data[1+cursor.x][7+cursor.y].character = '°';
         engine.buffer->data[1+cursor.x][7+cursor.y].backcolor = current_color;
 
-        //mostra as dimenções do documento
+        //Show document dimensions
         engine.buffer->DrawTextRight(IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y), Vector2(78, 1), Colors::Black, Colors::White);
 
-        //desenha a legenda
+        //Show the captions
         engine.buffer->DrawText("{L}oad {S}ave {C}lear {R}esize {W}rite", Vector2(1, 1), Colors::Black, Colors::White);
-        engine.buffer->DrawText("Color {F}orecolor {B}ackcolor {T}transparent {-}previus {+}next", Vector2(1, 5), Colors::Black, Colors::White);
         engine.buffer->DrawTextRight("Color", Vector2(engine.GetWindowSize().x - 7, 3), Colors::Black, Colors::White);
+        engine.buffer->DrawText("Color {F}orecolor {B}ackcolor {T}transparent {-}previus {+}next", Vector2(1, 5), Colors::Black, Colors::White);
         engine.buffer->DrawText("Use arrows to move the cursor = current save is " + IntToStr(saveid), Vector2(1, engine.GetWindowSize().y - 2), Colors::Black, Colors::White);
 
-        //Mostra o FPS
+        //Show FPS
         engine.buffer->DrawTextRight("FPS:" + IntToStr(engine.GetCurrentFps()), Vector2(78, engine.GetWindowSize().y -2), engine.GetCurrentFps() > 59?Colors::Green:Colors::Red, Colors::White);
+
         engine.UpdateConsole();
         engine.buffer->Clear(Colors::White);
     }

@@ -83,26 +83,26 @@ void Engine::ShowLogo()
 
 #ifdef NEWLOGO
     byte colc = 0, colg = 0, effect = 0;
-    Sprite logo(Vector2(buffer->GetSize().x, 14)), blood(Vector2(buffer->GetSize().x - 2, buffer->GetSize().Y- 2));
+    Sprite logo(Vector2(buffer->GetSize().x, 14)), blood(Vector2(buffer->GetSize().x - 2, buffer->GetSize().y- 2));
     int lasttick = GetTick(), blinktick = GetTick();
     bool blink = false;
 
     std::srand(GetTick());
 
-    logo.DrawTextCenter("  ______                       _       ",     Vector2(logo.GetSize().x / 2, 0), LightBlue, White);
-    logo.DrawTextCenter(" / _____)                     | |      ",     Vector2(logo.GetSize().x / 2, 1), LightBlue, White);
-    logo.DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(logo.GetSize().x / 2, 2), LightBlue, White);
-    logo.DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(logo.GetSize().x / 2, 3), LightBlue, White);
-    logo.DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(logo.GetSize().x / 2, 4), LightBlue, White);
-    logo.DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(logo.GetSize().x / 2, 5), LightBlue, White);
+    logo.DrawTextCenter("  ______                       _       ",     Vector2(logo.GetSize().x / 2, 0), Colors::Blue, Colors::White);
+    logo.DrawTextCenter(" / _____)                     | |      ",     Vector2(logo.GetSize().x / 2, 1), Colors::Blue, Colors::White);
+    logo.DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(logo.GetSize().x / 2, 2), Colors::Blue, Colors::White);
+    logo.DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(logo.GetSize().x / 2, 3), Colors::Blue, Colors::White);
+    logo.DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(logo.GetSize().x / 2, 4), Colors::Blue, Colors::White);
+    logo.DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(logo.GetSize().x / 2, 5), Colors::Blue, Colors::White);
 
-    logo.DrawTextCenter("  ______                      _______             _             ",        Vector2(logo.GetSize().x / 2, 7), LightGreen, White);
-    logo.DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(logo.GetSize().x / 2, 8), LightGreen, White);
-    logo.DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(logo.GetSize().x / 2, 9), LightGreen, White);
-    logo.DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(logo.GetSize().x / 2, 10), LightGreen, White);
-    logo.DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(logo.GetSize().x / 2, 11), LightGreen, White);
-    logo.DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(logo.GetSize().x / 2, 12), LightGreen, White);
-    logo.DrawTextCenter("                                           (_____|              ",        Vector2(logo.GetSize().x / 2, 13), LightGreen, White);
+    logo.DrawTextCenter("  ______                      _______             _             ",        Vector2(logo.GetSize().x / 2, 7), Colors::Green, Colors::White);
+    logo.DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(logo.GetSize().x / 2, 8), Colors::Green, Colors::White);
+    logo.DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(logo.GetSize().x / 2, 9), Colors::Green, Colors::White);
+    logo.DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(logo.GetSize().x / 2, 10), Colors::Green, Colors::White);
+    logo.DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(logo.GetSize().x / 2, 11), Colors::Green, Colors::White);
+    logo.DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(logo.GetSize().x / 2, 12), Colors::Green, Colors::White);
+    logo.DrawTextCenter("                                           (_____|              ",        Vector2(logo.GetSize().x / 2, 13), Colors::Green, Colors::White);
 
     while(!Keyboard::GetKey(VK_SPACE) || effect < 2)
     {
@@ -115,15 +115,15 @@ void Engine::ShowLogo()
             if(effect > 1 && bleed)
             {
                 byte count = 0;
-                for(byte x = 0; x < blood.GetSize().x; ++x)
+                for(register byte x = 0; x < blood.GetSize().x; ++x)
                 {
-                    for(byte y = 0; y < blood.GetSize().Y; ++y)
+                    for(register byte y = 0; y < blood.GetSize().y; ++y)
                     {
-                        if(blood.data[x][y].backcolor != LightRed)
+                        if(blood.data[x][y].backcolor != Colors::Red)
                         {
                             if((std::rand() % 101) == 0)
                             {
-                                blood.data[x][y].backcolor = LightRed;
+                                blood.data[x][y].backcolor = Colors::Red;
                                 ++count;
                                 if(y > 10)
                                     bleed = false;
@@ -142,9 +142,9 @@ void Engine::ShowLogo()
             buffer->DrawSprite(blood, Vector2(1, 1));
 
             //console effect
-            for(byte row = 2; row < 9; ++row)
+            for(register byte row = 2; row < 9; ++row)
             {
-                for(byte x = 20; x < colc; ++x)
+                for(register byte x = 20; x < colc; ++x)
                 {
                     if(row % 2)
                     {
@@ -166,9 +166,9 @@ void Engine::ShowLogo()
 
             if(effect > 0)
             {
-                for(byte row = 9; row < 16; ++row)
+                for(register byte row = 9; row < 16; ++row)
                 {
-                    for(byte x = 6; x < colg; ++x)
+                    for(register byte x = 6; x < colg; ++x)
                     {
                         if(row % 2)
                         {
@@ -189,14 +189,14 @@ void Engine::ShowLogo()
                     effect = 2;
             }
 
-            for(byte x = 0; x < GetWindowSize().x; ++x)
+            for(register byte x = 0; x < GetWindowSize().x; ++x)
             {
-                for(byte y = 0; y < GetWindowSize().y; ++y)
+                for(register byte y = 0; y < GetWindowSize().y; ++y)
                 {
                     if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
                     {
                         buffer->data[x][y].character = '°';
-                        buffer->data[x][y].forecolor = LightRed;
+                        buffer->data[x][y].forecolor = Colors::Red;
                     }
                 }
             }
@@ -211,17 +211,17 @@ void Engine::ShowLogo()
             {
                 if(blink)
                 {
-                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 17), Red, Transparent);
-                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 18), Red, Transparent);
-                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 18), White, Transparent);
-                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 19), Red, Transparent);
+                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 17), Colors::DarkRed, Colors::Transparent);
+                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 18), Colors::DarkRed, Colors::Transparent);
+                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 18), Colors::White, Colors::Transparent);
+                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 19), Colors::DarkRed, Colors::Transparent);
                 }
             }
 
-            buffer->DrawText("Developed by", Vector2(2, GetWindowSize().y -3), White, Transparent);
-            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().y -2), White, Transparent);
+            buffer->DrawText("Developed by", Vector2(2, GetWindowSize().y -3), Colors::White, Colors::Transparent);
+            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().y -2), Colors::White, Colors::Transparent);
 
-            buffer->DrawText_right("Version 0.6",Vector2(GetWindowSize().x-2, GetWindowSize().y-2), White, Transparent);
+            buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Transparent);
 
             UpdateConsole();
         }
@@ -234,8 +234,8 @@ void Engine::ShowLogo()
     while(!Keyboard::GetKey(VK_SPACE))
     {
 
-        for(byte x = 0; x < GetWindowSize().x; ++x)
-            for(byte y = 0; y < GetWindowSize().y; ++y)
+        for(register byte x = 0; x < GetWindowSize().x; ++x)
+            for(register byte y = 0; y < GetWindowSize().y; ++y)
                 if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
                 {
                     buffer->data[x][y].character = '*';
@@ -266,8 +266,8 @@ void Engine::ShowLogo()
             ++col;
         }
 
-        for(byte y = 2; y < 17; ++y)
-            for(byte x = 2; x < GetWindowSize().x; ++x)
+        for(register byte y = 2; y < 17; ++y)
+            for(register byte x = 2; x < GetWindowSize().x; ++x)
             {
                 if((col <= (GetWindowSize().x / 2)) && x < col)
                 {
@@ -285,7 +285,7 @@ void Engine::ShowLogo()
         buffer->DrawText("Developed by", Vector2(2, GetWindowSize().y -3), Colors::White, Colors::Black);
         buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().y -2), Colors::White, Colors::Black);
 
-        buffer->DrawTextRight("Version 0.6",Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Black);
+        buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Black);
 
         buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 19), Colors::White, Colors::Black);
 
@@ -296,7 +296,7 @@ void Engine::ShowLogo()
 #endif
 }
 
-void Engine::ShowError(const string &text)
+void Engine::ShowError(const string &text, const bool close)
 {
     SetWindowSize(Vector2(80,25));
     while(!Keyboard::GetKey(VK_SPACE))
@@ -341,13 +341,19 @@ bool Engine::SetWindowSize(Vector2 size)
     displayarea.Right = size.x-1;
 
     //TODO: verificar o retorno antes de mudar o valor
-    console_size = size;
 
-    if(buffer != NULL)
-        delete buffer;
-    buffer = new Sprite(console_size);
 
-    return(SetConsoleWindowInfo(output_handle, TRUE, &displayarea));
+    if(SetConsoleWindowInfo(output_handle, TRUE, &displayarea))
+    {
+        console_size = size;
+        if(buffer != NULL)
+        {
+            delete buffer;
+        }
+        buffer = new Sprite(console_size);
+        return (true);
+    }
+    return (false);
 }
 
 Vector2 Engine::GetWindowSize()

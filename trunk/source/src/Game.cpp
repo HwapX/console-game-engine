@@ -3,7 +3,7 @@
 #include <ctime>
 #include <sstream>
 
-//using namespace ConsoleGameEngine;
+using namespace ConsoleGameEngine;
 
 typedef struct sbrick
 {
@@ -46,10 +46,10 @@ int Game()
                     ++current;
                     str.clear();
                 }
-                engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, bricks[b].pos   ), White, Blue);
-                engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, bricks[b].pos +1), White, Blue);
-                engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, bricks[b].pos +2), White, Blue);
-                engine.buffer->DrawTextCenter(bricks[b].num, Vector2(engine.GetWindowSize().x / 2, bricks[b].pos +1), White, Blue);
+                engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, bricks[b].pos   ), Colors::White, Colors::DarkBlue);
+                engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, bricks[b].pos +1), Colors::White, Colors::DarkBlue);
+                engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, bricks[b].pos +2), Colors::White, Colors::DarkBlue);
+                engine.buffer->DrawTextCenter(bricks[b].num, Vector2(engine.GetWindowSize().x / 2, bricks[b].pos +1), Colors::White, Colors::DarkBlue);
             }
         }
 
@@ -76,11 +76,11 @@ int Game()
             --interval;
         }
 
-        engine.buffer->DrawText(str, Vector2((engine.GetWindowSize().x / 2) - ((bricks[current].num.size()-1) / 2), bricks[current].pos +1), LightGreen, Blue);
-        engine.buffer->DrawText(inttostr(points), Vector2(0, 0), Yellow, Blue);
+        engine.buffer->DrawText(str, Vector2((engine.GetWindowSize().x / 2) - ((bricks[current].num.size()-1) / 2), bricks[current].pos +1), Colors::Green, Colors::DarkBlue);
+        engine.buffer->DrawText(inttostr(points), Vector2(0, 0), Colors::Yellow, Colors::DarkBlue);
 
         engine.UpdateConsole();
-        engine.buffer->Clear(Blue);
+        engine.buffer->Clear(Colors::Blue);
     }
 
     return 0;

@@ -1,5 +1,6 @@
 #include "Sprite.h"
 
+using namespace ConsoleGameEngine;
 
 Sprite::Sprite(const string &filename)
 {
@@ -22,10 +23,10 @@ Sprite::Sprite(const string &filename)
             std::fread((void*)&data[x][y].character, 1, 1, in);
 
             std::fread((void*)&temp, 1, 1, in);
-            data[x][y].forecolor = (Color)temp;
+            data[x][y].forecolor = (color)temp;
 
             std::fread((void*)&temp, 1, 1, in);
-            data[x][y].backcolor = (Color)temp;
+            data[x][y].backcolor = (color)temp;
         }
     }
 
@@ -50,13 +51,12 @@ Sprite::Sprite(const string &filename)
         {
             stream.get(data[x][y].character);
             stream.get(temp);
-            data[x][y].forecolor = (Color)temp;
+            data[x][y].forecolor = (color)temp;
             stream.get(temp);
-            data[x][y].backcolor = (Color)temp;
+            data[x][y].backcolor = (color)temp;
         }
 
     stream.close();*/
-    lastClearcolor = Black;
 }
 
 Sprite::Sprite(const string &filename, const Vector2 &tilesize, const byte index)
@@ -68,11 +68,11 @@ Sprite::Sprite(const string &filename, const Vector2 &tilesize, const byte index
     cx = tileset.GetSize().x / tilesize.x;
     cy = tileset.GetSize().y / tilesize.y;
     px = index > cx?index % cx:index;
-    py = index / px;
+    py = index > cx?index / cx:0;
 
     AllocData();
-
-    DrawSprite(tileset, Vector2(0, 0), Rect(Vector2(px -1 * tilesize.x, py -1 * tilesize.y), tilesize));
+    Clear(Colors::Transparent);
+    DrawSprite(tileset, Vector2(0, 0), Rect(Vector2((px -1) * tilesize.x, py * tilesize.y), tilesize));
 
 }
 
@@ -80,7 +80,6 @@ Sprite::Sprite(const Vector2 &sprite_size)
 {
     size = sprite_size;
     AllocData();
-    lastClearcolor = Black;
 }
 
 //informar o tamanho da imagem
@@ -102,26 +101,46 @@ Vector2 Sprite::GetSize()
 Sprite::~Sprite()
 {
     for(uint16_t b = 0; b < size.x; ++b)
+    {
         delete [] data[b];
+    }
     delete [] data;
 }
 
 bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position)
 {
     for(register uint16_t x = 0; x < sprite.size.x; ++x)
+    {
         for(register uint16_t y = 0; y < sprite.size.y; ++y)
+        {
             if((position.x + x < size.x) && (position.y + y < size.y))
-                data[position.x + x][position.y + y] = sprite.data[x][y];
+            {
+                if(sprite.data[x][y].backcolor != Colors::Transparent)
+                {
+                    data[position.x + x][position.y + y] = sprite.data[x][y];
+                }
+            }
+        }
+    }
 
     return true;
 }
 
 bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position, const Rect &rect)
 {
-    for(register uint16_t x = rect.x; x < rect.x; ++x)
-        for(register uint16_t y = rect.y; y < rect.y; ++y)
+    for(register uint16_t x = 0; x < rect.width; ++x)
+    {
+        for(register uint16_t y = 0; y < rect.height; ++y)
+        {
             if((position.x + x < size.x) && (position.y + y < size.y))
-                data[position.x + x][position.y + y] = sprite.data[x][y];
+            {
+                if(sprite.data[x + rect.x][y + rect.y].backcolor != Colors::Transparent)
+                {
+                    data[position.x + x][position.y + y] = sprite.data[x + rect.x][y + rect.y];
+                }
+            }
+        }
+    }
     return(true);
 }
 
@@ -131,7 +150,7 @@ bool Sprite::DrawSpriteCenter(const Sprite &sprite, const Vector2 &position)
 }
 
 
-void Sprite::FillBackcolor(Color backcolor)
+void Sprite::FillBackcolor(color backcolor)
 {
     //TODO: Esta função deve deixar todas as propriedades backcolor do sprite da cor informada
     for(uint16_t x = 0; x < size.x; ++x)
@@ -139,7 +158,7 @@ void Sprite::FillBackcolor(Color backcolor)
             data[x][y].backcolor = backcolor;
 }
 
-void Sprite::FillForecolor(Color forecolor)
+void Sprite::FillForecolor(color forecolor)
 {
     //TODO: Esta função deve deixar todas as propriedades forecolor do sprite da cor informada
     for(uint16_t x = 0; x < size.x; ++x)
@@ -147,7 +166,7 @@ void Sprite::FillForecolor(Color forecolor)
             data[x][y].forecolor = forecolor;
 }
 
-byte Sprite::DrawText(const string &text, const Vector2 &position, Color forecolor, Color backcolor)
+byte Sprite::DrawText(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
     byte len = text.size();
     register byte b;
@@ -160,24 +179,24 @@ byte Sprite::DrawText(const string &text, const Vector2 &position, Color forecol
         if((position.x + b) >= size.x)
             return(b);
         data[position.x + b][position.y].character = text[b];
-        if(backcolor != Transparent)
+        if(backcolor != Colors::Transparent)
             data[position.x + b][position.y].backcolor = backcolor;
         data[position.x + b][position.y].forecolor = forecolor;
     }
     return b;
 }
 
-byte Sprite::DrawText_right(const string &text, const Vector2 &position, const Color forecolor, const Color backcolor)
+byte Sprite::DrawTextRight(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
     return(DrawText(text, Vector2((position.x - (text.size() -1)), position.y), forecolor, backcolor));
 }
 
-byte Sprite::DrawTextCenter(const string &text, const Vector2 &position, const Color forecolor, const Color backcolor)
+byte Sprite::DrawTextCenter(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
     return(DrawText(text, Vector2(position.x - ((text.size() -1) / 2), position.y), forecolor, backcolor));
 }
 
-byte Sprite::DrawText_vert(const string &text, const Vector2 &position, const Color forecolor, const Color backcolor)
+byte Sprite::DrawTextVert(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
     byte len = text.size();
     register byte b;
@@ -190,37 +209,62 @@ byte Sprite::DrawText_vert(const string &text, const Vector2 &position, const Co
         if((position.y + b) >= size.y)
             return(b);
         data[position.x][position.y + b].character = text[b];
-        if(backcolor != Transparent)
+        if(backcolor != Colors::Transparent)
             data[position.x][position.y + b].backcolor = backcolor;
         data[position.x][position.y + b].forecolor = forecolor;
     }
     return b;
 }
 
-byte Sprite::DrawTextVertCenter(const string &text, const Vector2 &position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextVertCenter(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
-    return (DrawText_vert(text, Vector2(position.x, (position.y / (text.size() -1))), forecolor, backcolor));
+    return (DrawTextVert(text, Vector2(position.x, (position.y / (text.size() -1))), forecolor, backcolor));
 }
 
-byte Sprite::DrawTextVertTop(const string &text, const Vector2 &position, Color forecolor, Color backcolor)
+byte Sprite::DrawTextVertTop(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
-    return (DrawText_vert(text, Vector2(position.x, (position.y - (text.size() -1))), forecolor, backcolor));
+    return (DrawTextVert(text, Vector2(position.x, (position.y - (text.size() -1))), forecolor, backcolor));
 }
 
 void Sprite::Clear()
 {
-    Clear(Black);
+    Clear(Colors::Black);
 }
 
-void Sprite::Clear(Color backcolor)
+void Sprite::ReplaceBackcolor(color oldcolor, color newcolor)
 {
-    lastClearcolor = backcolor;
     for(register uint16_t x = 0; x < size.x; ++x)
+    {
+        for(register uint16_t y = 0; y < size.y; ++y)
+        {
+            if(data[x][y].backcolor == oldcolor)
+                data[x][y].backcolor = newcolor;
+        }
+    }
+}
+
+void Sprite::ReplaceForecolor(color oldcolor, color newcolor)
+{
+    for(register uint16_t x = 0; x < size.x; ++x)
+    {
+        for(register uint16_t y = 0; y < size.y; ++y)
+        {
+            if(data[x][y].forecolor == oldcolor)
+                data[x][y].forecolor = newcolor;
+        }
+    }
+}
+
+void Sprite::Clear(color backcolor)
+{
+    for(register uint16_t x = 0; x < size.x; ++x)
+    {
         for(register uint16_t y = 0; y < size.y; ++y)
         {
             data[x][y].Reset();
             data[x][y].backcolor = backcolor;
         }
+    }
 }
 
 bool Sprite::DoesItFit(Sprite& sprite, Vector2 position)

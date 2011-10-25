@@ -1,5 +1,7 @@
 #include "Sound.h"
 
+using namespace ConsoleGameEngine;
+
 Sound::Sound(string filename)
 {
     filepath = filename;

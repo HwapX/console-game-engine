@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+using namespace ConsoleGameEngine;
+
 void Engine::PreInit()
 {
     output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -82,10 +84,10 @@ void Engine::ShowLogo()
 #ifdef NEWLOGO
     byte colc = 0, colg = 0, effect = 0;
     Sprite logo(Vector2(buffer->GetSize().x, 14)), blood(Vector2(buffer->GetSize().x - 2, buffer->GetSize().Y- 2));
-    int lasttick = GetTickCount(), blinktick = GetTickCount();
+    int lasttick = GetTick(), blinktick = GetTick();
     bool blink = false;
 
-    std::srand(GetTickCount());
+    std::srand(GetTick());
 
     logo.DrawTextCenter("  ______                       _       ",     Vector2(logo.GetSize().x / 2, 0), LightBlue, White);
     logo.DrawTextCenter(" / _____)                     | |      ",     Vector2(logo.GetSize().x / 2, 1), LightBlue, White);
@@ -104,9 +106,9 @@ void Engine::ShowLogo()
 
     while(!Keyboard::GetKey(VK_SPACE) || effect < 2)
     {
-        if((GetTickCount() - lasttick) > 25)
+        if((GetTick() - lasttick) > 25)
         {
-            lasttick = GetTickCount();
+            lasttick = GetTick();
 
             //blood effect
             static bool bleed = true;
@@ -199,9 +201,9 @@ void Engine::ShowLogo()
                 }
             }
 
-            if((GetTickCount() - blinktick) > 1000)
+            if((GetTick() - blinktick) > 1000)
             {
-                blinktick = GetTickCount();
+                blinktick = GetTick();
                 blink = !blink;
             }
 
@@ -237,30 +239,30 @@ void Engine::ShowLogo()
                 if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
                 {
                     buffer->data[x][y].character = '*';
-                    buffer->data[x][y].forecolor = LightBlue;
+                    buffer->data[x][y].forecolor = Colors::Blue;
                 }
 
-        buffer->DrawTextCenter("  ______                       _       ",     Vector2(GetWindowSize().x / 2, 2), White, Black);
-        buffer->DrawTextCenter(" / _____)                     | |      ",     Vector2(GetWindowSize().x / 2, 3), White, Black);
-        buffer->DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetWindowSize().x / 2, 4), White, Black);
-        buffer->DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetWindowSize().x / 2, 5), White, Black);
-        buffer->DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetWindowSize().x / 2, 6), White, Black);
-        buffer->DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetWindowSize().x / 2, 7), White, Black);
+        buffer->DrawTextCenter("  ______                       _       ",     Vector2(GetWindowSize().x / 2, 2), Colors::White, Colors::Black);
+        buffer->DrawTextCenter(" / _____)                     | |      ",     Vector2(GetWindowSize().x / 2, 3), Colors::White, Colors::Black);
+        buffer->DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetWindowSize().x / 2, 4), Colors::White, Colors::Black);
+        buffer->DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetWindowSize().x / 2, 5), Colors::White, Colors::Black);
+        buffer->DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetWindowSize().x / 2, 6), Colors::White, Colors::Black);
+        buffer->DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetWindowSize().x / 2, 7), Colors::White, Colors::Black);
 
-        buffer->DrawTextCenter("  ______                      _______             _             ",        Vector2(GetWindowSize().x / 2, 10), White, Black);
-        buffer->DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetWindowSize().x / 2, 11), White, Black);
-        buffer->DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetWindowSize().x / 2, 12), White, Black);
-        buffer->DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetWindowSize().x / 2, 13), White, Black);
-        buffer->DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetWindowSize().x / 2, 14), White, Black);
-        buffer->DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetWindowSize().x / 2, 15), White, Black);
-        buffer->DrawTextCenter("                                           (_____|              ",        Vector2(GetWindowSize().x / 2, 16), White, Black);
+        buffer->DrawTextCenter("  ______                      _______             _             ",        Vector2(GetWindowSize().x / 2, 10), Colors::White, Colors::Black);
+        buffer->DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetWindowSize().x / 2, 11), Colors::White, Colors::Black);
+        buffer->DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetWindowSize().x / 2, 12), Colors::White, Colors::Black);
+        buffer->DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetWindowSize().x / 2, 13), Colors::White, Colors::Black);
+        buffer->DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetWindowSize().x / 2, 14), Colors::White, Colors::Black);
+        buffer->DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetWindowSize().x / 2, 15), Colors::White, Colors::Black);
+        buffer->DrawTextCenter("                                           (_____|              ",        Vector2(GetWindowSize().x / 2, 16), Colors::White, Colors::Black);
 
         //effect
         static int lastpp = 0;
 
-        if(((GetTickCount() - lastpp) > 100) && (col < (GetWindowSize().x / 2)))
+        if(((GetTick() - lastpp) > 100) && (col < (GetWindowSize().x / 2)))
         {
-            lastpp = GetTickCount();
+            lastpp = GetTick();
             ++col;
         }
 
@@ -269,23 +271,23 @@ void Engine::ShowLogo()
             {
                 if((col <= (GetWindowSize().x / 2)) && x < col)
                 {
-                    buffer->data[x][y].forecolor = Green;
-                    buffer->data[(GetWindowSize().x-1) - x][y].forecolor = Yellow;
+                    buffer->data[x][y].forecolor = Colors::DarkGreen;
+                    buffer->data[(GetWindowSize().x-1) - x][y].forecolor = Colors::Yellow;
                 }
             }
 
-        buffer->data[59][10].forecolor = LightBlue;
-        buffer->data[59][11].forecolor = LightBlue;
-        buffer->data[58][11].forecolor = LightBlue;
-        buffer->data[60][11].forecolor = LightBlue;
+        buffer->data[59][10].forecolor = Colors::Blue;
+        buffer->data[59][11].forecolor = Colors::Blue;
+        buffer->data[58][11].forecolor = Colors::Blue;
+        buffer->data[60][11].forecolor = Colors::Blue;
         //effect
 
-        buffer->DrawText("Developed by", Vector2(2, GetWindowSize().y -3), White, Black);
-        buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().y -2), White, Black);
+        buffer->DrawText("Developed by", Vector2(2, GetWindowSize().y -3), Colors::White, Colors::Black);
+        buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().y -2), Colors::White, Colors::Black);
 
-        buffer->DrawText_right("Version 0.6",Vector2(GetWindowSize().x-2, GetWindowSize().y-2), White, Black);
+        buffer->DrawTextRight("Version 0.6",Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Black);
 
-        buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 19), White, Black);
+        buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 19), Colors::White, Colors::Black);
 
         UpdateConsole();
         buffer->Clear();
@@ -296,12 +298,25 @@ void Engine::ShowLogo()
 
 void Engine::ShowError(const string &text)
 {
-    buffer->Clear();
-    buffer->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), White, Black);
-    buffer->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 0), White, Black);
-    buffer->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 0), White, Black);
-    buffer->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 0), White, Black);
-    buffer->DrawTextCenter(text, Vector2(buffer->GetSize().x / 2, 20), Red, Black);
+    SetWindowSize(Vector2(80,25));
+    while(!Keyboard::GetKey(VK_SPACE))
+    {
+        buffer->Clear();
+        buffer->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Colors::White, Colors::Black);
+        buffer->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Colors::White, Colors::Black);
+        buffer->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Colors::White, Colors::Black);
+        buffer->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Colors::White, Colors::Black);
+        buffer->DrawTextCenter(text, Vector2(buffer->GetSize().x / 2, 15), Colors::Red, Colors::Black);
+        buffer->DrawTextRight("Press space to close application", Vector2(buffer->GetSize().x -1, buffer->GetSize().y -1), Colors::White, Colors::Black);
+        UpdateConsole();
+        buffer->Clear();
+    }
+    exit(1);
+}
+
+int Engine::GetTick()
+{
+    return(GetTickCount());
 }
 
 bool Engine::SetWindowPosition(Vector2 position)
@@ -365,7 +380,7 @@ void Engine::WaitFocus()
     while(!Focus()) {};
 }
 
-bool Engine::SetTextColor (Color forecolor, Color backcolor)
+bool Engine::SetTextColor (color forecolor, color backcolor)
 {
     return (SetConsoleTextAttribute (output_handle, forecolor | backcolor << 4) == TRUE);
 }
@@ -401,9 +416,9 @@ void Engine::UpdateConsole()
     static short int fps = 0;
     static int lasttick = 0;
 
-    if((GetTickCount() - lasttick) > 1000)
+    if((GetTick() - lasttick) > 1000)
     {
-        lasttick = GetTickCount();
+        lasttick = GetTick();
         currentfps = fps;
         fps = 0;
     }
@@ -413,23 +428,7 @@ void Engine::UpdateConsole()
         for(register byte y = 0; y < console_size.y; ++y)
         {
             winbuffer[y][x].Char.AsciiChar = buffer->data[x][y].character;
-            if(buffer->data[x][y].backcolor == ClearColor)
-            {
-                //FIX: Rever, por algum motivo não esta funcionando
-                winbuffer[y][x].Attributes = buffer->data[x][y].forecolor | buffer->lastClearcolor << 4;
-            }
-            if(buffer->data[x][y].backcolor == Transparent)
-            {
-                //TODO:Este codigo esta gastando muito processamento e é possivel otimizalo/
-                //FIX:Codigo com problema
-                COORD coord = {y, x};
-                WORD attr;
-                DWORD trash;
-                ReadConsoleOutputAttribute(output_handle, &attr, sizeof(WORD), coord, &trash);
-                winbuffer[y][x].Attributes = attr;
-            }
-            else
-                winbuffer[y][x].Attributes = buffer->data[x][y].forecolor | buffer->data[x][y].backcolor << 4;
+            winbuffer[y][x].Attributes = buffer->data[x][y].forecolor | buffer->data[x][y].backcolor << 4;
         }
     COORD size = {console_size.x, console_size.y};
     COORD start = {0, 0};

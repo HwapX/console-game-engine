@@ -1,5 +1,7 @@
 #include "Input.h"
 
+using namespace ConsoleGameEngine;
+
 bool Keyboard::GetKey(int key)
 {
     return(GetAsyncKeyState(key) == -32767);

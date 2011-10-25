@@ -5,19 +5,24 @@
 
 using namespace std;
 
+namespace ConsoleGameEngine
+{
+
 /**
 *nothing
 */
 class Sound
 {
-    private:
-        string filepath;
-    public:
-        Sound(string filename);
-        bool Play();
-        bool Stop();
-        static bool PlaySound(string filename);
-        static bool StopSound(string filename);
+private:
+    string filepath;
+public:
+    Sound(string filename);
+    bool Play();
+    bool Stop();
+    static bool PlaySound(string filename);
+    static bool StopSound(string filename);
 };
+
+}
 
 #endif // CGE_SOUND_H

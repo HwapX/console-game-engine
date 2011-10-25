@@ -3,7 +3,7 @@
 
 int Game();
 
-//using namespace ConsoleGameEngine;
+using namespace ConsoleGameEngine;
 
 string IntToStr(int number)
 {
@@ -18,12 +18,12 @@ string show_dialog(Engine &engine, string title)
     string str;
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
-        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -3), Black, White);
-        engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -2), Black, White);
-        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -1), Black, White);
-        engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 ), Black, White);
-        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 +1), Black, White);
-        engine.buffer->DrawTextCenter(title, Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -2), Black, White);
+        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -3), Colors::Black, Colors::White);
+        engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -2), Colors::Black, Colors::White);
+        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -1), Colors::Black, Colors::White);
+        engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 ), Colors::Black, Colors::White);
+        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 +1), Colors::Black, Colors::White);
+        engine.buffer->DrawTextCenter(title, Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -2), Colors::Black, Colors::White);
 
         if(key == VK_BACK && str.size() != 0)
             str.erase(str.size() -1, 1);
@@ -33,9 +33,9 @@ string show_dialog(Engine &engine, string title)
         {
             str+= key;
         }
-        engine.buffer->DrawTextCenter(str, Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2), Black, White);
+        engine.buffer->DrawTextCenter(str, Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2), Colors::Black, Colors::White);
         engine.UpdateConsole();
-        engine.buffer->Clear(White);
+        engine.buffer->Clear(Colors::White);
 
         key = Keyboard::GetNextKey();
     }
@@ -45,12 +45,12 @@ string show_dialog(Engine &engine, string title)
 int main()
 {
     Engine engine("Sprite editor for Console Game Engine");
-    engine.SetWindowSize(Vector2(80, 80));
+    engine.SetWindowSize(Vector2(80, 75));
 
-    byte current_color = 0;
+    color current_color = 0;
     Vector2 cursor;
     Sprite *document = new Sprite(Vector2(64, 64));
-    document->Clear(White);
+    document->Clear(Colors::White);
 
     int saveid = 0;
 
@@ -63,7 +63,7 @@ int main()
                 Keyboard::GetKey(VK_OEM_PLUS))
         {
             current_color++;
-            if(current_color == 18)
+            if(current_color == 17)
                 current_color = 0;
         }
         else if(Keyboard::GetKey(VK_SUBTRACT) ||
@@ -91,15 +91,19 @@ int main()
         }
         else if(Keyboard::GetKey('B'))
         {
-            document->data[cursor.x][cursor.y].backcolor = (Color)current_color;
+            document->data[cursor.x][cursor.y].backcolor = current_color;
         }
         else if(Keyboard::GetKey('F'))
         {
-            document->data[cursor.x][cursor.y].forecolor = (Color)current_color;
+            document->data[cursor.x][cursor.y].forecolor = current_color;
+        }
+        else if(Keyboard::GetKey('T'))
+        {
+            document->ReplaceBackcolor(current_color, Colors::Transparent);
         }
         else if(Keyboard::GetKey('C'))
         {
-            document->FillBackcolor((Color)current_color);
+            document->FillBackcolor((color)current_color);
         }
         else if(Keyboard::GetKey('S'))
         {
@@ -149,11 +153,11 @@ int main()
                         y == engine.GetWindowSize().y - 3)
                 {
                     engine.buffer->data[x][y].character = '=';
-                    engine.buffer->data[x][y].forecolor = LightGrey;
+                    engine.buffer->data[x][y].forecolor = Colors::Gray;
                 }//verifica se x esta a uma posição inferior a 4 da borda direita da janela
-                else if(x > engine.GetWindowSize().x - 5 && x < engine.GetWindowSize().x)   //mostra a cor selecionada atualmente
+                else if(x > engine.GetWindowSize().x - 6 && x < engine.GetWindowSize().x -1)   //mostra a cor selecionada atualmente
                 {
-                    engine.buffer->data[x][5].backcolor = (Color)current_color;
+                    engine.buffer->data[x][3].backcolor = current_color;
                 }
 
                 //desenha o contorno do documento
@@ -162,18 +166,19 @@ int main()
                 {
                     //as constantes são a posição onde o documento sera desenhado
                     engine.buffer->data[1 + x][7 + y].character = '=';
-                    engine.buffer->data[1 + x][7 + y].forecolor = LightGrey;
+                    engine.buffer->data[1 + x][7 + y].forecolor = Colors::Gray;
                 }
             }
-        engine.buffer->data[engine.GetWindowSize().x - 5 ][5].character = '=';
+        engine.buffer->data[engine.GetWindowSize().x - 6][3].character = '=';
+        engine.buffer->data[engine.GetWindowSize().x - 12][3].character = '=';
 
         //desenha a palete de cores
-        for(byte c = 0; c < 18; ++c)
+        for(byte c = 0; c < 17; ++c)
             for(byte x = 0; x < 3; ++x)
             {
-                engine.buffer->data[x+(8+4*c)][3].backcolor = (Color)c;
+                engine.buffer->data[x+(1+4*c)][3].backcolor = (color)c;
                 if(c == current_color)
-                    engine.buffer->data[x+(8+4*c)][3].character = '°';
+                    engine.buffer->data[x+(1+4*c)][3].character = '°';
             }
 
         //desenha o documento
@@ -181,23 +186,21 @@ int main()
 
         //desenha o cursor
         engine.buffer->data[1+cursor.x][7+cursor.y].character = '°';
-        engine.buffer->data[1+cursor.x][7+cursor.y].backcolor = (Color)current_color;
+        engine.buffer->data[1+cursor.x][7+cursor.y].backcolor = current_color;
 
         //mostra as dimenções do documento
-        engine.buffer->DrawText_right(IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y), Vector2(78, 1), Black, White);
+        engine.buffer->DrawTextRight(IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y), Vector2(78, 1), Colors::Black, Colors::White);
 
         //desenha a legenda
-        engine.buffer->DrawText("Colors",  Vector2(1, 3), Black, White);
-        engine.buffer->DrawText("{L}oad {S}ave {C}lear {R}esize {W}rite", Vector2(1, 1), Black, White);
-        engine.buffer->DrawText("Color {F}orecolor {B}ackcolor {-}previus {+}next", Vector2(1, 5), Black, White);
-        engine.buffer->DrawText_right("Current color", Vector2(engine.GetWindowSize().x - 6, 5), Black, White);
-        engine.buffer->DrawText("Use arrows to move the cursor = current save is " + IntToStr(saveid), Vector2(1, engine.GetWindowSize().y - 2), Black, White);
+        engine.buffer->DrawText("{L}oad {S}ave {C}lear {R}esize {W}rite", Vector2(1, 1), Colors::Black, Colors::White);
+        engine.buffer->DrawText("Color {F}orecolor {B}ackcolor {T}transparent {-}previus {+}next", Vector2(1, 5), Colors::Black, Colors::White);
+        engine.buffer->DrawTextRight("Color", Vector2(engine.GetWindowSize().x - 7, 3), Colors::Black, Colors::White);
+        engine.buffer->DrawText("Use arrows to move the cursor = current save is " + IntToStr(saveid), Vector2(1, engine.GetWindowSize().y - 2), Colors::Black, Colors::White);
 
         //Mostra o FPS
-        engine.buffer->DrawText_right("FPS:" + IntToStr(engine.GetCurrentFps()), Vector2(78, engine.GetWindowSize().y -2), engine.GetCurrentFps() > 59?LightGreen:LightRed, White);
-
+        engine.buffer->DrawTextRight("FPS:" + IntToStr(engine.GetCurrentFps()), Vector2(78, engine.GetWindowSize().y -2), engine.GetCurrentFps() > 59?Colors::Green:Colors::Red, Colors::White);
         engine.UpdateConsole();
-        engine.buffer->Clear(White);
+        engine.buffer->Clear(Colors::White);
     }
     return 0;
 }

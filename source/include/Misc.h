@@ -7,33 +7,36 @@
 
 using namespace std;
 
+namespace ConsoleGameEngine
+{
+
 /**
 *A enum with all console colors
 *enumerate all suported console colors with
 *this enum have two more colors(ClearColor, Transparent) used internaly on engine
 */
-enum Color
-{
-    Black       = 0,
-    b        = FOREGROUND_INTENSITY,
-    LightGrey   = FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_BLUE,
-    White       = FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY,
-    Blue        = FOREGROUND_BLUE,
-    Green       = FOREGROUND_GREEN,
-    Cyan        = FOREGROUND_GREEN | FOREGROUND_BLUE,
-    Red         = FOREGROUND_RED,
-    Purple      = FOREGROUND_RED   | FOREGROUND_BLUE,
-    LightBlue   = FOREGROUND_BLUE  | FOREGROUND_INTENSITY,
-    LightGreen  = FOREGROUND_GREEN | FOREGROUND_INTENSITY,
-    LightCyan   = FOREGROUND_GREEN | FOREGROUND_BLUE  | FOREGROUND_INTENSITY,
-    LightRed    = FOREGROUND_RED   | FOREGROUND_INTENSITY,
-    LightPurple = FOREGROUND_RED   | FOREGROUND_BLUE  | FOREGROUND_INTENSITY,
-    Orange      = FOREGROUND_RED   | FOREGROUND_GREEN,
-    Yellow      = FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_INTENSITY,
-    ClearColor  = 0x00FFFFFF,
-    Transparent = 0xFFFFFFFF,
-};
 
+typedef byte color;
+
+namespace Colors{
+    const color Black = 0;
+    const color DarkBlue = 1;
+    const color DarkGreen = 2;
+    const color DarkCyan = 3;
+    const color DarkRed = 4;
+    const color DarkMagenta = 5;
+    const color DarkYellow = 6;
+    const color Gray = 7;
+    const color DarkGray = 8;
+    const color Blue = 9;
+    const color Green = 10;
+    const color Cyan = 11;
+    const color Red = 12;
+    const color Magenta = 13;
+    const color Yellow = 14;
+    const color White = 15;
+    const color Transparent = 0xFF;//17//16;
+}
 
 /**
 *????
@@ -41,21 +44,21 @@ enum Color
 
 class Vector2
 {
-    public:
-        uint16_t x, y;
+public:
+    uint16_t x, y;
 
-        Vector2();
-        Vector2(uint16_t x, uint16_t y);
-        uint16_t operator[](const int i);
+    Vector2();
+    Vector2(uint16_t x, uint16_t y);
+    uint16_t operator[](const int i);
 };
 
 class Rect
 {
-    public:
-        uint16_t x, y, width, height;
+public:
+    uint16_t x, y, width, height;
 
-        Rect(const Vector2 &position, const Vector2 &size);
-        Rect();
+    Rect(const Vector2 &position, const Vector2 &size);
+    Rect();
 };
 
 /**
@@ -72,11 +75,11 @@ public:
     /**
     *this represent the foreground color(font color)
     */
-    Color forecolor;
+    color forecolor;
     /**
     *this represent the background color
     */
-    Color backcolor;
+    color backcolor;
     /**
     *the constructor
     */
@@ -86,5 +89,7 @@ public:
     */
     void Reset();
 };
+
+}
 
 #endif // CGE_MISC_H

@@ -3,11 +3,14 @@
 
 #include <windows.h>
 
-/**
-*class to manipulate user input on keyboard
-*/
-class Keyboard
+namespace ConsoleGameEngine
 {
+
+    /**
+    *class to manipulate user input on keyboard
+    */
+    class Keyboard
+    {
     public:
         /**
         *check key informed
@@ -24,6 +27,8 @@ class Keyboard
         //revisar as funções abaixo da classe
         static byte GetKey();
         static byte GetNextKey();
-};
+    };
+
+}
 
 #endif // CGE_INPUT_H

@@ -1,5 +1,7 @@
 #include "Misc.h"
 
+using namespace ConsoleGameEngine;
+
 Pixel::Pixel()
 {
     Reset();
@@ -8,8 +10,8 @@ Pixel::Pixel()
 void Pixel::Reset()
 {
     character = ' ';
-    forecolor = LightGrey;
-    backcolor = Black;
+    forecolor = Colors::Gray;
+    backcolor = Colors::Black;
 }
 
 /*---------------------------*/
@@ -47,3 +49,4 @@ Rect::Rect(const Vector2 &position, const Vector2 &size)
     width = size.x;
     height = size.y;
 }
+

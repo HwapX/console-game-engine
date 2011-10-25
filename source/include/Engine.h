@@ -55,13 +55,13 @@ public:
     *initilize engine with given parameters
     *@param size console window size in pixel(console cells)
     */
-    Engine(Vector2 size);
+    Engine(const Vector2 &size);
     /**
     *initilize engine with given parameters
     *@param position console window position
     *@param size console window size in pixel(console cells)
     */
-    Engine(Vector2 position, Vector2 size);
+    Engine(const Vector2 &position, const Vector2 &size);
     /**
     *initilize engine with given parameters
     *@param title console title

@@ -18,24 +18,25 @@ namespace ConsoleGameEngine
 
 typedef byte color;
 
-namespace Colors{
-    const color Black = 0;
-    const color DarkBlue = 1;
-    const color DarkGreen = 2;
-    const color DarkCyan = 3;
-    const color DarkRed = 4;
-    const color DarkMagenta = 5;
-    const color DarkYellow = 6;
-    const color Gray = 7;
-    const color DarkGray = 8;
-    const color Blue = 9;
-    const color Green = 10;
-    const color Cyan = 11;
-    const color Red = 12;
-    const color Magenta = 13;
-    const color Yellow = 14;
-    const color White = 15;
-    const color Transparent = 0xFF;//17//16;
+namespace Colors
+{
+const color Black = 0;
+const color DarkBlue = 1;
+const color DarkGreen = 2;
+const color DarkCyan = 3;
+const color DarkRed = 4;
+const color DarkMagenta = 5;
+const color DarkYellow = 6;
+const color Gray = 7;
+const color DarkGray = 8;
+const color Blue = 9;
+const color Green = 10;
+const color Cyan = 11;
+const color Red = 12;
+const color Magenta = 13;
+const color Yellow = 14;
+const color White = 15;
+const color Transparent = 0xFF;//17//16;
 }
 
 /**

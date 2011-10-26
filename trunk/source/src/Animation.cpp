@@ -2,37 +2,37 @@
 
 Animation::Animation(const string &filename, const Vector2 &tilesize, const byte start, const byte count, const uint16_t interval)
 {
-    frame_count = count;
-    frames = new Sprite*[count];
-    current_frame = 0;
-    frame_interval = interval;
-    lasttick = 0;
+    this->frame_count = count;
+    this->frames = new Sprite*[count];
+    this->current_frame = 0;
+    this->frame_interval = interval;
+    this->lasttick = 0;
 
     for(register byte b = 0; b < count; ++b)
     {
-        frames[b] = new Sprite(filename, tilesize, start + b);
+        this->frames[b] = new Sprite(filename, tilesize, start + b);
     }
 
 }
 
 Animation::~Animation()
 {
-    for(register byte b = 0; b < frame_count; ++b)
+    for(register byte b = 0; b < this->frame_count; ++b)
     {
-        delete frames[b];
+        delete this->frames[b];
     }
 
-    delete [] frames;
+    delete [] this->frames;
 }
 
 Sprite &Animation::CurrentFrame()
 {
-    if((Engine::GetTick() - lasttick) > frame_interval)
+    if((Engine::GetTick() - this->lasttick) > this->frame_interval)
     {
-        lasttick = Engine::GetTick();
-        ++current_frame;
-        if(current_frame == frame_count)
-            current_frame = 0;
+        this->lasttick = Engine::GetTick();
+        ++this->current_frame;
+        if(this->current_frame == this->frame_count)
+            this->current_frame = 0;
     }
-    return(*frames[current_frame]);
+    return(*this->frames[this->current_frame]);
 }

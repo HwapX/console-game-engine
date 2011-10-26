@@ -10,9 +10,12 @@ void Engine::PreInit()
     SetCursorSize(1, false);
     SetWindowTitle("Console Game Engine");
     currentfps = 0;
+    fps = 0;
+    fpstick = 0;
     buffer = NULL;
     console_size.x = 80;
     console_size.y = 25;
+
 }
 
 void Engine::PosInit()
@@ -79,8 +82,6 @@ Engine::Engine(const string &title, const Vector2 &position, const Vector2 &size
 
 void Engine::ShowLogo()
 {
-    //TODO: Refazer função, mostrar os creditos, logo, versão e nome dos desenvolvedores
-
 #ifdef NEWLOGO
     byte colc = 0, colg = 0, effect = 0;
     Sprite logo(Vector2(buffer->GetSize().x, 14)), blood(Vector2(buffer->GetSize().x - 2, buffer->GetSize().y- 2));
@@ -331,8 +332,6 @@ Engine::~Engine()
 
 bool Engine::SetWindowSize(Vector2 size)
 {
-    //COORD coord = {size.x, size.y};
-    //return(SetConsoleScreenBufferSize(output_handle, coord));
     SMALL_RECT displayarea;
 
     displayarea.Top = 0;
@@ -340,18 +339,21 @@ bool Engine::SetWindowSize(Vector2 size)
     displayarea.Bottom = size.y-1;
     displayarea.Right = size.x-1;
 
-    //TODO: verificar o retorno antes de mudar o valor
+    COORD coord = {size.x, size.y};
 
-
-    if(SetConsoleWindowInfo(output_handle, TRUE, &displayarea))
+    if(SetConsoleScreenBufferSize(output_handle, coord))
     {
-        console_size = size;
-        if(buffer != NULL)
+        if(SetConsoleWindowInfo(output_handle, TRUE, &displayarea))
         {
-            delete buffer;
+            console_size = size;
+
+            if(buffer != NULL)
+            {
+                delete buffer;
+            }
+            buffer = new Sprite(console_size);
+            return (true);
         }
-        buffer = new Sprite(console_size);
-        return (true);
     }
     return (false);
 }
@@ -410,34 +412,31 @@ bool Engine::SetCursorSize(byte size, bool visible)
 
 short int Engine::GetCurrentFps()
 {
-    return(currentfps);
+    return(this->currentfps);
 }
 
 void Engine::UpdateConsole()
 {
-    SetCursorPosition(Vector2(0, 0));
+    this->SetCursorPosition(Vector2(0, 0));
     //TODO: fazer backup da posição anterior do cursor e restaurar novamente no final da função
-    CHAR_INFO winbuffer[console_size.y][console_size.x];
+    CHAR_INFO winbuffer[this->console_size.y][this->console_size.x];
 
-    static short int fps = 0;
-    static int lasttick = 0;
-
-    if((GetTick() - lasttick) > 1000)
+    if((this->GetTick() - this->fpstick) > 1000)
     {
-        lasttick = GetTick();
-        currentfps = fps;
-        fps = 0;
+        this->fpstick = this->GetTick();
+        this->currentfps = this->fps;
+        this->fps = 0;
     }
-    fps++;
+    this->fps++;
 
-    for(register byte x = 0; x < console_size.x; ++x)
-        for(register byte y = 0; y < console_size.y; ++y)
+    for(register byte x = 0; x < this->console_size.x; ++x)
+        for(register byte y = 0; y < this->console_size.y; ++y)
         {
-            winbuffer[y][x].Char.AsciiChar = buffer->data[x][y].character;
-            winbuffer[y][x].Attributes = buffer->data[x][y].forecolor | buffer->data[x][y].backcolor << 4;
+            winbuffer[y][x].Char.AsciiChar = this->buffer->data[x][y].character;
+            winbuffer[y][x].Attributes = this->buffer->data[x][y].forecolor | this->buffer->data[x][y].backcolor << 4;
         }
-    COORD size = {console_size.x, console_size.y};
+    COORD size = {this->console_size.x, this->console_size.y};
     COORD start = {0, 0};
-    SMALL_RECT srect = {0, 0, console_size.x, console_size.y};
+    SMALL_RECT srect = {0, 0, this->console_size.x, this->console_size.y};
     WriteConsoleOutput(output_handle, (CHAR_INFO*)winbuffer, size, start, &srect);
 }

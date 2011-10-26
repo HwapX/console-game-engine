@@ -17,18 +17,27 @@ namespace ConsoleGameEngine
 */
 class Sprite
 {
-private:
-    void AllocData();
+protected:
     Vector2 size;
-public:
-    /**
-    *deixar essa variavel privada futuramente e criar uma função para pegar o valor dela
-    */
-    Vector2 GetSize();
     /**
     *a two-dimensional matrix of pixel, that represent all pixels of sprite.
     */
-    Pixel** data;
+
+    bool AllocData(const Vector2 &data_size);
+    void DeallocData(const uint16_t size_x);
+public:
+Pixel** data;
+    /**
+    *
+    */
+    Vector2 GetSize();
+
+    bool PutPixel(const Vector2 &coord, const Pixel &pixel_data);
+
+    Pixel *GetPixel(const Vector2 &coord);
+
+    void FloodFill();
+
     /**
     *load a sprite from file.
     *@param filename path of file to load.
@@ -41,9 +50,11 @@ public:
 
     Sprite(const string &filename, const Vector2 &tilesize, const byte index);
 
-    void ReplaceBackcolor(color oldcolor, color newcolor);
+    void ReplaceBackcolor(const color oldcolor, const color newcolor);
 
-    void ReplaceForecolor(color oldcolor, color newcolor);
+    void ReplaceForecolor(const color oldcolor, const color newcolor);
+
+    bool Resize(const Vector2 &newsize);
 
     ~Sprite();
 
@@ -54,6 +65,8 @@ public:
     *@return return true if the draw as succeeded or false if fail
     */
     bool DrawSprite(const Sprite &sprite, const Vector2 &position);
+
+    bool DrawSprite(const Sprite &sprite, const Vector2 &position, const Rect &rect);
     /**
     *this function draw a sprite on center of relative position informed.
     *@param sprite the sprite to draw
@@ -61,9 +74,6 @@ public:
     *@return return true if the draw as succeeded or false if fail
     *@see DrawSprite
     */
-
-    bool DrawSprite(const Sprite &sprite, const Vector2 &position, const Rect &rect);
-
     bool DrawSpriteCenter(const Sprite &sprite, const Vector2 &position);
     /**
     *Draw a text

@@ -21,7 +21,7 @@ using namespace std;
 #include "Input.h"
 #include "Sound.h"
 
-#define NEWLOGO
+#define aNEWLOGO
 
 #define VERSION "Version beta 0.7"
 
@@ -41,6 +41,8 @@ private:
     void PosInit();
 
     short int currentfps;
+    short int fps;
+    int fpstick;
 
     Vector2 console_size;
     Vector2 console_position;

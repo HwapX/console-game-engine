@@ -1,6 +1,4 @@
 #include "Engine.h"
-#include <sstream>
-#include <assert.h>
 
 int Game();
 
@@ -59,8 +57,6 @@ int main()
     bool selecttool = false;
     document->Clear(Colors::White);
 
-    int saveid = 2;
-
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
         engine.WaitFocus();
@@ -82,7 +78,19 @@ int main()
         }
         else if(Keyboard::GetKey('R'))
         {
-            //resize
+            string result;
+            Vector2 new_size;
+
+            if(engine.ShowDialog("Input new width", result))
+            {
+                new_size.x = atoi(result.c_str());
+                if(engine.ShowDialog("Input new height", result))
+                {
+                    new_size.y = atoi(result.c_str());
+                    document->Resize(new_size);
+                    tool_frame.Resize(Vector2(document->GetSize().x +2, document->GetSize().y +1));
+                }
+            }
         }
         else if(Keyboard::GetKey('W'))
         {
@@ -123,7 +131,8 @@ int main()
                 {
                     area.x = selection.x;
                     area.width = cursor.x - selection.x + 1;
-                }else
+                }
+                else
                 {
                     area.x = cursor.x;
                     area.width = selection.x - cursor.x + 1;
@@ -133,7 +142,8 @@ int main()
                 {
                     area.y = selection.y;
                     area.height = cursor.y - selection.y + 1;
-                }else
+                }
+                else
                 {
                     area.y = cursor.y;
                     area.height = selection.y - cursor.y + 1;
@@ -144,26 +154,43 @@ int main()
 
                 clipboard->DrawSprite(*document, Vector2(0, 0), area);
             }
-        }else if(Keyboard::GetKey('V'))
+        }
+        else if(Keyboard::GetKey('V'))
         {
             sprite_undo.DrawSprite(*document, Vector2(0, 0));
             document->DrawSprite(*clipboard, cursor);
         }
+        else if(Keyboard::GetKey('D'))
+        {
+            sprite_undo.DrawSprite(*document, Vector2(0, 0));
+            document->FloodBackcolor(cursor, document->data[cursor.x][cursor.y].backcolor, current_color);
+        }
         else if(Keyboard::GetKey('Z'))
         {
+            Sprite temp(document->GetSize());
+            temp.DrawSprite(*document, Vector2(0, 0));
             document->DrawSprite(sprite_undo, Vector2(0, 0));
+            sprite_undo.DrawSprite(temp, Vector2(0, 0));
         }
         else if(Keyboard::GetKey('S'))
         {
-            ++saveid;
-            document->Save("./sprites/sprite_" + IntToStr(saveid) + ".cges");
-            //document->Save("c:/mod/" + show_dialog(engine, "enter the filename to save") + ".ces");
+            string result;
+            if(engine.ShowDialog("Input the name of file to save!", result))
+            {
+                document->Save("./sprites/sprite_" + result + ".cges");
+            }
         }
         else if(Keyboard::GetKey('O'))
         {
             sprite_undo.DrawSprite(*document, Vector2(0, 0));
             delete document;
-            document = new Sprite("./sprites/sprite_" + IntToStr(saveid) + ".cges");//"./" + show_dialog(engine, "enter the filename to load"));
+
+            string result;
+            if(engine.ShowDialog("Input the name of file to load!", result))
+            {
+                document = new Sprite("./sprites/" + result + ".cges");
+                tool_frame.Resize(Vector2(document->GetSize().x +2, document->GetSize().y +1));
+            }
         }
         else if(Keyboard::GetKey('G'))
         {
@@ -192,9 +219,6 @@ int main()
                 cursor.x++;
         }
 
-        //draw the document
-
-
         tool_frame.Clear(Colors::Transparent);
 
         for(byte x = 0; x < tool_frame.GetSize().x; ++x)
@@ -203,7 +227,7 @@ int main()
             {
                 if(selecttool)
                     if(x == selection.x+1 || y == selection.y ||
-                       x == cursor.x+1 || y == cursor.y)
+                            x == cursor.x+1 || y == cursor.y)
                     {
                         tool_frame.data[x][y].character = '°';
                         tool_frame.data[x][y].forecolor = Colors::Gray;
@@ -222,7 +246,6 @@ int main()
 
         engine.buffer->DrawSpriteCenter(*document, Vector2(engine.buffer->GetSize().x / 2, 7));
         engine.buffer->DrawSpriteCenter(tool_frame, Vector2(engine.GetWindowSize().x / 2, 7));
-
 
         //draw editor grid
         for(byte x = 0; x < engine.GetWindowSize().x; ++x)
@@ -244,6 +267,7 @@ int main()
                 }
             }
         }
+
         engine.buffer->data[engine.GetWindowSize().x - 6][3].character = '=';
         engine.buffer->data[engine.GetWindowSize().x - 12][3].character = '=';
 
@@ -259,12 +283,11 @@ int main()
         //Show the captions
         engine.buffer->DrawText("(N)ew (O)pen (S)ave (R)esize (W)rite (C)opy (X)Cut (V)Paste (A)Select (Z)Undo", Vector2(1, 1), Colors::Black, Colors::White);
         engine.buffer->DrawTextRight("Color", Vector2(engine.GetWindowSize().x - 7, 3), Colors::Black, Colors::White);
-        engine.buffer->DrawText("Colors (F)ont (B)ackground Rep(l)ace (-)Previus (+)Next", Vector2(1, 5), Colors::Black, Colors::White);
-        //engine.buffer->DrawText("Use arrows to move the cursor = current save is " + IntToStr(saveid), Vector2(1, engine.GetWindowSize().y - 2), Colors::Black, Colors::White);
-        engine.buffer->DrawText(IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y) + " = " +
-                                IntToStr(selection.x) + " x " + IntToStr(selection.y) + " = " +
-                                IntToStr(cursor.x) + " x " + IntToStr(cursor.y) + " = " +
-                                IntToStr(clipboard->GetSize().x) + " x " + IntToStr(clipboard->GetSize().y) + " = "
+        engine.buffer->DrawText("Colors (F)ont (B)ackground (L)Replace (-)Previus (+)Next (D)Flood", Vector2(1, 5), Colors::Black, Colors::White);
+        engine.buffer->DrawText("Size " + IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y) + " = " +
+                                "Selection " + IntToStr(selection.x) + " x " + IntToStr(selection.y) + " = " +
+                                "Cursor " + IntToStr(cursor.x) + " x " + IntToStr(cursor.y) + " = " +
+                                "Clipboard " + IntToStr(clipboard->GetSize().x) + " x " + IntToStr(clipboard->GetSize().y) + " = "
                                 , Vector2(1, engine.GetWindowSize().y - 2), Colors::Black, Colors::White);
 
         //Show FPS

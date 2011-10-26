@@ -82,7 +82,7 @@ Engine::Engine(const string &title, const Vector2 &position, const Vector2 &size
 
 void Engine::ShowLogo()
 {
-#ifdef NEWLOGO
+#ifndef OLDLOGO
     byte colc = 0, colg = 0, effect = 0;
     Sprite logo(Vector2(buffer->GetSize().x, 14)), blood(Vector2(buffer->GetSize().x - 2, buffer->GetSize().y- 2));
     int lasttick = GetTick(), blinktick = GetTick();
@@ -219,8 +219,8 @@ void Engine::ShowLogo()
                 }
             }
 
-            buffer->DrawText("Developed by", Vector2(2, GetWindowSize().y -3), Colors::White, Colors::Transparent);
-            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().y -2), Colors::White, Colors::Transparent);
+            buffer->DrawText("Developed by", Vector2(1, GetWindowSize().y -3), Colors::White, Colors::Transparent);
+            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetWindowSize().y -2), Colors::White, Colors::Transparent);
 
             buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Transparent);
 
@@ -283,8 +283,8 @@ void Engine::ShowLogo()
         buffer->data[60][11].forecolor = Colors::Blue;
         //effect
 
-        buffer->DrawText("Developed by", Vector2(2, GetWindowSize().y -3), Colors::White, Colors::Black);
-        buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(2, GetWindowSize().y -2), Colors::White, Colors::Black);
+        buffer->DrawText("Developed by", Vector2(1, GetWindowSize().y -3), Colors::White, Colors::Black);
+        buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetWindowSize().y -2), Colors::White, Colors::Black);
 
         buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Black);
 
@@ -313,6 +313,51 @@ void Engine::ShowError(const string &text, const bool close)
         buffer->Clear();
     }
     exit(1);
+}
+
+bool Engine::ShowDialog(const string &text, string &result)
+{
+    result.clear();
+    char lastkey = 0;
+    while(!Keyboard::GetKey(VK_ESCAPE))
+    {
+        if(lastkey == VK_RETURN)
+        {
+            if(result.empty())
+            {
+                return(false);
+            }
+            else
+            {
+                return(true);
+            }
+        }
+        else if(lastkey == VK_BACK)
+        {
+            if(result.size() > 0)
+            {
+                result.erase(result.size() -1);
+            }
+        }
+        else if((lastkey > 64 && lastkey < 91) || (lastkey > 47 && lastkey < 58) || lastkey == ' ')
+        {
+            result+= lastkey;
+        }
+
+        this->buffer->Clear(Colors::White);
+        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 5), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter("*                                                          *", Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter(text                            , Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 7), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter("*                                                          *", Vector2(buffer->GetSize().x / 2, 8), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter(result                          , Vector2(buffer->GetSize().x / 2, 8), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 9), Colors::Black, Colors::White);
+
+        this->UpdateConsole();
+        lastkey = Keyboard::GetNextKey();
+    }
+
+    return(false);
 }
 
 int Engine::GetTick()

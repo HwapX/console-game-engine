@@ -26,7 +26,7 @@ protected:
     bool AllocData(const Vector2 &data_size);
     void DeallocData(const uint16_t size_x);
 public:
-Pixel** data;
+    Pixel** data;
     /**
     *
     */
@@ -36,7 +36,7 @@ Pixel** data;
 
     Pixel *GetPixel(const Vector2 &coord);
 
-    void FloodFill();
+    void FloodBackcolor(const Vector2 &position, const color oldcolor, const color newcolor);
 
     /**
     *load a sprite from file.

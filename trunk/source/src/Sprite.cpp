@@ -247,6 +247,34 @@ void Sprite::Clear()
     this->Clear(Colors::Black);
 }
 
+void Sprite::FloodBackcolor(const Vector2 &position, const color oldcolor, const color newcolor)
+{
+    if(position.x < this->size.x && position.y < this->size.y && position.x >= 0 && position.y >= 0)
+    {
+        this->data[position.x][position.y].backcolor = newcolor;
+    }
+    if(position.x+1 < this->size.x)
+    {
+        if(this->data[position.x +1][position.y].backcolor == oldcolor)
+            this->FloodBackcolor(Vector2(position.x+1, position.y), oldcolor, newcolor);
+    }
+    if(position.x-1 >= 0)
+    {
+        if(this->data[position.x-1][position.y].backcolor == oldcolor)
+            this->FloodBackcolor(Vector2(position.x-1, position.y), oldcolor, newcolor);
+    }
+    if(position.y+1 < this->size.y)
+    {
+        if(this->data[position.x][position.y +1].backcolor == oldcolor)
+            this->FloodBackcolor(Vector2(position.x, position.y+1), oldcolor, newcolor);
+    }
+    if(position.y-1 >= 0)
+    {
+        if(this->data[position.x][position.y-1].backcolor == oldcolor)
+            this->FloodBackcolor(Vector2(position.x, position.y -1), oldcolor, newcolor);
+    }
+}
+
 bool Sprite::PutPixel(const Vector2 &coord, const Pixel &pixel_data)
 {
     if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))

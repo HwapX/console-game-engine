@@ -36,6 +36,8 @@ const color Red = 12;
 const color Magenta = 13;
 const color Yellow = 14;
 const color White = 15;
+const color InvertBF = 0xFE;
+const color Invert = 0xFD;
 const color Transparent = 0xFF;//17//16;
 }
 

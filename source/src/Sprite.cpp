@@ -5,18 +5,23 @@ using namespace ConsoleGameEngine;
 Sprite::Sprite(const string &filename)
 {
     byte temp = 0;
+    Vector2 temp_size;
     std::FILE* in = fopen(filename.c_str(), "r");
 
     if(in == NULL)
         std::fprintf(stderr, "Can't Open sprite file");
 
-    std::fread((void*)&size.x, 2, 1, in);
-    std::fread((void*)&size.y, 2, 1, in);
+    std::fread((void*)&temp_size.x, 2, 1, in);
+    std::fread((void*)&temp_size.y, 2, 1, in);
 
-    AllocData();
-    for(register uint16_t x = 0; x < size.x; ++x)
+    if(!AllocData(temp_size))
     {
-        for(register uint16_t y = 0; y < size.y; ++y)
+        return;
+    }
+
+    for(register uint16_t x = 0; x < temp_size.x; ++x)
+    {
+        for(register uint16_t y = 0; y < temp_size.y; ++y)
         {
             std::fread((void*)&data[x][y].character, 1, 1, in);
 
@@ -62,13 +67,15 @@ Sprite::Sprite(const string &filename, const Vector2 &tilesize, const byte index
     Sprite tileset(filename);
     byte cx = 0, cy = 0, px = 0, py = 0;
 
-    size = tilesize;
     cx = tileset.GetSize().x / tilesize.x;
     cy = tileset.GetSize().y / tilesize.y;
     px = index > cx?index % cx:index;
     py = index > cx?index / cx:0;
 
-    AllocData();
+    if(!AllocData(tilesize))
+    {
+        return;
+    }
     Clear(Colors::Transparent);
     DrawSprite(tileset, Vector2(0, 0), Rect(Vector2((px -1) * tilesize.x, py * tilesize.y), tilesize));
 
@@ -76,19 +83,30 @@ Sprite::Sprite(const string &filename, const Vector2 &tilesize, const byte index
 
 Sprite::Sprite(const Vector2 &sprite_size)
 {
-    size = sprite_size;
-    AllocData();
+    AllocData(sprite_size);
 }
 
 //informar o tamanho da imagem
-void Sprite::AllocData()
+bool Sprite::AllocData(const Vector2 &data_size)
 {
-    data = new Pixel*[size.x];
-    for(register uint16_t i = 0; i < size.x; ++i)
+    data = new Pixel*[data_size.x];
+    if(this->data == NULL)
     {
-        data[i] = new Pixel[size.y];
-        //verificar a memoria alocada
+        std::fprintf(stderr, "Can't allocate memory");
+        return(false);
     }
+    for(register uint16_t i = 0; i < data_size.x; ++i)
+    {
+        this->data[i] = new Pixel[data_size.y];
+        if(this->data[i] == NULL)
+        {
+            std::fprintf(stderr, "Can't allocate memory");
+            DeallocData(i);
+            return(false);
+        }
+    }
+    size = data_size;
+    return(true);
 }
 
 Vector2 Sprite::GetSize()
@@ -96,32 +114,24 @@ Vector2 Sprite::GetSize()
     return(size);
 }
 
+void Sprite::DeallocData(const uint16_t size_x)
+{
+    for(register uint16_t i = 0; i < size_x; ++i)
+    {
+        delete [] this->data[i];
+    }
+    delete [] this->data;
+    this->size = Vector2(0, 0);
+}
+
 Sprite::~Sprite()
 {
-    for(register uint16_t b = 0; b < size.x; ++b)
-    {
-        delete [] data[b];
-    }
-    delete [] data;
+    DeallocData(this->size.x);
 }
 
 bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position)
 {
-    for(register uint16_t x = 0; x < sprite.size.x; ++x)
-    {
-        for(register uint16_t y = 0; y < sprite.size.y; ++y)
-        {
-            if((position.x + x < size.x) && (position.y + y < size.y))
-            {
-                if(sprite.data[x][y].backcolor != Colors::Transparent)
-                {
-                    data[position.x + x][position.y + y] = sprite.data[x][y];
-                }
-            }
-        }
-    }
-
-    return true;
+    return(this->DrawSprite(sprite, position, Rect(Vector2(0, 0), sprite.size)));
 }
 
 bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position, const Rect &rect)
@@ -130,12 +140,14 @@ bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position, const Rec
     {
         for(register uint16_t y = 0; y < rect.height; ++y)
         {
-            if((position.x + x < size.x) && (position.y + y < size.y))
+            if((position.x + x < this->size.x) && (position.y + y < this->size.y))
             {
                 if(sprite.data[x + rect.x][y + rect.y].backcolor != Colors::Transparent)
                 {
-                    data[position.x + x][position.y + y] = sprite.data[x + rect.x][y + rect.y];
+                    this->data[position.x + x][position.y + y].backcolor = sprite.data[x + rect.x][y + rect.y].backcolor;
                 }
+                this->data[position.x + x][position.y + y].forecolor = sprite.data[x + rect.x][y + rect.y].forecolor;
+                this->data[position.x + x][position.y + y].character = sprite.data[x + rect.x][y + rect.y].character;
             }
         }
     }
@@ -144,52 +156,60 @@ bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position, const Rec
 
 bool Sprite::DrawSpriteCenter(const Sprite &sprite, const Vector2 &position)
 {
-    return(DrawSprite(sprite, Vector2(((position.x / 2) - (sprite.size.x / 2)), ((position.y / 2) - (sprite.size.y / 2)))));
+    return(this->DrawSprite(sprite, Vector2((position.x - (sprite.size.x / 2)), position.y)));
 }
 
 
-void Sprite::FillBackcolor(color backcolor)
+void Sprite::FillBackcolor(const color backcolor)
 {
-    for(register uint16_t x = 0; x < size.x; ++x)
-        for(register uint16_t y = 0; y < size.y; ++y)
-            data[x][y].backcolor = backcolor;
+    for(register uint16_t x = 0; x < this->size.x; ++x)
+    {
+        for(register uint16_t y = 0; y < this->size.y; ++y)
+        {
+            this->data[x][y].backcolor = backcolor;
+        }
+    }
 }
 
-void Sprite::FillForecolor(color forecolor)
+void Sprite::FillForecolor(const color forecolor)
 {
-    for(register uint16_t x = 0; x < size.x; ++x)
-        for(register uint16_t y = 0; y < size.y; ++y)
-            data[x][y].forecolor = forecolor;
+    for(register uint16_t x = 0; x < this->size.x; ++x)
+    {
+        for(register uint16_t y = 0; y < this->size.y; ++y)
+        {
+            this->data[x][y].forecolor = forecolor;
+        }
+    }
 }
 
-byte Sprite::DrawText(const string &text, const Vector2 &position, color forecolor, color backcolor)
+byte Sprite::DrawText(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
     byte len = text.size();
     register byte b;
 
-    if(position.y >= size.y)
+    if(position.y >= this->size.y)
         return 0;
 
     for(b = 0; b < len; ++b)
     {
-        if((position.x + b) >= size.x)
+        if((position.x + b) >= this->size.x)
             return(b);
-        data[position.x + b][position.y].character = text[b];
+        this->data[position.x + b][position.y].character = text[b];
         if(backcolor != Colors::Transparent)
-            data[position.x + b][position.y].backcolor = backcolor;
-        data[position.x + b][position.y].forecolor = forecolor;
+            this->data[position.x + b][position.y].backcolor = backcolor;
+        this->data[position.x + b][position.y].forecolor = forecolor;
     }
     return b;
 }
 
 byte Sprite::DrawTextRight(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
-    return(DrawText(text, Vector2((position.x - (text.size() -1)), position.y), forecolor, backcolor));
+    return(this->DrawText(text, Vector2((position.x - (text.size() -1)), position.y), forecolor, backcolor));
 }
 
 byte Sprite::DrawTextCenter(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
-    return(DrawText(text, Vector2(position.x - ((text.size() -1) / 2), position.y), forecolor, backcolor));
+    return(this->DrawText(text, Vector2(position.x - ((text.size() -1) / 2), position.y), forecolor, backcolor));
 }
 
 byte Sprite::DrawTextVert(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
@@ -197,79 +217,114 @@ byte Sprite::DrawTextVert(const string &text, const Vector2 &position, const col
     byte len = text.size();
     register byte b;
 
-    if(position.x >= size.x)
+    if(position.x >= this->size.x)
         return 0;
 
     for(b = 0; b < len; ++b)
     {
-        if((position.y + b) >= size.y)
+        if((position.y + b) >= this->size.y)
             return(b);
-        data[position.x][position.y + b].character = text[b];
+        this->data[position.x][position.y + b].character = text[b];
         if(backcolor != Colors::Transparent)
-            data[position.x][position.y + b].backcolor = backcolor;
-        data[position.x][position.y + b].forecolor = forecolor;
+            this->data[position.x][position.y + b].backcolor = backcolor;
+        this->data[position.x][position.y + b].forecolor = forecolor;
     }
     return b;
 }
 
 byte Sprite::DrawTextVertCenter(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
-    return (DrawTextVert(text, Vector2(position.x, (position.y / (text.size() -1))), forecolor, backcolor));
+    return (this->DrawTextVert(text, Vector2(position.x, (position.y / (text.size() -1))), forecolor, backcolor));
 }
 
 byte Sprite::DrawTextVertTop(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
-    return (DrawTextVert(text, Vector2(position.x, (position.y - (text.size() -1))), forecolor, backcolor));
+    return (this->DrawTextVert(text, Vector2(position.x, (position.y - (text.size() -1))), forecolor, backcolor));
 }
 
 void Sprite::Clear()
 {
-    Clear(Colors::Black);
+    this->Clear(Colors::Black);
 }
 
-void Sprite::ReplaceBackcolor(color oldcolor, color newcolor)
+bool Sprite::PutPixel(const Vector2 &coord, const Pixel &pixel_data)
 {
-    for(register uint16_t x = 0; x < size.x; ++x)
+    if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
     {
-        for(register uint16_t y = 0; y < size.y; ++y)
+        this->data[coord.x][coord.y] = pixel_data;
+        return(true);
+    }
+
+    return(false);
+}
+
+Pixel *Sprite::GetPixel(const Vector2 &coord)
+{
+    if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
+    {
+        return(&this->data[coord.x][coord.y]);
+    }
+
+    return(NULL);
+}
+
+void Sprite::ReplaceBackcolor(const color oldcolor, const color newcolor)
+{
+    for(register uint16_t x = 0; x < this->size.x; ++x)
+    {
+        for(register uint16_t y = 0; y < this->size.y; ++y)
         {
-            if(data[x][y].backcolor == oldcolor)
-                data[x][y].backcolor = newcolor;
+            if(this->data[x][y].backcolor == oldcolor)
+                this->data[x][y].backcolor = newcolor;
         }
     }
 }
 
-void Sprite::ReplaceForecolor(color oldcolor, color newcolor)
+void Sprite::ReplaceForecolor(const color oldcolor, const color newcolor)
 {
-    for(register uint16_t x = 0; x < size.x; ++x)
+    for(register uint16_t x = 0; x < this->size.x; ++x)
     {
-        for(register uint16_t y = 0; y < size.y; ++y)
+        for(register uint16_t y = 0; y < this->size.y; ++y)
         {
-            if(data[x][y].forecolor == oldcolor)
-                data[x][y].forecolor = newcolor;
+            if(this->data[x][y].forecolor == oldcolor)
+                this->data[x][y].forecolor = newcolor;
         }
     }
+}
+
+bool Sprite::Resize(const Vector2 &newsize)
+{
+    Sprite bkp(this->size);
+
+    bkp.DrawSprite(*this, Vector2(0, 0));
+    this->DeallocData(this->size.x);
+    if(!this->AllocData(newsize))
+    {
+        return (false);
+    }
+    this->DrawSprite(bkp, Vector2(0, 0));
+    return(true);
 }
 
 void Sprite::Clear(color backcolor)
 {
-    for(register uint16_t x = 0; x < size.x; ++x)
+    for(register uint16_t x = 0; x < this->size.x; ++x)
     {
-        for(register uint16_t y = 0; y < size.y; ++y)
+        for(register uint16_t y = 0; y < this->size.y; ++y)
         {
-            data[x][y].Reset();
-            data[x][y].backcolor = backcolor;
+            this->data[x][y].Reset();
+            this->data[x][y].backcolor = backcolor;
         }
     }
 }
 
 bool Sprite::DoesItFit(Sprite& sprite, Vector2 position)
 {
-    if(((position.x + sprite.size.x) >= size.x) &&
-            ((position.y + sprite.size.y) >= size.y))
-        return false;
+    if(((position.x + sprite.size.x) >= this->size.x) &&
+            ((position.y + sprite.size.y) >= this->size.y))
+        return(false);
     else
-        return true;
+        return(true);
 }
 
 void Sprite::Rotate(uint16_t graus)
@@ -282,8 +337,8 @@ void Sprite::Save(const string &filename)
     byte temp = 0;
     FILE* out = std::fopen(filename.c_str(), "w");
 
-    std::fwrite((void*)&size.x, 2, 1, out);
-    std::fwrite((void*)&size.y, 2, 1, out);
+    std::fwrite((void*)&this->size.x, 2, 1, out);
+    std::fwrite((void*)&this->size.y, 2, 1, out);
 
     if(out == NULL)
         std::fprintf(stderr, "Can't save sprite file");
@@ -292,12 +347,12 @@ void Sprite::Save(const string &filename)
     {
         for(register uint16_t y = 0; y < size.y; ++y)
         {
-            std::fwrite((void*)&data[x][y].character, 1, 1, out);
+            std::fwrite((void*)&this->data[x][y].character, 1, 1, out);
 
-            temp = (byte)data[x][y].forecolor;
+            temp = (byte)this->data[x][y].forecolor;
             std::fwrite((void*)&temp, 1, 1, out);
 
-            temp = (byte)data[x][y].backcolor;
+            temp = (byte)this->data[x][y].backcolor;
             std::fwrite((void*)&temp, 1, 1, out);
         }
     }

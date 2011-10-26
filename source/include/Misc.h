@@ -48,11 +48,11 @@ const color Transparent = 0xFF;//17//16;
 class Vector2
 {
 public:
-    uint16_t x, y;
+    int16_t x, y;
 
     Vector2();
-    Vector2(uint16_t x, uint16_t y);
-    uint16_t operator[](const int i);
+    Vector2(int16_t x, int16_t y);
+    int16_t operator[](const int i);
 };
 
 class Rect

@@ -17,6 +17,8 @@ namespace ConsoleGameEngine
 */
 class Sprite
 {
+private:
+    bool CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const byte index);
 protected:
     Vector2 size;
     /**
@@ -47,6 +49,8 @@ public:
     *create a sprite with informed size.
     */
     Sprite(const Vector2 &sprite_size);
+
+    Sprite(Sprite &tileset, const Vector2 &tilesize, const byte index);
 
     Sprite(const string &filename, const Vector2 &tilesize, const byte index);
 

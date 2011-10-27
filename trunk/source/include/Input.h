@@ -2,6 +2,7 @@
 #define CGE_INPUT_H
 
 #include <windows.h>
+#include <iostream>
 
 namespace ConsoleGameEngine
 {
@@ -17,16 +18,20 @@ public:
     *@param key key to check
     *@return ?
     */
-    static bool GetKey(int key);
+    static bool GetKey(const char key);
     /**
     *check key if key informed are down
     *@param key key to check
     *@return return true if are pressed or false otherwise
     */
-    static bool GetKey_down(int key);
+    static bool GetKeyDown(const char key);
     //revisar as funções abaixo da classe
-    static byte GetKey();
-    static byte GetNextKey();
+    static char GetKey();
+    static char GetNextKey();
+
+    //static char TranslateKey(const char key);
+private:
+
 };
 
 }

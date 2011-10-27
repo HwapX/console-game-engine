@@ -14,7 +14,7 @@ Sprite::Sprite(const string &filename)
     std::fread((void*)&temp_size.x, 2, 1, in);
     std::fread((void*)&temp_size.y, 2, 1, in);
 
-    if(!AllocData(temp_size))
+    if(!this->AllocData(temp_size))
     {
         return;
     }
@@ -26,10 +26,10 @@ Sprite::Sprite(const string &filename)
             std::fread((void*)&data[x][y].character, 1, 1, in);
 
             std::fread((void*)&temp, 1, 1, in);
-            data[x][y].forecolor = (color)temp;
+            this->data[x][y].forecolor = (color)temp;
 
             std::fread((void*)&temp, 1, 1, in);
-            data[x][y].backcolor = (color)temp;
+            this->data[x][y].backcolor = (color)temp;
         }
     }
 
@@ -62,23 +62,33 @@ Sprite::Sprite(const string &filename)
     stream.close();*/
 }
 
-Sprite::Sprite(const string &filename, const Vector2 &tilesize, const byte index)
+bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const byte index)
 {
-    Sprite tileset(filename);
-    byte cx = 0, cy = 0, px = 0, py = 0;
+    byte cx = 0, px = 0, py = 0; //cy = 0,
 
     cx = tileset.GetSize().x / tilesize.x;
-    cy = tileset.GetSize().y / tilesize.y;
+    //cy = tileset.GetSize().y / tilesize.y;
     px = index > cx?index % cx:index;
     py = index > cx?index / cx:0;
 
-    if(!AllocData(tilesize))
+    if(!this->AllocData(tilesize))
     {
-        return;
+        return(false);
     }
-    Clear(Colors::Transparent);
-    DrawSprite(tileset, Vector2(0, 0), Rect(Vector2((px -1) * tilesize.x, py * tilesize.y), tilesize));
+    this->Clear(Colors::Transparent);
+    this->DrawSprite(tileset, Vector2(0, 0), Rect(Vector2((px -1) * tilesize.x, py * tilesize.y), tilesize));
+    return(true);
+}
 
+Sprite::Sprite(Sprite &tileset, const Vector2 &tilesize, const byte index)
+{
+    this->CreateFromTileset(tileset, tilesize, index);
+}
+
+Sprite::Sprite(const string &filename, const Vector2 &tilesize, const byte index)
+{
+    Sprite tileset(filename);
+    CreateFromTileset(tileset, tilesize, index);
 }
 
 Sprite::Sprite(const Vector2 &sprite_size)
@@ -86,7 +96,6 @@ Sprite::Sprite(const Vector2 &sprite_size)
     AllocData(sprite_size);
 }
 
-//informar o tamanho da imagem
 bool Sprite::AllocData(const Vector2 &data_size)
 {
     data = new Pixel*[data_size.x];
@@ -249,6 +258,8 @@ void Sprite::Clear()
 
 void Sprite::FloodBackcolor(const Vector2 &position, const color oldcolor, const color newcolor)
 {
+    if(oldcolor == newcolor)
+        return;
     if(position.x < this->size.x && position.y < this->size.y && position.x >= 0 && position.y >= 0)
     {
         this->data[position.x][position.y].backcolor = newcolor;

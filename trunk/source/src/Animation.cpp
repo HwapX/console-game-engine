@@ -1,6 +1,7 @@
 #include "Animation.h"
 
-Animation::Animation(const string &filename, const Vector2 &tilesize, const byte start, const byte count, const uint16_t interval)
+
+void Animation::CreateAnimation(Sprite &tileset, const Vector2 &tilesize, const byte start, const byte count, const uint16_t interval)
 {
     this->frame_count = count;
     this->frames = new Sprite*[count];
@@ -10,9 +11,19 @@ Animation::Animation(const string &filename, const Vector2 &tilesize, const byte
 
     for(register byte b = 0; b < count; ++b)
     {
-        this->frames[b] = new Sprite(filename, tilesize, start + b);
+        this->frames[b] = new Sprite(tileset, tilesize, start + b);
     }
+}
 
+Animation::Animation(Sprite &tileset, const Vector2 &tilesize, const byte start, const byte count, const uint16_t interval)
+{
+    CreateAnimation(tileset, tilesize, start, count, interval);
+}
+
+Animation::Animation(const string &filename, const Vector2 &tilesize, const byte start, const byte count, const uint16_t interval)
+{
+    Sprite tileset(filename);
+    CreateAnimation(tileset, tilesize, start, count, interval);
 }
 
 Animation::~Animation()

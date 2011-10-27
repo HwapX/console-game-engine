@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#define AUTO_SAVE_INTERVAL 1000 * 60
+
 int Game();
 
 using namespace ConsoleGameEngine;
@@ -53,13 +55,31 @@ int main()
     Sprite tool_frame(Vector2(document->GetSize().x +2, document->GetSize().y +1));
     Sprite *clipboard = new Sprite(Vector2(0, 0));
     Sprite sprite_undo = Sprite(document->GetSize());
-    Vector2 selection;
-    bool selecttool = false;
+    Vector2 selection, grid_size;
+    bool selecttool = false, gridtool = false;
+    int savetick = engine.GetTick();
+
     document->Clear(Colors::White);
 
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
-        engine.WaitFocus();
+        /*if(!engine.Focus())
+        {
+            while(!engine.Focus())
+            {
+                engine.buffer->Clear(Colors::White);
+                engine.buffer->DrawTextCenter("Waiting focus!", Vector2(engine.buffer->GetSize().x / 2, engine.buffer->GetSize().y / 2), Colors::Black, Colors::White);
+                engine.UpdateConsole();
+            }
+        }*/
+        tool_frame.Clear(Colors::Transparent);
+        engine.buffer->Clear(Colors::White);
+
+        if((engine.GetTick() - savetick) > AUTO_SAVE_INTERVAL)
+        {
+            savetick = engine.GetTick();
+            document->Save("./Sprites/autosave.cges");
+        }
 
         //le o teclado
         if(Keyboard::GetKey(VK_ADD) ||
@@ -81,10 +101,10 @@ int main()
             string result;
             Vector2 new_size;
 
-            if(engine.ShowDialog("Input new width", result))
+            if(engine.ShowDialog("Resize", "Input new width", result))
             {
                 new_size.x = atoi(result.c_str());
-                if(engine.ShowDialog("Input new height", result))
+                if(engine.ShowDialog("Resize", "Input new height", result))
                 {
                     new_size.y = atoi(result.c_str());
                     document->Resize(new_size);
@@ -172,12 +192,53 @@ int main()
             document->DrawSprite(sprite_undo, Vector2(0, 0));
             sprite_undo.DrawSprite(temp, Vector2(0, 0));
         }
+        else if(Keyboard::GetKey('P'))
+        {
+            string result;
+            Vector2 tilesize;
+            uint16_t start = 0, count = 0;
+            uint16_t interval = 0;
+
+            if(engine.ShowDialog("Preview Animation", "input tile size (width X height)", result))
+            {
+                sscanf(result.c_str(), "%hd X %hd", &tilesize.x, &tilesize.y);
+                if(engine.ShowDialog("Preview Animation", "input frames (start X count)", result))
+                {
+                    sscanf(result.c_str(), "%hd X %hd", &start, &count);
+                    if(engine.ShowDialog("Preview Animation", "input interval (interval)", result))
+                    {
+                        sscanf(result.c_str(), "%hd", &interval);
+                        Animation preview(*document, tilesize, start, count, interval);
+                        while(!Keyboard::GetKey(VK_RETURN))
+                        {
+                            engine.buffer->Clear(Colors::White);
+                            engine.buffer->DrawSpriteCenter(preview.CurrentFrame(), Vector2(engine.buffer->GetSize().x / 2, 0));
+                            engine.UpdateConsole();
+                        }
+                    }
+                }
+
+            }
+        }
+        else if(Keyboard::GetKey('H'))
+        {
+            string result;
+
+            if(engine.ShowDialog("Grid size", "Input grid size (width X height)", result))
+            {
+                sscanf(result.c_str(), "%hd X %hd", &grid_size.x, &grid_size.y);
+            }
+        }
+        else if(Keyboard::GetKey('G'))
+        {
+            gridtool = !gridtool;
+        }
         else if(Keyboard::GetKey('S'))
         {
             string result;
-            if(engine.ShowDialog("Input the name of file to save!", result))
+            if(engine.ShowDialog("Save File","Input the name of file!", result))
             {
-                document->Save("./sprites/sprite_" + result + ".cges");
+                document->Save("./sprites/" + result + ".cges");
             }
         }
         else if(Keyboard::GetKey('O'))
@@ -186,7 +247,7 @@ int main()
             delete document;
 
             string result;
-            if(engine.ShowDialog("Input the name of file to load!", result))
+            if(engine.ShowDialog("Open File", "Input the name of file!", result))
             {
                 document = new Sprite("./sprites/" + result + ".cges");
                 tool_frame.Resize(Vector2(document->GetSize().x +2, document->GetSize().y +1));
@@ -219,12 +280,19 @@ int main()
                 cursor.x++;
         }
 
-        tool_frame.Clear(Colors::Transparent);
-
         for(byte x = 0; x < tool_frame.GetSize().x; ++x)
         {
             for(byte y = 0; y < tool_frame.GetSize().y; ++y)
             {
+                if(gridtool && (grid_size.x > 0 && grid_size.y > 0))
+                {
+                    if(((x+1) % grid_size.x == 0) ||
+                            ((y+1) % grid_size.y == 0) && x < document->GetSize().x)
+                    {
+                        tool_frame.data[x+1][y].character = '°';
+                        tool_frame.data[x+1][y].forecolor = Colors::Gray;
+                    }
+                }
                 if(selecttool)
                     if(x == selection.x+1 || y == selection.y ||
                             x == cursor.x+1 || y == cursor.y)
@@ -294,7 +362,7 @@ int main()
         engine.buffer->DrawTextRight("FPS:" + IntToStr(engine.GetCurrentFps()), Vector2(78, engine.GetWindowSize().y -2), engine.GetCurrentFps() > 59?Colors::Green:Colors::Red, Colors::White);
 
         engine.UpdateConsole();
-        engine.buffer->Clear(Colors::White);
+        engine.WaitFocus();
     }
     return 0;
 }

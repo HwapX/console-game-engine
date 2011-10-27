@@ -21,11 +21,7 @@ using namespace std;
 #include "Input.h"
 #include "Sound.h"
 
-#ifndef DEBUG
-
 #define OLDLOGO
-
-#endif
 
 #define VERSION "Version beta 0.7"
 
@@ -103,7 +99,7 @@ public:
     */
     void ShowError(const string &text, const bool close);
 
-    bool ShowDialog(const string &text, string &result);
+    bool ShowDialog(const string &title, const string &text, string &result);
 
     static int GetTick();
     /**

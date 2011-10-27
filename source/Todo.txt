@@ -1,1 +1,3 @@
-
+Adicionar previa para animações
+Adicionar opção de deletar seleção
+Colocar parametros opcionais na função ShowDialog backcolor , forecolor

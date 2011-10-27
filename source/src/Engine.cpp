@@ -315,7 +315,7 @@ void Engine::ShowError(const string &text, const bool close)
     exit(1);
 }
 
-bool Engine::ShowDialog(const string &text, string &result)
+bool Engine::ShowDialog(const string &title, const string &text, string &result)
 {
     result.clear();
     char lastkey = 0;
@@ -345,13 +345,18 @@ bool Engine::ShowDialog(const string &text, string &result)
         }
 
         this->buffer->Clear(Colors::White);
-        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 5), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter("*                                                          *", Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter(text                            , Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter(       "******************************************"           ,Vector2(buffer->GetSize().x / 2, 5), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter(       "*                                        *"           , Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter(title                                                         , Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
+
         this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 7), Colors::Black, Colors::White);
+
         this->buffer->DrawTextCenter("*                                                          *", Vector2(buffer->GetSize().x / 2, 8), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter(result                          , Vector2(buffer->GetSize().x / 2, 8), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter(text                                                          , Vector2(buffer->GetSize().x / 2, 8), Colors::Black, Colors::White);
         this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 9), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter("*                                                          *", Vector2(buffer->GetSize().x / 2, 10), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter(result                                                        , Vector2(buffer->GetSize().x / 2, 10), Colors::Black, Colors::White);
+        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 11), Colors::Black, Colors::White);
 
         this->UpdateConsole();
         lastkey = Keyboard::GetNextKey();

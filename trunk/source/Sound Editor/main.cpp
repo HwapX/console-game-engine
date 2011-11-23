@@ -27,6 +27,14 @@ int main()
         engine.buffer->Clear();
         table.Clear(Colors::Transparent);
 
+        if(Keyboard::GetKey('S'))
+        {
+
+        }
+        else if(Keyboard::GetKey('L'))
+        {
+
+        }
         if(Keyboard::GetKey('P'))
         {
             if(audio->IsPlaying() && !audio->Paused())
@@ -38,7 +46,7 @@ int main()
                 audio->Play();
             }
         }
-        else if(Keyboard::GetKey('S'))
+        else if(Keyboard::GetKey('O'))
         {
             audio->Stop();
         }
@@ -137,7 +145,7 @@ int main()
             uint8_t y = audio->GetNote(x).frequence?(audio->GetNote(x).frequence * chanels) / max_frequence:0;
             table.data[x][y].backcolor = y+1;
         }
-        if(audio->IsPlaying())
+        if(audio->IsPlaying() && !audio->Paused())
         {
             uint8_t y = audio->GetNote(audio->GetCurrent()).frequence?(audio->GetNote(audio->GetCurrent()).frequence * chanels) / max_frequence:0;
             table.data[audio->GetCurrent()][y].character = CURSOR_ICON;

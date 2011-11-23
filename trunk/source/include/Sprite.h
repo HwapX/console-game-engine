@@ -36,7 +36,7 @@ public:
 
     bool PutPixel(const Vector2 &coord, const Pixel &pixel_data);
 
-    Pixel *GetPixel(const Vector2 &coord);
+    Pixel &operator()(const Vector2 &position);
 
     void FloodBackcolor(const Vector2 &position, const color oldcolor, const color newcolor);
 

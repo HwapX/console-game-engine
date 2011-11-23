@@ -297,6 +297,18 @@ bool Sprite::PutPixel(const Vector2 &coord, const Pixel &pixel_data)
     return(false);
 }
 
+Pixel &Sprite::operator()(const Vector2 &position)
+{
+    if((position.x < this->size.x && position.y < this->size.y) && !(position.x < 0 && position.y < 0))
+    {
+        return(this->data[position.x][position.y]);
+    }
+    else
+    {
+        throw("Out memory, Invalid pixel position");
+    }
+}
+/*
 Pixel *Sprite::GetPixel(const Vector2 &coord)
 {
     if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
@@ -305,7 +317,7 @@ Pixel *Sprite::GetPixel(const Vector2 &coord)
     }
 
     return(NULL);
-}
+}*/
 
 void Sprite::ReplaceBackcolor(const color oldcolor, const color newcolor)
 {

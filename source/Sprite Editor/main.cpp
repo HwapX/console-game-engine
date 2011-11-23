@@ -1,47 +1,11 @@
 #include "Engine.h"
+#include "Utils.h"
 
 #define AUTO_SAVE_INTERVAL 1000 * 60
 
 int Game();
 
 using namespace ConsoleGameEngine;
-
-string IntToStr(uint32_t number)
-{
-    char num[10];
-    itoa(number, num, 10);
-    return num;
-}
-
-string show_dialog(Engine &engine, string title)
-{
-    uint8_t key = 0;
-    string str;
-    while(!Keyboard::GetKey(VK_ESCAPE))
-    {
-        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -3), Colors::Black, Colors::White);
-        engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -2), Colors::Black, Colors::White);
-        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -1), Colors::Black, Colors::White);
-        engine.buffer->DrawTextCenter("=                                        =", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 ), Colors::Black, Colors::White);
-        engine.buffer->DrawTextCenter("==========================================", Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 +1), Colors::Black, Colors::White);
-        engine.buffer->DrawTextCenter(title, Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2 -2), Colors::Black, Colors::White);
-
-        if(key == VK_BACK && str.size() != 0)
-            str.erase(str.size() -1, 1);
-        else if(key == 13)//VK_EXECUTE)
-            return str;
-        else
-        {
-            str+= key;
-        }
-        engine.buffer->DrawTextCenter(str, Vector2(engine.GetWindowSize().x / 2, engine.GetWindowSize().y / 2), Colors::Black, Colors::White);
-        engine.UpdateConsole();
-        engine.buffer->Clear(Colors::White);
-
-        key = Keyboard::GetNextKey();
-    }
-    return str;
-}
 
 int main()
 {
@@ -63,15 +27,15 @@ int main()
 
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
-        /*if(!engine.Focus())
+        if(!engine.Focus())
         {
             while(!engine.Focus())
             {
-                engine.buffer->Clear(Colors::White);
+                //engine.buffer->Clear(Colors::White);
                 engine.buffer->DrawTextCenter("Waiting focus!", Vector2(engine.buffer->GetSize().x / 2, engine.buffer->GetSize().y / 2), Colors::Black, Colors::White);
                 engine.UpdateConsole();
             }
-        }*/
+        }
         tool_frame.Clear(Colors::Transparent);
         engine.buffer->Clear(Colors::White);
 
@@ -302,7 +266,7 @@ int main()
         }
 
         //Show the cursor
-        tool_frame.data[cursor.x+1][cursor.y].character = '°';
+        tool_frame.data[cursor.x+1][cursor.y].character = 0x7F;
         tool_frame.data[cursor.x+1][cursor.y].backcolor = current_color;
 
         engine.buffer->DrawSpriteCenter(*document, Vector2(engine.buffer->GetSize().x / 2, 7));

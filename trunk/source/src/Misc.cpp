@@ -2,18 +2,6 @@
 
 using namespace ConsoleGameEngine;
 
-Pixel::Pixel()
-{
-    Reset();
-}
-
-void Pixel::Reset()
-{
-    character = ' ';
-    forecolor = Colors::Gray;
-    backcolor = Colors::Black;
-}
-
 /*---------------------------*/
 /*----------Vector2----------*/
 /*---------------------------*/
@@ -31,7 +19,7 @@ Vector2::Vector2(int16_t x, int16_t y)
 }
 
 /*-------------------------*/
-/*----------Pixel----------*/
+/*----------Rect-----------*/
 /*-------------------------*/
 
 Rect::Rect()
@@ -50,3 +38,34 @@ Rect::Rect(const Vector2 &position, const Vector2 &size)
     height = size.y;
 }
 
+/*-------------------------*/
+/*----------Pixel----------*/
+/*-------------------------*/
+
+Pixel::Pixel()
+{
+    Reset();
+}
+
+void Pixel::Reset()
+{
+    character = ' ';
+    forecolor = Colors::Gray;
+    backcolor = Colors::Black;
+}
+
+/*-------------------------*/
+/*----------Pixel----------*/
+/*-------------------------*/
+
+Note::Note()
+{
+    frequence = 0;
+    duration = 0;
+}
+
+Note::Note(uint16_t frequence, uint16_t duration)
+{
+    this->frequence = frequence;
+    this->duration = duration;
+}

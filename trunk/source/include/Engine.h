@@ -40,9 +40,9 @@ private:
     void PreInit();
     void PosInit();
 
-    short int currentfps;
-    short int fps;
-    int fpstick;
+    uint16_t currentfps;
+    uint16_t fps;
+    uint32_t fpstick;
 
     Vector2 console_size;
     Vector2 console_position;
@@ -101,7 +101,7 @@ public:
 
     bool ShowDialog(const string &title, const string &text, string &result);
 
-    static int GetTick();
+    static uint32_t GetTick();
     /**
     *check if window has focus
     *@return return true if window is in focus or false otherwise
@@ -159,7 +159,7 @@ public:
     *@param visible visible state
     *@return return true if success or false otherwise
     */
-    bool SetCursorSize(byte size, bool visible);
+    bool SetCursorSize(uint8_t size, bool visible);
     /**
     *copy buffer to console
     */
@@ -167,7 +167,7 @@ public:
     /**
     *get current frame rate per second
     */
-    short int GetCurrentFps();
+    uint16_t GetCurrentFps();
     //set font
     //get console size
     //get console position

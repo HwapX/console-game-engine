@@ -11,3 +11,7 @@ Sistema de som semelhante ao MIDI usando os beeps do windows com freequencias di
 
 importar arquivos art de imagens
 ascii art
+
+passar copia dos dados do som
+
+Pegar a posição atual do som tocado pela soma de todos as notas até todas até o momento

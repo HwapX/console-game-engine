@@ -34,7 +34,7 @@ bool Keyboard::GetKeyDown(const char key)
 
 char Keyboard::GetKey()
 {
-    for(byte b = 1; b < 256; b++)
+    for(uint8_t b = 1; b < 256; b++)
     {
         if(GetKey(b))
         {

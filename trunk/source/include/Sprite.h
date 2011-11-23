@@ -18,7 +18,7 @@ namespace ConsoleGameEngine
 class Sprite
 {
 private:
-    bool CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const byte index);
+    bool CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const uint8_t index);
 protected:
     Vector2 size;
     /**
@@ -50,9 +50,9 @@ public:
     */
     Sprite(const Vector2 &sprite_size);
 
-    Sprite(Sprite &tileset, const Vector2 &tilesize, const byte index);
+    Sprite(Sprite &tileset, const Vector2 &tilesize, const uint8_t index);
 
-    Sprite(const string &filename, const Vector2 &tilesize, const byte index);
+    Sprite(const string &filename, const Vector2 &tilesize, const uint8_t index);
 
     void ReplaceBackcolor(const color oldcolor, const color newcolor);
 
@@ -94,7 +94,7 @@ public:
     *@see DrawTextVertTop
     *@see DrawTextVertCenter
     */
-    byte DrawText(const string &text, const Vector2 &position, const color forecolor, const color backcolor);
+    uint8_t DrawText(const string &text, const Vector2 &position, const color forecolor, const color backcolor);
     /**
     *Draw a text
     *this function draw a vectical text on informed position, containing its forecolor and backcolor informed.
@@ -110,7 +110,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawTextVert(const string &text, const Vector2 &position, color forecolor, const color backcolor);
+    uint8_t DrawTextVert(const string &text, const Vector2 &position, color forecolor, const color backcolor);
     /**
     *Draw a text
     *this function draw a text on right of position informed, containing its forecolor and backcolor informed.
@@ -126,7 +126,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawTextRight(const string &text, const Vector2 &position, color forecolor, color backcolor);
+    uint8_t DrawTextRight(const string &text, const Vector2 &position, color forecolor, color backcolor);
     /**
     *Draw a text
     *this function draw a text in a center relative position, containing its forecolor and backcolor informed.
@@ -142,7 +142,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawTextCenter(const string &text, const Vector2 &position, color forecolor, color backcolor);
+    uint8_t DrawTextCenter(const string &text, const Vector2 &position, color forecolor, color backcolor);
     /**
     *Draw a text
     *this function draw a vectical text in a given vectical relative position, containing its forecolor and backcolor informed.
@@ -158,7 +158,7 @@ public:
     *@see DrawTextVertTop
     *@see DrawText
     */
-    byte DrawTextVertCenter(const string &text, const Vector2 &position, color forecolor, color backcolor);
+    uint8_t DrawTextVertCenter(const string &text, const Vector2 &position, color forecolor, color backcolor);
     /**
     *Draw a text
     *this function draw a text on top of informed position, containing its forecolor and backcolor informed.
@@ -174,7 +174,7 @@ public:
     *@see DrawTextVertCenter
     *@see DrawText
     */
-    byte DrawTextVertTop(const string &text, const Vector2 &position, color forecolor, color backcolor);
+    uint8_t DrawTextVertTop(const string &text, const Vector2 &position, color forecolor, color backcolor);
     /**
     *this function check if a sprite fit this drawing in a informed position.
     *@param sprite the sprite to check

@@ -83,9 +83,9 @@ Engine::Engine(const string &title, const Vector2 &position, const Vector2 &size
 void Engine::ShowLogo()
 {
 #ifndef OLDLOGO
-    byte colc = 0, colg = 0, effect = 0;
+    uint8_t colc = 0, colg = 0, effect = 0;
     Sprite logo(Vector2(buffer->GetSize().x, 14)), blood(Vector2(buffer->GetSize().x - 2, buffer->GetSize().y- 2));
-    int lasttick = GetTick(), blinktick = GetTick();
+    uint32_t lasttick = GetTick(), blinktick = GetTick();
     bool blink = false;
 
     std::srand(GetTick());
@@ -115,10 +115,10 @@ void Engine::ShowLogo()
             static bool bleed = true;
             if(effect > 1 && bleed)
             {
-                byte count = 0;
-                for(register byte x = 0; x < blood.GetSize().x; ++x)
+                uint8_t count = 0;
+                for(register uint8_t x = 0; x < blood.GetSize().x; ++x)
                 {
-                    for(register byte y = 0; y < blood.GetSize().y; ++y)
+                    for(register uint8_t y = 0; y < blood.GetSize().y; ++y)
                     {
                         if(blood.data[x][y].backcolor != Colors::Red)
                         {
@@ -143,9 +143,9 @@ void Engine::ShowLogo()
             buffer->DrawSprite(blood, Vector2(1, 1));
 
             //console effect
-            for(register byte row = 2; row < 9; ++row)
+            for(register uint8_t row = 2; row < 9; ++row)
             {
-                for(register byte x = 20; x < colc; ++x)
+                for(register uint8_t x = 20; x < colc; ++x)
                 {
                     if(row % 2)
                     {
@@ -167,9 +167,9 @@ void Engine::ShowLogo()
 
             if(effect > 0)
             {
-                for(register byte row = 9; row < 16; ++row)
+                for(register uint8_t row = 9; row < 16; ++row)
                 {
-                    for(register byte x = 6; x < colg; ++x)
+                    for(register uint8_t x = 6; x < colg; ++x)
                     {
                         if(row % 2)
                         {
@@ -190,9 +190,9 @@ void Engine::ShowLogo()
                     effect = 2;
             }
 
-            for(register byte x = 0; x < GetWindowSize().x; ++x)
+            for(register uint8_t x = 0; x < GetWindowSize().x; ++x)
             {
-                for(register byte y = 0; y < GetWindowSize().y; ++y)
+                for(register uint8_t y = 0; y < GetWindowSize().y; ++y)
                 {
                     if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
                     {
@@ -230,13 +230,13 @@ void Engine::ShowLogo()
 
 #else
 
-    byte col = 0;
+    uint8_t col = 0;
 
     while(!Keyboard::GetKey(VK_SPACE))
     {
 
-        for(register byte x = 0; x < GetWindowSize().x; ++x)
-            for(register byte y = 0; y < GetWindowSize().y; ++y)
+        for(register uint8_t x = 0; x < GetWindowSize().x; ++x)
+            for(register uint8_t y = 0; y < GetWindowSize().y; ++y)
                 if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
                 {
                     buffer->data[x][y].character = '*';
@@ -259,7 +259,7 @@ void Engine::ShowLogo()
         buffer->DrawTextCenter("                                           (_____|              ",        Vector2(GetWindowSize().x / 2, 16), Colors::White, Colors::Black);
 
         //effect
-        static int lastpp = 0;
+        static uint32_t lastpp = 0;
 
         if(((GetTick() - lastpp) > 100) && (col < (GetWindowSize().x / 2)))
         {
@@ -267,8 +267,8 @@ void Engine::ShowLogo()
             ++col;
         }
 
-        for(register byte y = 2; y < 17; ++y)
-            for(register byte x = 2; x < GetWindowSize().x; ++x)
+        for(register uint8_t y = 2; y < 17; ++y)
+            for(register uint8_t x = 2; x < GetWindowSize().x; ++x)
             {
                 if((col <= (GetWindowSize().x / 2)) && x < col)
                 {
@@ -371,7 +371,7 @@ bool Engine::ShowDialog(const string &title, const string &text, string &result)
     return(false);
 }
 
-int Engine::GetTick()
+uint32_t Engine::GetTick()
 {
     return(GetTickCount());
 }
@@ -460,13 +460,13 @@ bool Engine::SetWindowTitle(const string &title)
     return SetConsoleTitle ((LPCSTR)title.c_str());
 }
 
-bool Engine::SetCursorSize(byte size, bool visible)
+bool Engine::SetCursorSize(uint8_t size, bool visible)
 {
     CONSOLE_CURSOR_INFO cursorinfo = { size, visible };
     return (SetConsoleCursorInfo (output_handle, &cursorinfo) == TRUE);
 }
 
-short int Engine::GetCurrentFps()
+uint16_t Engine::GetCurrentFps()
 {
     return(this->currentfps);
 }
@@ -485,8 +485,8 @@ void Engine::UpdateConsole()
     }
     this->fps++;
 
-    for(register byte x = 0; x < this->console_size.x; ++x)
-        for(register byte y = 0; y < this->console_size.y; ++y)
+    for(register uint8_t x = 0; x < this->console_size.x; ++x)
+        for(register uint8_t y = 0; y < this->console_size.y; ++y)
         {
             winbuffer[y][x].Char.AsciiChar = this->buffer->data[x][y].character;
             winbuffer[y][x].Attributes = this->buffer->data[x][y].forecolor | this->buffer->data[x][y].backcolor << 4;

@@ -319,9 +319,15 @@ bool Engine::ShowDialog(const string &title, const string &text, string &result)
 {
     result.clear();
     char lastkey = 0;
-    while(!Keyboard::GetKey(VK_ESCAPE))
+    bool cancel = false;
+
+    while(!cancel)
     {
-        if(lastkey == VK_RETURN)
+        if(lastkey == VK_ESCAPE)
+        {
+            return(false);
+        }
+        if(lastkey == '\n')
         {
             if(result.empty())
             {

@@ -18,7 +18,7 @@ public:
     *@param key key to check
     *@return ?
     */
-    static bool GetKey(const char key);
+    static bool GetKey(char key);
     /**
     *check key if key informed are down
     *@param key key to check

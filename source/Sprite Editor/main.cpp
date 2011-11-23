@@ -6,7 +6,7 @@ int Game();
 
 using namespace ConsoleGameEngine;
 
-string IntToStr(int number)
+string IntToStr(uint32_t number)
 {
     char num[10];
     itoa(number, num, 10);
@@ -15,7 +15,7 @@ string IntToStr(int number)
 
 string show_dialog(Engine &engine, string title)
 {
-    byte key = 0;
+    uint8_t key = 0;
     string str;
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
@@ -57,7 +57,7 @@ int main()
     Sprite sprite_undo = Sprite(document->GetSize());
     Vector2 selection, grid_size;
     bool selecttool = false, gridtool = false;
-    int savetick = engine.GetTick();
+    uint32_t savetick = engine.GetTick();
 
     document->Clear(Colors::White);
 
@@ -273,9 +273,9 @@ int main()
                 cursor.x++;
         }
 
-        for(byte x = 0; x < tool_frame.GetSize().x; ++x)
+        for(uint8_t x = 0; x < tool_frame.GetSize().x; ++x)
         {
-            for(byte y = 0; y < tool_frame.GetSize().y; ++y)
+            for(uint8_t y = 0; y < tool_frame.GetSize().y; ++y)
             {
                 if(gridtool && (grid_size.x > 0 && grid_size.y > 0))
                 {
@@ -309,9 +309,9 @@ int main()
         engine.buffer->DrawSpriteCenter(tool_frame, Vector2(engine.GetWindowSize().x / 2, 7));
 
         //draw editor grid
-        for(byte x = 0; x < engine.GetWindowSize().x; ++x)
+        for(uint8_t x = 0; x < engine.GetWindowSize().x; ++x)
         {
-            for(byte y = 0; y < engine.GetWindowSize().y; ++y)
+            for(uint8_t y = 0; y < engine.GetWindowSize().y; ++y)
             {
                 if(y == 0 || x == 0 ||
                         y == engine.GetWindowSize().y-1 ||
@@ -333,8 +333,8 @@ int main()
         engine.buffer->data[engine.GetWindowSize().x - 12][3].character = '=';
 
         //draw the color palette
-        for(byte c = 0; c < 17; ++c)
-            for(byte x = 0; x < 3; ++x)
+        for(uint8_t c = 0; c < 17; ++c)
+            for(uint8_t x = 0; x < 3; ++x)
             {
                 engine.buffer->data[x+(1+4*c)][3].backcolor = (color)c;
                 if(c == current_color)

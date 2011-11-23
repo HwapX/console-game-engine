@@ -1,0 +1,5 @@
+Beep não funciona no windows vista!!!
+Vai ser necessario o uso de threads porque beep é uma função syncronica
+
+
+play async e sync

@@ -2,21 +2,21 @@
 #include <Vector>
 using namespace ConsoleGameEngine;
 
-int CompressRLE(byte *data, int size, byte **result)
+uint32_t CompressRLE(uint8_t *data, uint32_t size, uint8_t **result)
 {
     //return new size
 }
 
-int UnCompressRLE(byte *data, int size, byte *result)
+uint32_t UnCompressRLE(uint8_t *data, uint32_t size, uint8_t *result)
 {
     //return new size
 }
 
 Sprite::Sprite(const string &filename)
 {
-    byte temp = 0;
+    uint8_t temp = 0;
     Vector2 temp_size;
-    std::FILE* in = fopen(filename.c_str(), "rb");
+    std::FILE* in = std::fopen(filename.c_str(), "rb");
 
     if(in == NULL)
         std::fprintf(stderr, "Can't Open sprite file");
@@ -72,9 +72,9 @@ Sprite::Sprite(const string &filename)
     stream.close();*/
 }
 
-bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const byte index)
+bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const uint8_t index)
 {
-    byte cx = 0, px = 0, py = 0;
+    uint8_t cx = 0, px = 0, py = 0;
 
     cx = tileset.GetSize().x / tilesize.x;
 
@@ -90,12 +90,12 @@ bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const b
     return(true);
 }
 
-Sprite::Sprite(Sprite &tileset, const Vector2 &tilesize, const byte index)
+Sprite::Sprite(Sprite &tileset, const Vector2 &tilesize, const uint8_t index)
 {
     this->CreateFromTileset(tileset, tilesize, index);
 }
 
-Sprite::Sprite(const string &filename, const Vector2 &tilesize, const byte index)
+Sprite::Sprite(const string &filename, const Vector2 &tilesize, const uint8_t index)
 {
     Sprite tileset(filename);
     CreateFromTileset(tileset, tilesize, index);
@@ -191,10 +191,10 @@ void Sprite::FillForecolor(const color forecolor)
     }
 }
 
-byte Sprite::DrawText(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
+uint8_t Sprite::DrawText(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
-    byte len = text.size();
-    register byte b;
+    uint8_t len = text.size();
+    register uint8_t b;
 
     if(position.y >= this->size.y)
         return 0;
@@ -211,20 +211,20 @@ byte Sprite::DrawText(const string &text, const Vector2 &position, const color f
     return b;
 }
 
-byte Sprite::DrawTextRight(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
+uint8_t Sprite::DrawTextRight(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
     return(this->DrawText(text, Vector2((position.x - (text.size() -1)), position.y), forecolor, backcolor));
 }
 
-byte Sprite::DrawTextCenter(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
+uint8_t Sprite::DrawTextCenter(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
     return(this->DrawText(text, Vector2(position.x - ((text.size() -1) / 2), position.y), forecolor, backcolor));
 }
 
-byte Sprite::DrawTextVert(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
+uint8_t Sprite::DrawTextVert(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
 {
-    byte len = text.size();
-    register byte b;
+    uint8_t len = text.size();
+    register uint8_t b;
 
     if(position.x >= this->size.x)
         return 0;
@@ -241,12 +241,12 @@ byte Sprite::DrawTextVert(const string &text, const Vector2 &position, const col
     return b;
 }
 
-byte Sprite::DrawTextVertCenter(const string &text, const Vector2 &position, color forecolor, color backcolor)
+uint8_t Sprite::DrawTextVertCenter(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
     return (this->DrawTextVert(text, Vector2(position.x, (position.y / (text.size() -1))), forecolor, backcolor));
 }
 
-byte Sprite::DrawTextVertTop(const string &text, const Vector2 &position, color forecolor, color backcolor)
+uint8_t Sprite::DrawTextVertTop(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
     return (this->DrawTextVert(text, Vector2(position.x, (position.y - (text.size() -1))), forecolor, backcolor));
 }
@@ -337,10 +337,7 @@ bool Sprite::Resize(const Vector2 &newsize)
 
     bkp.DrawSprite(*this, Vector2(0, 0));
     this->DeallocData(this->size.x);
-    if(!this->AllocData(newsize))
-    {
-        return (false);
-    }
+    this->AllocData(newsize);
     this->DrawSprite(bkp, Vector2(0, 0));
     return(true);
 }
@@ -373,7 +370,7 @@ void Sprite::Rotate(uint16_t graus)
 
 void Sprite::Save(const string &filename)
 {
-    byte temp = 0;
+    uint8_t temp = 0;
     FILE* out = std::fopen(filename.c_str(), "w");
 
     std::fwrite((void*)&this->size.x, 2, 1, out);
@@ -388,10 +385,10 @@ void Sprite::Save(const string &filename)
         {
             std::fwrite((void*)&this->data[x][y].character, 1, 1, out);
 
-            temp = (byte)this->data[x][y].forecolor;
+            temp = (uint8_t)this->data[x][y].forecolor;
             std::fwrite((void*)&temp, 1, 1, out);
 
-            temp = (byte)this->data[x][y].backcolor;
+            temp = (uint8_t)this->data[x][y].backcolor;
             std::fwrite((void*)&temp, 1, 1, out);
         }
     }
@@ -402,16 +399,16 @@ void Sprite::Save(const string &filename)
     /*ofstream stream(filename.c_str(), ios_base::out | ios_base::binary);
     stream.write << size.x << size.y;
 
-    byte temp = 0;
+    uint8_t temp = 0;
 
     for(uint16_t x = 0; x < size.x; ++x)
     {
         for(uint16_t y = 0; y < size.y; ++y)
         {
             stream << data[x][y].character;
-            temp = (byte)data[x][y].forecolor;
+            temp = (uint8_t)data[x][y].forecolor;
             stream << temp;
-            temp = (byte)data[x][y].backcolor;
+            temp = (uint8_t)data[x][y].backcolor;
             stream << temp;
         }
     }

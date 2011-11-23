@@ -16,7 +16,7 @@ namespace ConsoleGameEngine
 *this enum have two more colors(ClearColor, Transparent) used internaly on engine
 */
 
-typedef byte color;
+typedef uint8_t color;
 
 namespace Colors
 {
@@ -52,7 +52,6 @@ public:
 
     Vector2();
     Vector2(int16_t x, int16_t y);
-    int16_t operator[](const int i);
 };
 
 class Rect
@@ -91,6 +90,15 @@ public:
     *this function reset the pixel to default values
     */
     void Reset();
+};
+
+class Note
+{
+public:
+    uint16_t frequence;
+    uint16_t duration;
+    Note();
+    Note(uint16_t frequence, uint16_t duration);
 };
 
 }

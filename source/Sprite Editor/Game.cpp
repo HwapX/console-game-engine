@@ -11,7 +11,7 @@ typedef struct sbrick
     char pos;
 } brick;
 
-string inttostr(int number)
+string inttostr(uint32_t number)
 {
     stringstream ss;
     ss << number;
@@ -23,19 +23,19 @@ int Game()
     Engine engine("Brick game", Vector2(80, 27));
     brick bricks[40];
     srand(time(NULL));
-    for(byte b = 0; b < 40; ++b)
+    for(uint8_t b = 0; b < 40; ++b)
     {
         bricks[b].num = inttostr(rand());
         bricks[b].pos = -1;
     }
 
-    int lasttick = 0, points = 0;
-    byte current = 0, interval = 10;
+    uint32_t lasttick = 0, points = 0;
+    uint8_t current = 0, interval = 10;
     string str;
     while(!Keyboard::GetKey(VK_ESCAPE) || interval == 2)
     {
         //engine.WaitFocus();
-        for(byte b = 0; b <= current; b++)
+        for(uint8_t b = 0; b <= current; b++)
         {
             if(bricks[b].pos != -1)
             {
@@ -59,7 +59,7 @@ int Game()
             lasttick = GetTickCount();
         }
 
-        for(byte b = 0; b < 255; b++)
+        for(uint8_t b = 0; b < 255; b++)
             if(Keyboard::GetKey(b))
                 str+= b;
 

@@ -2,19 +2,8 @@
 #include <Vector>
 using namespace ConsoleGameEngine;
 
-uint32_t CompressRLE(uint8_t *data, uint32_t size, uint8_t **result)
-{
-    //return new size
-}
-
-uint32_t UnCompressRLE(uint8_t *data, uint32_t size, uint8_t *result)
-{
-    //return new size
-}
-
 Sprite::Sprite(const string &filename)
 {
-    uint8_t temp = 0;
     Vector2 temp_size;
     std::FILE* in = std::fopen(filename.c_str(), "rb");
 
@@ -34,42 +23,12 @@ Sprite::Sprite(const string &filename)
         for(register uint16_t y = 0; y < temp_size.y; ++y)
         {
             std::fread((void*)&data[x][y].character, 1, 1, in);
-
-            std::fread((void*)&temp, 1, 1, in);
-            this->data[x][y].forecolor = (color)temp;
-
-            std::fread((void*)&temp, 1, 1, in);
-            this->data[x][y].backcolor = (color)temp;
+            std::fread((void*)&this->data[x][y].forecolor, 1, 1, in);
+            std::fread((void*)&this->data[x][y].backcolor, 1, 1, in);
         }
     }
 
     std::fclose(in);
-    /*
-    ifstream stream(filename.c_str(), ios_base::binary);
-    char temp = 0;
-
-    stream >> size.x >> size.y;
-
-    //only to recovery old images
-    //stream >> temp;
-    //size.x = temp;
-    //stream >> temp;
-    //size.y = temp;
-
-
-
-    AllocData();
-    for(uint16_t x = 0; x < size.x; ++x)
-        for(uint16_t y = 0; y < size.y; ++y)
-        {
-            stream.get(data[x][y].character);
-            stream.get(temp);
-            data[x][y].forecolor = (color)temp;
-            stream.get(temp);
-            data[x][y].backcolor = (color)temp;
-        }
-
-    stream.close();*/
 }
 
 bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const uint8_t index)
@@ -293,20 +252,27 @@ bool Sprite::PutPixel(const Vector2 &coord, const Pixel &pixel_data)
         this->data[coord.x][coord.y] = pixel_data;
         return(true);
     }
-
-    return(false);
+    else
+    {
+        return(false);
+    }
 }
 
-Pixel &Sprite::operator()(const Vector2 &position)
+Pixel &Sprite::GetPixel(const Vector2 &coord)
 {
-    if((position.x < this->size.x && position.y < this->size.y) && !(position.x < 0 && position.y < 0))
+    if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
     {
-        return(this->data[position.x][position.y]);
+        return(this->data[coord.x][coord.y]);
     }
     else
     {
-        throw("Out memory, Invalid pixel position");
+        throw("Out memory");
     }
+}
+
+Pixel &Sprite::operator()(Vector2 coord)
+{
+    return(this->GetPixel(coord));
 }
 /*
 Pixel *Sprite::GetPixel(const Vector2 &coord)

@@ -4,3 +4,13 @@ restore stdin
             HANDLE old = GetStdHandle(STD_INPUT_HANDLE);
             SetStdHandle(STD_INPUT_HANDLE, CreateFile("CONIN$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL));
 */
+
+uint32_t CompressRLE(uint8_t *data, uint32_t size, uint8_t **result)
+{
+    //return new size
+}
+
+uint32_t UnCompressRLE(uint8_t *data, uint32_t size, uint8_t *result)
+{
+    //return new size
+}

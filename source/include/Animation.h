@@ -3,7 +3,7 @@
 
 #include "Misc.h"
 #include "Sprite.h"
-#include "Engine.h"
+#include "Console.h"
 
 using namespace ConsoleGameEngine;
 

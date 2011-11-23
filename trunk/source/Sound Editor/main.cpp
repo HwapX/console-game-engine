@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "Console.h"
 #include "Utils.h"
 
 #define CURSOR_ICON 0xF4//0xFE//0x7F
@@ -7,7 +7,7 @@ using namespace ConsoleGameEngine;
 
 int main()
 {
-    Engine engine("Console Game Engine Sound Editor", Vector2(80, 25));
+    Console console("Console Game Engine Sound Editor", Vector2(80, 25));
 
     uint8_t chanels = 15, notes = 20;
     uint16_t duration = 100;
@@ -19,12 +19,12 @@ int main()
 
     for(uint8_t i = 0; i < audio->GetSize(); ++i)
     {
-        audio->ReplaceNote(i, Note(i*200, 300));
+        audio->ReplaceNote(i, Note(i*200, 150));
     }
 
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
-        engine.buffer->Clear();
+        console.Clear();
         table.Clear(Colors::Transparent);
 
         if(Keyboard::GetKey('S'))
@@ -99,38 +99,38 @@ int main()
 
 
 
-        for(uint8_t x = 0; x < engine.GetWindowSize().x; ++x)
+        for(uint8_t x = 0; x < console.GetSize().x; ++x)
         {
-            for(uint8_t y = 0; y < engine.GetWindowSize().y; ++y)
+            for(uint8_t y = 0; y < console.GetSize().y; ++y)
             {
-                if(y == 0 || y == engine.GetWindowSize().y-1 ||
+                if(y == 0 || y == console.GetSize().y-1 ||
                         y == 2 || y == 4 ||
-                        y == engine.GetWindowSize().y - 3)
+                        y == console.GetSize().y - 3)
                 {
-                    engine.buffer->data[x][y].character = 0xCD;
-                    engine.buffer->data[x][y].forecolor = Colors::Gray;
+                    console(Vector2(x, y)).character = 0xCD;
+                    console(Vector2(x, y)).forecolor = Colors::Gray;
                 }
-                else if(x == 0 || x == engine.GetWindowSize().x-1)
+                else if(x == 0 || x == console.GetSize().x-1)
                 {
-                    engine.buffer->data[x][y].character = 0xBA;
-                    engine.buffer->data[x][y].forecolor = Colors::Gray;
+                    console(Vector2(x, y)).character = 0xBA;
+                    console(Vector2(x, y)).forecolor = Colors::Gray;
                 }
             }
         }
-        engine.buffer->data[0][0].character = 0xC9;
-        engine.buffer->data[0][0].forecolor = Colors::Gray;
-        engine.buffer->data[0][2].character = 0xCC;
-        engine.buffer->data[0][2].forecolor = Colors::Gray;
-        engine.buffer->data[0][4].character = 0xCC;
-        engine.buffer->data[0][4].forecolor = Colors::Gray;
+        console(Vector2(0, 0)).character = 0xC9;
+        console(Vector2(0, 0)).forecolor = Colors::Gray;
+        console(Vector2(0, 2)).character = 0xCC;
+        console(Vector2(0, 2)).forecolor = Colors::Gray;
+        console(Vector2(0, 4)).character = 0xCC;
+        console(Vector2(0, 4)).forecolor = Colors::Gray;
 
-        engine.buffer->DrawText("(S)ave (L)oad (C)hanels (D)istance (F)requence (R)esize (P)lay/Pause St(o)p", Vector2(1, 1), Colors::White, Colors::Transparent);
-        engine.buffer->DrawText("(+)Duration(-) (Up)Frequence(Down) (A)ctual (T)est", Vector2(1, 3), Colors::White, Colors::Transparent);
+        console.DrawText("(S)ave (L)oad (C)hanels (D)istance (F)requence (R)esize (P)lay/Pause St(o)p", Vector2(1, 1), Colors::White, Colors::Transparent);
+        console.DrawText("(+)Duration(-) (Up)Frequence(Down) (A)ctual (T)est", Vector2(1, 3), Colors::White, Colors::Transparent);
 
-        engine.buffer->DrawText(" Frequence = " + IntToStr(audio->GetNote(cursor.x).frequence) + " Duration = " + IntToStr(audio->GetNote(cursor.x).duration),
-                                 Vector2(1, engine.buffer->GetSize().y - 2), Colors::White, Colors::Transparent);
-        engine.buffer->DrawTextRight("Note = " + IntToStr(cursor.x) + " Frequence = " + IntToStr(cursor.y) + " Duration = " + IntToStr(duration),
-                                 Vector2(engine.buffer->GetSize().x -2, engine.buffer->GetSize().y - 2), Colors::White, Colors::Transparent);
+        console.DrawText(" Frequence = " + IntToStr(audio->GetNote(cursor.x).frequence) + " Duration = " + IntToStr(audio->GetNote(cursor.x).duration),
+                                 Vector2(1, console.GetSize().y - 2), Colors::White, Colors::Transparent);
+        console.DrawTextRight("Note = " + IntToStr(cursor.x) + " Frequence = " + IntToStr(cursor.y) + " Duration = " + IntToStr(duration),
+                                 Vector2(console.GetSize().x -2, console.GetSize().y - 2), Colors::White, Colors::Transparent);
 
         /*for(uint8_t i = 0; i < audio->GetSize(); ++i)
         {
@@ -143,23 +143,23 @@ int main()
         for(uint8_t x = 0; x < audio->GetSize(); ++x)
         {
             uint8_t y = audio->GetNote(x).frequence?(audio->GetNote(x).frequence * chanels) / max_frequence:0;
-            table.data[x][y].backcolor = y+1;
+            table(Vector2(x, y)).backcolor = y+1;
         }
         if(audio->IsPlaying() && !audio->Paused())
         {
             uint8_t y = audio->GetNote(audio->GetCurrent()).frequence?(audio->GetNote(audio->GetCurrent()).frequence * chanels) / max_frequence:0;
-            table.data[audio->GetCurrent()][y].character = CURSOR_ICON;
-            table.data[audio->GetCurrent()][y].forecolor = Colors::White;
+            table(Vector2(audio->GetCurrent(), y)).character = CURSOR_ICON;
+            table(Vector2(audio->GetCurrent(), y)).forecolor = Colors::White;
         }
         else
         {
-            table.data[cursor.x][cursor.y * chanels / max_frequence].character = CURSOR_ICON;
-            table.data[cursor.x][cursor.y * chanels / max_frequence].forecolor = Colors::White;
+            table(Vector2(cursor.x, cursor.y * chanels / max_frequence)).character = CURSOR_ICON;
+            table(Vector2(cursor.x, cursor.y * chanels / max_frequence)).forecolor = Colors::White;
         }
 
-        engine.buffer->DrawSprite(table, Vector2(1, 5));
+        console.DrawSprite(table, Vector2(1, 5));
 
-        engine.UpdateConsole();
+        console.Update();
     }
 
     return(0);

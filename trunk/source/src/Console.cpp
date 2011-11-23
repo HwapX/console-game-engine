@@ -1,86 +1,76 @@
-#include "Engine.h"
+#include "Console.h"
 
 using namespace ConsoleGameEngine;
 
-void Engine::PreInit()
+void Console::PreInit()
 {
     output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    console_handle = GetConsoleWindow();
+    handle = GetConsoleWindow();
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
     SetCursorSize(1, false);
-    SetWindowTitle("Console Game Engine");
+    SetTitle("Console Game Engine");
     currentfps = 0;
     fps = 0;
     fpstick = 0;
-    buffer = NULL;
-    console_size.x = 80;
-    console_size.y = 25;
-
 }
 
-void Engine::PosInit()
+void Console::PosInit()
 {
-    SetWindowSize(console_size);
+    Resize(size);
     ShowLogo();
 }
 
-Engine::Engine()
+Console::Console() : Sprite::Sprite(Vector2(80, 25))
+{
+    PreInit();
+    PosInit();
+}
+
+Console::Console(const string &title) : Sprite::Sprite(Vector2(80, 25))
+{
+    PreInit();
+
+    SetTitle(title);
+
+    PosInit();
+}
+
+Console::Console(const Vector2 &position, const Vector2 &size) : Sprite::Sprite(size)
+{
+    PreInit();
+
+    SetPosition(position);
+
+    PosInit();
+}
+
+Console::Console(const Vector2 &size) : Sprite::Sprite(size)
 {
     PreInit();
 
     PosInit();
 }
 
-Engine::Engine(const string &title)
+Console::Console(const string &title, const Vector2 &size) : Sprite::Sprite(size)
 {
     PreInit();
 
-    SetWindowTitle(title);
+    SetTitle(title);
 
     PosInit();
 }
 
-Engine::Engine(const Vector2 &position, const Vector2 &size)
+Console::Console(const string &title, const Vector2 &position, const Vector2 &size) : Sprite::Sprite(size)
 {
     PreInit();
 
-    console_size = size;
-    SetWindowPosition(position);
+    SetTitle(title);
+    SetPosition(position);
 
     PosInit();
 }
 
-Engine::Engine(const Vector2 &size)
-{
-    PreInit();
-
-    console_size = size;
-
-    PosInit();
-}
-
-Engine::Engine(const string &title, const Vector2 &size)
-{
-    PreInit();
-
-    SetWindowTitle(title);
-    console_size = size;
-
-    PosInit();
-}
-
-Engine::Engine(const string &title, const Vector2 &position, const Vector2 &size)
-{
-    PreInit();
-
-    SetWindowTitle(title);
-    console_size = size;
-    SetWindowPosition(position);
-
-    PosInit();
-}
-
-void Engine::ShowLogo()
+void Console::ShowLogo()
 {
 #ifndef OLDLOGO
     uint8_t colc = 0, colg = 0, effect = 0;
@@ -235,87 +225,87 @@ void Engine::ShowLogo()
     while(!Keyboard::GetKey(VK_SPACE))
     {
 
-        for(register uint8_t x = 0; x < GetWindowSize().x; ++x)
-            for(register uint8_t y = 0; y < GetWindowSize().y; ++y)
-                if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
+        for(register uint8_t x = 0; x < GetSize().x; ++x)
+            for(register uint8_t y = 0; y < GetSize().y; ++y)
+                if(y == 0 || x == 0 || y == GetSize().y-1 || x == GetSize().x-1)
                 {
-                    buffer->data[x][y].character = '*';
-                    buffer->data[x][y].forecolor = Colors::Blue;
+                    data[x][y].character = '*';
+                    data[x][y].forecolor = Colors::Blue;
                 }
 
-        buffer->DrawTextCenter("  ______                       _       ",     Vector2(GetWindowSize().x / 2, 2), Colors::White, Colors::Black);
-        buffer->DrawTextCenter(" / _____)                     | |      ",     Vector2(GetWindowSize().x / 2, 3), Colors::White, Colors::Black);
-        buffer->DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetWindowSize().x / 2, 4), Colors::White, Colors::Black);
-        buffer->DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetWindowSize().x / 2, 5), Colors::White, Colors::Black);
-        buffer->DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetWindowSize().x / 2, 6), Colors::White, Colors::Black);
-        buffer->DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetWindowSize().x / 2, 7), Colors::White, Colors::Black);
+        DrawTextCenter("  ______                       _       ",     Vector2(GetSize().x / 2, 2), Colors::White, Colors::Black);
+        DrawTextCenter(" / _____)                     | |      ",     Vector2(GetSize().x / 2, 3), Colors::White, Colors::Black);
+        DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetSize().x / 2, 4), Colors::White, Colors::Black);
+        DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetSize().x / 2, 5), Colors::White, Colors::Black);
+        DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetSize().x / 2, 6), Colors::White, Colors::Black);
+        DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetSize().x / 2, 7), Colors::White, Colors::Black);
 
-        buffer->DrawTextCenter("  ______                      _______             _             ",        Vector2(GetWindowSize().x / 2, 10), Colors::White, Colors::Black);
-        buffer->DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetWindowSize().x / 2, 11), Colors::White, Colors::Black);
-        buffer->DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetWindowSize().x / 2, 12), Colors::White, Colors::Black);
-        buffer->DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetWindowSize().x / 2, 13), Colors::White, Colors::Black);
-        buffer->DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetWindowSize().x / 2, 14), Colors::White, Colors::Black);
-        buffer->DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetWindowSize().x / 2, 15), Colors::White, Colors::Black);
-        buffer->DrawTextCenter("                                           (_____|              ",        Vector2(GetWindowSize().x / 2, 16), Colors::White, Colors::Black);
+        DrawTextCenter("  ______                      _______             _             ",        Vector2(GetSize().x / 2, 10), Colors::White, Colors::Black);
+        DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetSize().x / 2, 11), Colors::White, Colors::Black);
+        DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetSize().x / 2, 12), Colors::White, Colors::Black);
+        DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetSize().x / 2, 13), Colors::White, Colors::Black);
+        DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetSize().x / 2, 14), Colors::White, Colors::Black);
+        DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetSize().x / 2, 15), Colors::White, Colors::Black);
+        DrawTextCenter("                                           (_____|              ",        Vector2(GetSize().x / 2, 16), Colors::White, Colors::Black);
 
         //effect
         static uint32_t lastpp = 0;
 
-        if(((GetTick() - lastpp) > 100) && (col < (GetWindowSize().x / 2)))
+        if(((GetTick() - lastpp) > 100) && (col < (GetSize().x / 2)))
         {
             lastpp = GetTick();
             ++col;
         }
 
         for(register uint8_t y = 2; y < 17; ++y)
-            for(register uint8_t x = 2; x < GetWindowSize().x; ++x)
+            for(register uint8_t x = 2; x < GetSize().x; ++x)
             {
-                if((col <= (GetWindowSize().x / 2)) && x < col)
+                if((col <= (GetSize().x / 2)) && x < col)
                 {
-                    buffer->data[x][y].forecolor = Colors::DarkGreen;
-                    buffer->data[(GetWindowSize().x-1) - x][y].forecolor = Colors::Yellow;
+                    data[x][y].forecolor = Colors::DarkGreen;
+                    data[(GetSize().x-1) - x][y].forecolor = Colors::Yellow;
                 }
             }
 
-        buffer->data[59][10].forecolor = Colors::Blue;
-        buffer->data[59][11].forecolor = Colors::Blue;
-        buffer->data[58][11].forecolor = Colors::Blue;
-        buffer->data[60][11].forecolor = Colors::Blue;
+        data[59][10].forecolor = Colors::Blue;
+        data[59][11].forecolor = Colors::Blue;
+        data[58][11].forecolor = Colors::Blue;
+        data[60][11].forecolor = Colors::Blue;
         //effect
 
-        buffer->DrawText("Developed by", Vector2(1, GetWindowSize().y -3), Colors::White, Colors::Black);
-        buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetWindowSize().y -2), Colors::White, Colors::Black);
+        DrawText("Developed by", Vector2(1, GetSize().y -3), Colors::White, Colors::Black);
+        DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetSize().y -2), Colors::White, Colors::Black);
 
-        buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Black);
+        DrawTextRight(VERSION,Vector2(GetSize().x-2, GetSize().y-2), Colors::White, Colors::Black);
 
-        buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 19), Colors::White, Colors::Black);
+        DrawTextCenter("Press space", Vector2(GetSize().x / 2, 19), Colors::White, Colors::Black);
 
-        UpdateConsole();
-        buffer->Clear();
+        Update();
+        Clear();
     }
 
 #endif
 }
 
-void Engine::ShowError(const string &text, const bool close)
+void Console::ShowError(const string &text, const bool close)
 {
-    SetWindowSize(Vector2(80,25));
+    Resize(Vector2(80,25));
     while(!Keyboard::GetKey(VK_SPACE))
     {
-        buffer->Clear();
-        buffer->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Colors::White, Colors::Black);
-        buffer->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Colors::White, Colors::Black);
-        buffer->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Colors::White, Colors::Black);
-        buffer->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Colors::White, Colors::Black);
-        buffer->DrawTextCenter(text, Vector2(buffer->GetSize().x / 2, 15), Colors::Red, Colors::Black);
-        buffer->DrawTextRight("Press space to close application", Vector2(buffer->GetSize().x -1, buffer->GetSize().y -1), Colors::White, Colors::Black);
-        UpdateConsole();
-        buffer->Clear();
+        Clear();
+        DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Colors::White, Colors::Black);
+        this->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Colors::White, Colors::Black);
+        this->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Colors::White, Colors::Black);
+        this->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Colors::White, Colors::Black);
+        this->DrawTextCenter(text, Vector2(this->GetSize().x / 2, 15), Colors::Red, Colors::Black);
+        this->DrawTextRight("Press space to close application", Vector2(this->GetSize().x -1, this->GetSize().y -1), Colors::White, Colors::Black);
+        this->Update();
+        this->Clear();
     }
     exit(1);
 }
 
-bool Engine::ShowDialog(const string &title, const string &text, string &result)
+bool Console::ShowDialog(const string &title, const string &text, string &result)
 {
     result.clear();
     char lastkey = 0;
@@ -350,133 +340,113 @@ bool Engine::ShowDialog(const string &title, const string &text, string &result)
             result+= lastkey;
         }
 
-        this->buffer->Clear(Colors::White);
-        this->buffer->DrawTextCenter(       "******************************************"           ,Vector2(buffer->GetSize().x / 2, 5), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter(       "*                                        *"           , Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter(title                                                         , Vector2(buffer->GetSize().x / 2, 6), Colors::Black, Colors::White);
+        this->Clear(Colors::White);
+        this->DrawTextCenter(       "******************************************"           ,Vector2(this->GetSize().x / 2, 5), Colors::Black, Colors::White);
+        this->DrawTextCenter(       "*                                        *"           , Vector2(this->GetSize().x / 2, 6), Colors::Black, Colors::White);
+        this->DrawTextCenter(title                                                         , Vector2(this->GetSize().x / 2, 6), Colors::Black, Colors::White);
 
-        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 7), Colors::Black, Colors::White);
+        this->DrawTextCenter("************************************************************", Vector2(this->GetSize().x / 2, 7), Colors::Black, Colors::White);
 
-        this->buffer->DrawTextCenter("*                                                          *", Vector2(buffer->GetSize().x / 2, 8), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter(text                                                          , Vector2(buffer->GetSize().x / 2, 8), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 9), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter("*                                                          *", Vector2(buffer->GetSize().x / 2, 10), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter(result                                                        , Vector2(buffer->GetSize().x / 2, 10), Colors::Black, Colors::White);
-        this->buffer->DrawTextCenter("************************************************************", Vector2(buffer->GetSize().x / 2, 11), Colors::Black, Colors::White);
+        this->DrawTextCenter("*                                                          *", Vector2(this->GetSize().x / 2, 8), Colors::Black, Colors::White);
+        this->DrawTextCenter(text                                                          , Vector2(this->GetSize().x / 2, 8), Colors::Black, Colors::White);
+        this->DrawTextCenter("************************************************************", Vector2(this->GetSize().x / 2, 9), Colors::Black, Colors::White);
+        this->DrawTextCenter("*                                                          *", Vector2(this->GetSize().x / 2, 10), Colors::Black, Colors::White);
+        this->DrawTextCenter(result                                                        , Vector2(this->GetSize().x / 2, 10), Colors::Black, Colors::White);
+        this->DrawTextCenter("************************************************************", Vector2(this->GetSize().x / 2, 11), Colors::Black, Colors::White);
 
-        this->UpdateConsole();
+        this->Update();
         lastkey = Keyboard::GetNextKey();
     }
 
     return(false);
 }
 
-uint32_t Engine::GetTick()
+uint32_t Console::GetTick()
 {
     return(GetTickCount());
 }
 
-bool Engine::SetWindowPosition(Vector2 position)
+bool Console::SetPosition(Vector2 position)
 {
-    return(SetWindowPos(console_handle, HWND_TOP, position.x, position.y, NULL, NULL, SWP_NOSIZE));
+    return(SetWindowPos(handle, HWND_TOP, position.x, position.y, NULL, NULL, SWP_NOSIZE));
 }
 
-Engine::~Engine()
-{
-    delete buffer;
-}
-
-bool Engine::SetWindowSize(Vector2 size)
+bool Console::Resize(Vector2 new_size)
 {
     SMALL_RECT displayarea;
 
     displayarea.Top = 0;
     displayarea.Left = 0;
-    displayarea.Bottom = size.y-1;
-    displayarea.Right = size.x-1;
+    displayarea.Bottom = new_size.y-1;
+    displayarea.Right = new_size.x-1;
 
-    COORD coord = {size.x, size.y};
+    COORD coord = {new_size.x, new_size.y};
 
     if(SetConsoleScreenBufferSize(output_handle, coord))
     {
         if(SetConsoleWindowInfo(output_handle, TRUE, &displayarea))
         {
-            console_size = size;
-
-            if(buffer != NULL)
+            if(this->size.x != new_size.x || this->size.y != new_size.y)
             {
-                delete buffer;
+                Sprite::Resize(new_size);
             }
-            buffer = new Sprite(console_size);
             return (true);
         }
     }
     return (false);
 }
 
-Vector2 Engine::GetWindowSize()
+bool Console::Focus()
 {
-    /*CONSOLE_SCREEN_BUFFER_INFO coninfo;
-
-    GetConsoleScreenBufferInfo (output_handle, &coninfo);
-    return (Vector2(coninfo.dwsize.x, coninfo.dwsize.y));*/
-    return(console_size);
-}
-
-Vector2 Engine::GetScreenResolution()
-{
-    Vector2 temp;
-    temp.x = GetSystemMetrics(SM_CXSCREEN);
-    temp.y = GetSystemMetrics(SM_CYSCREEN);
-    return temp;
-}
-
-bool Engine::Focus()
-{
-    if(GetForegroundWindow() == console_handle)
+    if(GetForegroundWindow() == handle)
         return(true);
     else
         return(false);
 }
 
-void Engine::WaitFocus()
+void Console::WaitFocus()
 {
     while(!Focus()) {};
 }
 
-bool Engine::SetTextColor (color forecolor, color backcolor)
+bool Console::SetTextColor (color forecolor, color backcolor)
 {
     return (SetConsoleTextAttribute (output_handle, forecolor | backcolor << 4) == TRUE);
 }
 
-bool Engine::SetCursorPosition(Vector2 position)
+bool Console::SetCursorPosition(Vector2 position)
 {
     COORD coord = {position.x, position.y};
     return (SetConsoleCursorPosition(output_handle, coord) == TRUE);
 }
 
-bool Engine::SetWindowTitle(const string &title)
+bool Console::SetTitle(const string &title)
 {
     return SetConsoleTitle ((LPCSTR)title.c_str());
 }
 
-bool Engine::SetCursorSize(uint8_t size, bool visible)
+bool Console::SetCursorSize(uint8_t size, bool visible)
 {
     CONSOLE_CURSOR_INFO cursorinfo = { size, visible };
     return (SetConsoleCursorInfo (output_handle, &cursorinfo) == TRUE);
 }
 
-uint16_t Engine::GetCurrentFps()
+Vector2 Console::ScreenResolution()
+{
+    return(Vector2(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)));
+}
+
+uint16_t Console::GetCurrentFps()
 {
     return(this->currentfps);
 }
 
-void Engine::UpdateConsole()
+void Console::Update()
 {
     this->SetCursorPosition(Vector2(0, 0));
     //TODO: fazer backup da posição anterior do cursor e restaurar novamente no final da função
-    CHAR_INFO winbuffer[this->console_size.y][this->console_size.x];
-
+    CHAR_INFO winbuffer[this->size.y][this->size.x];
+    //TODO:Corrigir o x e y invertido acima
     if((this->GetTick() - this->fpstick) > 1000)
     {
         this->fpstick = this->GetTick();
@@ -485,14 +455,14 @@ void Engine::UpdateConsole()
     }
     this->fps++;
 
-    for(register uint8_t x = 0; x < this->console_size.x; ++x)
-        for(register uint8_t y = 0; y < this->console_size.y; ++y)
+    for(register uint8_t x = 0; x < this->size.x; ++x)
+        for(register uint8_t y = 0; y < this->size.y; ++y)
         {
-            winbuffer[y][x].Char.AsciiChar = this->buffer->data[x][y].character;
-            winbuffer[y][x].Attributes = this->buffer->data[x][y].forecolor | this->buffer->data[x][y].backcolor << 4;
+            winbuffer[y][x].Char.AsciiChar = this->data[x][y].character;
+            winbuffer[y][x].Attributes = this->data[x][y].forecolor | this->data[x][y].backcolor << 4;
         }
-    COORD size = {this->console_size.x, this->console_size.y};
+    COORD size = {this->size.x, this->size.y};
     COORD start = {0, 0};
-    SMALL_RECT srect = {0, 0, this->console_size.x, this->console_size.y};
+    SMALL_RECT srect = {0, 0, this->size.x, this->size.y};
     WriteConsoleOutput(output_handle, (CHAR_INFO*)winbuffer, size, start, &srect);
 }

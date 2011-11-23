@@ -38,9 +38,9 @@ Animation::~Animation()
 
 Sprite &Animation::CurrentFrame()
 {
-    if((Engine::GetTick() - this->lasttick) > this->frame_interval)
+    if((Console::GetTick() - this->lasttick) > this->frame_interval)
     {
-        this->lasttick = Engine::GetTick();
+        this->lasttick = Console::GetTick();
         ++this->current_frame;
         if(this->current_frame == this->frame_count)
             this->current_frame = 0;

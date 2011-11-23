@@ -1,17 +1,15 @@
-#include "Engine.h"
+#include "Console.h"
 #include "Utils.h"
 
 #define AUTO_SAVE_INTERVAL 1000 * 60
-
-int Game();
 
 using namespace ConsoleGameEngine;
 
 int main()
 {
-    Engine engine("Console Game Engine Sprite Editor");
-    engine.SetWindowSize(Vector2(80, 82));
-    engine.SetWindowPosition(Vector2(0, 0));
+    Console console("Console Game Engine Sprite Editor");
+    console.Resize(Vector2(80, 82));
+    console.SetPosition(Vector2(0, 0));
 
     color current_color = 0;
     Vector2 cursor;
@@ -21,27 +19,27 @@ int main()
     Sprite sprite_undo = Sprite(document->GetSize());
     Vector2 selection, grid_size;
     bool selecttool = false, gridtool = false;
-    uint32_t savetick = engine.GetTick();
+    uint32_t savetick = console.GetTick();
 
     document->Clear(Colors::White);
 
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
-        if(!engine.Focus())
+        if(!console.Focus())
         {
-            while(!engine.Focus())
+            while(!console.Focus())
             {
-                //engine.buffer->Clear(Colors::White);
-                engine.buffer->DrawTextCenter("Waiting focus!", Vector2(engine.buffer->GetSize().x / 2, engine.buffer->GetSize().y / 2), Colors::Black, Colors::White);
-                engine.UpdateConsole();
+                //console.Clear(Colors::White);
+                console.DrawTextCenter("Waiting focus!", Vector2(console.GetSize().x / 2, console.GetSize().y / 2), Colors::Black, Colors::White);
+                console.Update();
             }
         }
         tool_frame.Clear(Colors::Transparent);
-        engine.buffer->Clear(Colors::White);
+        console.Clear(Colors::White);
 
-        if((engine.GetTick() - savetick) > AUTO_SAVE_INTERVAL)
+        if((console.GetTick() - savetick) > AUTO_SAVE_INTERVAL)
         {
-            savetick = engine.GetTick();
+            savetick = console.GetTick();
             document->Save("./Sprites/autosave.cges");
         }
 
@@ -63,7 +61,7 @@ int main()
             string result;
             Vector2 new_size;
 
-            if(engine.ShowDialog("Resize document", "Input new size (width X height)", result))
+            if(console.ShowDialog("Resize document", "Input new size (width X height)", result))
             {
                 sscanf(result.c_str(), "%hd X %hd", &new_size.x, &new_size.y);
                 document->Resize(new_size);
@@ -72,20 +70,20 @@ int main()
         }
         else if(Keyboard::GetKey('W'))
         {
-            engine.SetCursorPosition(Vector2(10 + cursor.x, 3 + cursor.y));
-            document->data[cursor.x][cursor.y].character = Keyboard::GetNextKey();
+            console.SetCursorPosition(Vector2(10 + cursor.x, 3 + cursor.y));
+            document->GetPixel(Vector2(cursor.x, cursor.y)).character = Keyboard::GetNextKey();
         }
         else if(Keyboard::GetKey('B'))
         {
-            document->data[cursor.x][cursor.y].backcolor = current_color;
+            document->GetPixel(Vector2(cursor.x, cursor.y)).backcolor = current_color;
         }
         else if(Keyboard::GetKey('F'))
         {
-            document->data[cursor.x][cursor.y].forecolor = current_color;
+            document->GetPixel(Vector2(cursor.x, cursor.y)).forecolor = current_color;
         }
         else if(Keyboard::GetKey('L'))
         {
-            document->ReplaceBackcolor(document->data[cursor.x][cursor.y].backcolor, current_color);
+            document->ReplaceBackcolor(document->GetPixel(Vector2(cursor.x, cursor.y)).backcolor, current_color);
         }
         else if(Keyboard::GetKey('N'))
         {
@@ -141,7 +139,7 @@ int main()
         else if(Keyboard::GetKey('D'))
         {
             sprite_undo.DrawSprite(*document, Vector2(0, 0));
-            document->FloodBackcolor(cursor, document->data[cursor.x][cursor.y].backcolor, current_color);
+            document->FloodBackcolor(cursor, document->GetPixel(Vector2(cursor.x, cursor.y)).backcolor, current_color);
         }
         else if(Keyboard::GetKey('Z'))
         {
@@ -157,21 +155,21 @@ int main()
             uint16_t start = 0, count = 0;
             uint16_t interval = 0;
 
-            if(engine.ShowDialog("Preview Animation", "input tile size (width X height)", result))
+            if(console.ShowDialog("Preview Animation", "input tile size (width X height)", result))
             {
                 sscanf(result.c_str(), "%hd X %hd", &tilesize.x, &tilesize.y);
-                if(engine.ShowDialog("Preview Animation", "input frames (start X count)", result))
+                if(console.ShowDialog("Preview Animation", "input frames (start X count)", result))
                 {
                     sscanf(result.c_str(), "%hd X %hd", &start, &count);
-                    if(engine.ShowDialog("Preview Animation", "input interval (interval)", result))
+                    if(console.ShowDialog("Preview Animation", "input interval (interval)", result))
                     {
                         sscanf(result.c_str(), "%hd", &interval);
                         Animation preview(*document, tilesize, start, count, interval);
                         while(!Keyboard::GetKey(VK_RETURN))
                         {
-                            engine.buffer->Clear(Colors::White);
-                            engine.buffer->DrawSpriteCenter(preview.CurrentFrame(), Vector2(engine.buffer->GetSize().x / 2, 0));
-                            engine.UpdateConsole();
+                            console.Clear(Colors::White);
+                            console.DrawSpriteCenter(preview.CurrentFrame(), Vector2(console.GetSize().x / 2, 0));
+                            console.Update();
                         }
                     }
                 }
@@ -182,7 +180,7 @@ int main()
         {
             string result;
 
-            if(engine.ShowDialog("Grid size", "Input grid size (width X height)", result))
+            if(console.ShowDialog("Grid size", "Input grid size (width X height)", result))
             {
                 sscanf(result.c_str(), "%hd X %hd", &grid_size.x, &grid_size.y);
             }
@@ -194,7 +192,7 @@ int main()
         else if(Keyboard::GetKey('S'))
         {
             string result;
-            if(engine.ShowDialog("Save File","Input the name of file!", result))
+            if(console.ShowDialog("Save File","Input the name of file!", result))
             {
                 document->Save("./sprites/" + result + ".cges");
             }
@@ -202,18 +200,13 @@ int main()
         else if(Keyboard::GetKey('O'))
         {
             string result;
-            if(engine.ShowDialog("Open File", "Input the name of file!", result))
+            if(console.ShowDialog("Open File", "Input the name of file!", result))
             {
                 sprite_undo.DrawSprite(*document, Vector2(0, 0));
                 delete document;
                 document = new Sprite("./sprites/" + result + ".cges");
                 tool_frame.Resize(Vector2(document->GetSize().x +2, document->GetSize().y +1));
             }
-        }
-        else if(Keyboard::GetKey('M'))
-        {
-            Game();
-            engine.SetWindowSize(Vector2(80, 50));
         }
 
         if(Keyboard::GetKey(VK_UP))
@@ -246,80 +239,80 @@ int main()
                     if((((x+1) % grid_size.x == 0) ||
                             ((y+1) % grid_size.y == 0)) && x < document->GetSize().x)
                     {
-                        tool_frame.data[x+1][y].character = '°';
-                        tool_frame.data[x+1][y].forecolor = Colors::Gray;
+                        tool_frame(Vector2(x+1, y)).character = '°';
+                        tool_frame(Vector2(x+1, y)).forecolor = Colors::Gray;
                     }
                 }
                 if(selecttool)
                     if(x == selection.x+1 || y == selection.y ||
                             x == cursor.x+1 || y == cursor.y)
                     {
-                        tool_frame.data[x][y].character = '°';
-                        tool_frame.data[x][y].forecolor = Colors::Gray;
+                        tool_frame(Vector2(x, y)).character = '°';
+                        tool_frame(Vector2(x, y)).forecolor = Colors::Gray;
                     }
 
                 if(x == 0 || x == tool_frame.GetSize().x - 1 || y == tool_frame.GetSize().y - 1)
                 {
-                    tool_frame.data[x][y].character = '=';
+                    tool_frame(Vector2(x, y)).character = '=';
                 }
             }
         }
 
         //Show the cursor
-        tool_frame.data[cursor.x+1][cursor.y].character = 0x7F;
-        tool_frame.data[cursor.x+1][cursor.y].backcolor = current_color;
+        tool_frame(Vector2(cursor.x+1, cursor.y)).character = 0x7F;
+        tool_frame(Vector2(cursor.x+1, cursor.y)).backcolor = current_color;
 
-        engine.buffer->DrawSpriteCenter(*document, Vector2(engine.buffer->GetSize().x / 2, 7));
-        engine.buffer->DrawSpriteCenter(tool_frame, Vector2(engine.GetWindowSize().x / 2, 7));
+        console.DrawSpriteCenter(*document, Vector2(console.GetSize().x / 2, 7));
+        console.DrawSpriteCenter(tool_frame, Vector2(console.GetSize().x / 2, 7));
 
         //draw editor grid
-        for(uint8_t x = 0; x < engine.GetWindowSize().x; ++x)
+        for(uint8_t x = 0; x < console.GetSize().x; ++x)
         {
-            for(uint8_t y = 0; y < engine.GetWindowSize().y; ++y)
+            for(uint8_t y = 0; y < console.GetSize().y; ++y)
             {
                 if(y == 0 || x == 0 ||
-                        y == engine.GetWindowSize().y-1 ||
-                        x == engine.GetWindowSize().x-1 ||
+                        y == console.GetSize().y-1 ||
+                        x == console.GetSize().x-1 ||
                         y == 2 || y == 4 || y == 6 ||
-                        y == engine.GetWindowSize().y - 3)
+                        y == console.GetSize().y - 3)
                 {
-                    engine.buffer->data[x][y].character = '=';
-                    engine.buffer->data[x][y].forecolor = Colors::Gray;
+                    console(Vector2(x, y)).character = '=';
+                    console(Vector2(x, y)).forecolor = Colors::Gray;
                 }
-                else if(x > engine.GetWindowSize().x - 6 && x < engine.GetWindowSize().x -1)   //show selected color
+                else if(x > console.GetSize().x - 6 && x < console.GetSize().x -1)   //show selected color
                 {
-                    engine.buffer->data[x][3].backcolor = current_color;
+                    console(Vector2(x, 3)).backcolor = current_color;
                 }
             }
         }
 
-        engine.buffer->data[engine.GetWindowSize().x - 6][3].character = '=';
-        engine.buffer->data[engine.GetWindowSize().x - 12][3].character = '=';
+        console(Vector2(console.GetSize().x - 6, 3)).character = '=';
+        console(Vector2(console.GetSize().x - 12, 3)).character = '=';
 
         //draw the color palette
         for(uint8_t c = 0; c < 17; ++c)
             for(uint8_t x = 0; x < 3; ++x)
             {
-                engine.buffer->data[x+(1+4*c)][3].backcolor = (color)c;
+                console(Vector2(x+(1+4*c), 3)).backcolor = (color)c;
                 if(c == current_color)
-                    engine.buffer->data[x+(1+4*c)][3].character = '°';
+                    console(Vector2(x+(1+4*c), 3)).character = '°';
             }
 
         //Show the captions
-        engine.buffer->DrawText("(N)ew (O)pen (S)ave (R)esize (W)rite (C)opy (X)Cut (V)Paste (A)Select (Z)Undo", Vector2(1, 1), Colors::Black, Colors::White);
-        engine.buffer->DrawTextRight("Color", Vector2(engine.GetWindowSize().x - 7, 3), Colors::Black, Colors::White);
-        engine.buffer->DrawText("Colors (F)ont (B)ackground (L)Replace (-)Previus (+)Next (D)Flood", Vector2(1, 5), Colors::Black, Colors::White);
-        engine.buffer->DrawText("Size " + IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y) + " = " +
+        console.DrawText("(N)ew (O)pen (S)ave (R)esize (W)rite (C)opy (X)Cut (V)Paste (A)Select (Z)Undo", Vector2(1, 1), Colors::Black, Colors::White);
+        console.DrawTextRight("Color", Vector2(console.GetSize().x - 7, 3), Colors::Black, Colors::White);
+        console.DrawText("Colors (F)ont (B)ackground (L)Replace (-)Previus (+)Next (D)Flood", Vector2(1, 5), Colors::Black, Colors::White);
+        console.DrawText("Size " + IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y) + " = " +
                                 "Selection " + IntToStr(selection.x) + " x " + IntToStr(selection.y) + " = " +
                                 "Cursor " + IntToStr(cursor.x) + " x " + IntToStr(cursor.y) + " = " +
                                 "Clipboard " + IntToStr(clipboard->GetSize().x) + " x " + IntToStr(clipboard->GetSize().y) + " = "
-                                , Vector2(1, engine.GetWindowSize().y - 2), Colors::Black, Colors::White);
+                                , Vector2(1, console.GetSize().y - 2), Colors::Black, Colors::White);
 
         //Show FPS
-        engine.buffer->DrawTextRight("FPS:" + IntToStr(engine.GetCurrentFps()), Vector2(78, engine.GetWindowSize().y -2), engine.GetCurrentFps() > 59?Colors::Green:Colors::Red, Colors::White);
+        console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() > 59?Colors::Green:Colors::Red, Colors::White);
 
-        engine.UpdateConsole();
-        engine.WaitFocus();
+        console.Update();
+        console.WaitFocus();
     }
     return 0;
 }

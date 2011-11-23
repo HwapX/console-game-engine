@@ -1,12 +1,22 @@
 #include "Sprite.h"
-
+#include <Vector>
 using namespace ConsoleGameEngine;
+
+int CompressRLE(byte *data, int size, byte **result)
+{
+    //return new size
+}
+
+int UnCompressRLE(byte *data, int size, byte *result)
+{
+    //return new size
+}
 
 Sprite::Sprite(const string &filename)
 {
     byte temp = 0;
     Vector2 temp_size;
-    std::FILE* in = fopen(filename.c_str(), "r");
+    std::FILE* in = fopen(filename.c_str(), "rb");
 
     if(in == NULL)
         std::fprintf(stderr, "Can't Open sprite file");
@@ -64,19 +74,19 @@ Sprite::Sprite(const string &filename)
 
 bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const byte index)
 {
-    byte cx = 0, px = 0, py = 0; //cy = 0,
+    byte cx = 0, px = 0, py = 0;
 
     cx = tileset.GetSize().x / tilesize.x;
-    //cy = tileset.GetSize().y / tilesize.y;
-    px = index > cx?index % cx:index;
-    py = index > cx?index / cx:0;
+
+    px = index % cx;
+    py = index / cx;
 
     if(!this->AllocData(tilesize))
     {
         return(false);
     }
     this->Clear(Colors::Transparent);
-    this->DrawSprite(tileset, Vector2(0, 0), Rect(Vector2((px -1) * tilesize.x, py * tilesize.y), tilesize));
+    this->DrawSprite(tileset, Vector2(0, 0), Rect(Vector2(px * tilesize.x, py * tilesize.y), tilesize));
     return(true);
 }
 
@@ -99,20 +109,10 @@ Sprite::Sprite(const Vector2 &sprite_size)
 bool Sprite::AllocData(const Vector2 &data_size)
 {
     data = new Pixel*[data_size.x];
-    if(this->data == NULL)
-    {
-        std::fprintf(stderr, "Can't allocate memory");
-        return(false);
-    }
+
     for(register uint16_t i = 0; i < data_size.x; ++i)
     {
         this->data[i] = new Pixel[data_size.y];
-        if(this->data[i] == NULL)
-        {
-            std::fprintf(stderr, "Can't allocate memory");
-            DeallocData(i);
-            return(false);
-        }
     }
     size = data_size;
     return(true);
@@ -397,6 +397,7 @@ void Sprite::Save(const string &filename)
     }
 
     std::fclose(out);
+
 
     /*ofstream stream(filename.c_str(), ios_base::out | ios_base::binary);
     stream.write << size.x << size.y;

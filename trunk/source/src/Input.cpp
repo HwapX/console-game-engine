@@ -2,8 +2,28 @@
 
 using namespace ConsoleGameEngine;
 
-bool Keyboard::GetKey(const char key)
+bool Keyboard::GetKey(char key)
 {
+    if(key >= '0' && key <= '9')
+    {
+        key-= '0';
+        return((GetAsyncKeyState(key + '0') == -32767) || (GetAsyncKeyState(key + 0x60) == -32767));
+    }
+    else if(key >= '*' && key <= '/')
+    {
+        key-= '+';
+        return((GetAsyncKeyState(key + 0x6B) == -32767) || (GetAsyncKeyState(key + 0xBB) == -32767));
+    }
+
+    switch(key)
+    {
+    case '\n':
+        key = VK_RETURN;
+        break;
+    case '\b':
+        key = VK_BACK;
+        break;
+    }
     return(GetAsyncKeyState(key) == -32767);
 }
 

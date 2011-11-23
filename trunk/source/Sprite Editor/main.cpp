@@ -46,12 +46,12 @@ string show_dialog(Engine &engine, string title)
 int main()
 {
     Engine engine("Console Game Engine Sprite Editor");
-    engine.SetWindowSize(Vector2(80, 80));
+    engine.SetWindowSize(Vector2(80, 82));
     engine.SetWindowPosition(Vector2(0, 0));
 
     color current_color = 0;
     Vector2 cursor;
-    Sprite *document = new Sprite(Vector2(64, 64));
+    Sprite *document = new Sprite(Vector2(72, 72));
     Sprite tool_frame(Vector2(document->GetSize().x +2, document->GetSize().y +1));
     Sprite *clipboard = new Sprite(Vector2(0, 0));
     Sprite sprite_undo = Sprite(document->GetSize());
@@ -82,15 +82,13 @@ int main()
         }
 
         //le o teclado
-        if(Keyboard::GetKey(VK_ADD) ||
-                Keyboard::GetKey(VK_OEM_PLUS))
+        if(Keyboard::GetKey('+'))
         {
             current_color++;
             if(current_color == 17)
                 current_color = 0;
         }
-        else if(Keyboard::GetKey(VK_SUBTRACT) ||
-                Keyboard::GetKey(VK_OEM_MINUS))
+        else if(Keyboard::GetKey('-'))
         {
             if(current_color == 0)
                 current_color = 17;
@@ -101,15 +99,11 @@ int main()
             string result;
             Vector2 new_size;
 
-            if(engine.ShowDialog("Resize", "Input new width", result))
+            if(engine.ShowDialog("Resize document", "Input new size (width X height)", result))
             {
-                new_size.x = atoi(result.c_str());
-                if(engine.ShowDialog("Resize", "Input new height", result))
-                {
-                    new_size.y = atoi(result.c_str());
-                    document->Resize(new_size);
-                    tool_frame.Resize(Vector2(document->GetSize().x +2, document->GetSize().y +1));
-                }
+                sscanf(result.c_str(), "%hd X %hd", &new_size.x, &new_size.y);
+                document->Resize(new_size);
+                tool_frame.Resize(Vector2(document->GetSize().x +2, document->GetSize().y +1));
             }
         }
         else if(Keyboard::GetKey('W'))
@@ -220,7 +214,7 @@ int main()
 
             }
         }
-        else if(Keyboard::GetKey('H'))
+        else if(Keyboard::GetKey('J'))
         {
             string result;
 
@@ -243,17 +237,16 @@ int main()
         }
         else if(Keyboard::GetKey('O'))
         {
-            sprite_undo.DrawSprite(*document, Vector2(0, 0));
-            delete document;
-
             string result;
             if(engine.ShowDialog("Open File", "Input the name of file!", result))
             {
+                sprite_undo.DrawSprite(*document, Vector2(0, 0));
+                delete document;
                 document = new Sprite("./sprites/" + result + ".cges");
                 tool_frame.Resize(Vector2(document->GetSize().x +2, document->GetSize().y +1));
             }
         }
-        else if(Keyboard::GetKey('G'))
+        else if(Keyboard::GetKey('M'))
         {
             Game();
             engine.SetWindowSize(Vector2(80, 50));
@@ -286,8 +279,8 @@ int main()
             {
                 if(gridtool && (grid_size.x > 0 && grid_size.y > 0))
                 {
-                    if(((x+1) % grid_size.x == 0) ||
-                            ((y+1) % grid_size.y == 0) && x < document->GetSize().x)
+                    if((((x+1) % grid_size.x == 0) ||
+                            ((y+1) % grid_size.y == 0)) && x < document->GetSize().x)
                     {
                         tool_frame.data[x+1][y].character = '°';
                         tool_frame.data[x+1][y].forecolor = Colors::Gray;

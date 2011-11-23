@@ -1,3 +1,13 @@
 Adicionar previa para animações
 Adicionar opção de deletar seleção
 Colocar parametros opcionais na função ShowDialog backcolor , forecolor
+Aadicionar oppção de ajuda no editor para mostrar todas as funções já que é impossivel mostrar tudo
+
+Adicionar suporte a Compressão RLE
+Tratamento de erros correto
+Adicionar opção para completar a area selecionada com a opção desejada Fore Bkack Write
+
+Sistema de som semelhante ao MIDI usando os beeps do windows com freequencias diferentes
+
+importar arquivos art de imagens
+ascii art

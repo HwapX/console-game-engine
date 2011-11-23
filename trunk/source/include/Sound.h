@@ -21,6 +21,8 @@ class Sound
 private:
     uint32_t duration;
     uint16_t size;
+    uint16_t current;
+    bool paused;
     Note *notes;
     HANDLE thread_handle;
 
@@ -30,10 +32,13 @@ public:
     Sound(uint16_t const &size);
     ~Sound();
     bool Play(bool sync = false);
+    bool Pause();//suspend thread
+    bool Paused();
     bool Stop();
     bool ReplaceNote(uint16_t const &index,Note const &note);
     uint16_t Copy(Sound &sound,uint16_t const &start, uint16_t  &size);
     uint16_t GetSize();
+    uint16_t GetCurrent();
     bool Save(string const &filename);
     Note GetNote(uint16_t const &index);
     bool IsPlaying();

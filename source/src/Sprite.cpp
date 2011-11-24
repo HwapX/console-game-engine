@@ -1,5 +1,5 @@
 #include "Sprite.h"
-#include <Vector>
+
 using namespace ConsoleGameEngine;
 
 Sprite::Sprite(const string &filename)
@@ -8,15 +8,14 @@ Sprite::Sprite(const string &filename)
     std::FILE* in = std::fopen(filename.c_str(), "rb");
 
     if(in == NULL)
-        std::fprintf(stderr, "Can't Open sprite file");
+    {
+        throw("Cant open file");
+    }
 
     std::fread((void*)&temp_size.x, 2, 1, in);
     std::fread((void*)&temp_size.y, 2, 1, in);
 
-    if(!this->AllocData(temp_size))
-    {
-        return;
-    }
+    this->AllocData(temp_size);
 
     for(register uint16_t x = 0; x < temp_size.x; ++x)
     {
@@ -40,10 +39,7 @@ bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const u
     px = index % cx;
     py = index / cx;
 
-    if(!this->AllocData(tilesize))
-    {
-        return(false);
-    }
+    this->AllocData(tilesize);
     this->Clear(Colors::Transparent);
     this->DrawSprite(tileset, Vector2(0, 0), Rect(Vector2(px * tilesize.x, py * tilesize.y), tilesize));
     return(true);
@@ -108,7 +104,7 @@ bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position, const Rec
     {
         for(register uint16_t y = 0; y < rect.height; ++y)
         {
-            if((position.x + x < this->size.x) && (position.y + y < this->size.y))
+            if((position.x + x < this->size.x) && (position.y + y < this->size.y) && (position.x + x >= 0 && position.y + y >= 0))
             {
                 if(sprite.data[x + rect.x][y + rect.y].backcolor != Colors::Transparent)
                 {
@@ -128,9 +124,20 @@ bool Sprite::DrawSpriteCenter(const Sprite &sprite, const Vector2 &position)
 }
 
 
-void Sprite::FillBackcolor(const color backcolor)
+void Sprite::FillCharacter(const char character, const Rect &rect)
 {
-    for(register uint16_t x = 0; x < this->size.x; ++x)
+    for(register uint16_t x = rect.x; x < rect.x + rect.width; ++x)
+    {
+        for(register uint16_t y = 0; y < this->size.y; ++y)
+        {
+            this->data[x][y].character = character;
+        }
+    }
+}
+
+void Sprite::FillBackcolor(const color backcolor, const Rect &rect)
+{
+    for(register uint16_t x = rect.x; x < rect.x + rect.width; ++x)
     {
         for(register uint16_t y = 0; y < this->size.y; ++y)
         {
@@ -139,15 +146,30 @@ void Sprite::FillBackcolor(const color backcolor)
     }
 }
 
-void Sprite::FillForecolor(const color forecolor)
+void Sprite::FillForecolor(const color forecolor, const Rect &rect)
 {
-    for(register uint16_t x = 0; x < this->size.x; ++x)
+    for(register uint16_t x = rect.x; x < rect.x + rect.width; ++x)
     {
         for(register uint16_t y = 0; y < this->size.y; ++y)
         {
             this->data[x][y].forecolor = forecolor;
         }
     }
+}
+
+void Sprite::FillBackcolor(const color backcolor)
+{
+    this->FillBackcolor(backcolor, Rect(Vector2(0, 0), size));
+}
+
+void Sprite::FillForecolor(const color forecolor)
+{
+    this->FillForecolor(forecolor, Rect(Vector2(0, 0), size));
+}
+
+void Sprite::FillCharacter(const char character)
+{
+    this->FillCharacter(character, Rect(Vector2(0, 0), size));
 }
 
 uint8_t Sprite::DrawText(const string &text, const Vector2 &position, const color forecolor, const color backcolor)
@@ -245,6 +267,66 @@ void Sprite::FloodBackcolor(const Vector2 &position, const color oldcolor, const
     }
 }
 
+void Sprite::FloodCharacter(const Vector2 &position, const color oldchar, const color newchar)
+{
+    if(oldchar == newchar)
+        return;
+    if(position.x < this->size.x && position.y < this->size.y && position.x >= 0 && position.y >= 0)
+    {
+        this->data[position.x][position.y].character = newchar;
+    }
+    if(position.x+1 < this->size.x)
+    {
+        if(this->data[position.x +1][position.y].character == oldchar)
+            this->FloodCharacter(Vector2(position.x+1, position.y), oldchar, newchar);
+    }
+    if(position.x-1 >= 0)
+    {
+        if(this->data[position.x-1][position.y].character == oldchar)
+            this->FloodCharacter(Vector2(position.x-1, position.y), oldchar, newchar);
+    }
+    if(position.y+1 < this->size.y)
+    {
+        if(this->data[position.x][position.y +1].character == oldchar)
+            this->FloodCharacter(Vector2(position.x, position.y+1), oldchar, newchar);
+    }
+    if(position.y-1 >= 0)
+    {
+        if(this->data[position.x][position.y-1].character == oldchar)
+            this->FloodCharacter(Vector2(position.x, position.y -1), oldchar, newchar);
+    }
+}
+
+void Sprite::FloodForecolor(const Vector2 &position, const color oldcolor, const color newcolor)
+{
+    if(oldcolor == newcolor)
+        return;
+    if(position.x < this->size.x && position.y < this->size.y && position.x >= 0 && position.y >= 0)
+    {
+        this->data[position.x][position.y].forecolor = newcolor;
+    }
+    if(position.x+1 < this->size.x)
+    {
+        if(this->data[position.x +1][position.y].forecolor == oldcolor)
+            this->FloodForecolor(Vector2(position.x+1, position.y), oldcolor, newcolor);
+    }
+    if(position.x-1 >= 0)
+    {
+        if(this->data[position.x-1][position.y].forecolor == oldcolor)
+            this->FloodForecolor(Vector2(position.x-1, position.y), oldcolor, newcolor);
+    }
+    if(position.y+1 < this->size.y)
+    {
+        if(this->data[position.x][position.y +1].forecolor == oldcolor)
+            this->FloodForecolor(Vector2(position.x, position.y+1), oldcolor, newcolor);
+    }
+    if(position.y-1 >= 0)
+    {
+        if(this->data[position.x][position.y-1].forecolor == oldcolor)
+            this->FloodForecolor(Vector2(position.x, position.y -1), oldcolor, newcolor);
+    }
+}
+
 bool Sprite::PutPixel(const Vector2 &coord, const Pixel &pixel_data)
 {
     if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
@@ -260,7 +342,7 @@ bool Sprite::PutPixel(const Vector2 &coord, const Pixel &pixel_data)
 
 Pixel &Sprite::GetPixel(const Vector2 &coord)
 {
-    if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
+    if((coord.x < this->size.x && coord.y < this->size.y) && (coord.x >= 0 && coord.y >= 0))
     {
         return(this->data[coord.x][coord.y]);
     }
@@ -274,16 +356,6 @@ Pixel &Sprite::operator()(Vector2 coord)
 {
     return(this->GetPixel(coord));
 }
-/*
-Pixel *Sprite::GetPixel(const Vector2 &coord)
-{
-    if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
-    {
-        return(&this->data[coord.x][coord.y]);
-    }
-
-    return(NULL);
-}*/
 
 void Sprite::ReplaceBackcolor(const color oldcolor, const color newcolor)
 {
@@ -348,48 +420,25 @@ void Sprite::Rotate(uint16_t graus)
 
 void Sprite::Save(const string &filename)
 {
-    uint8_t temp = 0;
-    FILE* out = std::fopen(filename.c_str(), "w");
+    FILE* out = std::fopen(filename.c_str(), "wb");
 
     std::fwrite((void*)&this->size.x, 2, 1, out);
     std::fwrite((void*)&this->size.y, 2, 1, out);
 
     if(out == NULL)
-        std::fprintf(stderr, "Can't save sprite file");
+    {
+        throw("Can't save file");
+    }
 
     for(register uint16_t x = 0; x < size.x; ++x)
     {
         for(register uint16_t y = 0; y < size.y; ++y)
         {
             std::fwrite((void*)&this->data[x][y].character, 1, 1, out);
-
-            temp = (uint8_t)this->data[x][y].forecolor;
-            std::fwrite((void*)&temp, 1, 1, out);
-
-            temp = (uint8_t)this->data[x][y].backcolor;
-            std::fwrite((void*)&temp, 1, 1, out);
+            std::fwrite((void*)&this->data[x][y].forecolor, 1, 1, out);
+            std::fwrite((void*)&this->data[x][y].backcolor, 1, 1, out);
         }
     }
 
     std::fclose(out);
-
-
-    /*ofstream stream(filename.c_str(), ios_base::out | ios_base::binary);
-    stream.write << size.x << size.y;
-
-    uint8_t temp = 0;
-
-    for(uint16_t x = 0; x < size.x; ++x)
-    {
-        for(uint16_t y = 0; y < size.y; ++y)
-        {
-            stream << data[x][y].character;
-            temp = (uint8_t)data[x][y].forecolor;
-            stream << temp;
-            temp = (uint8_t)data[x][y].backcolor;
-            stream << temp;
-        }
-    }
-
-    stream.close();*/
 }

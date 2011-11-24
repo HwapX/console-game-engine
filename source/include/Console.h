@@ -22,7 +22,7 @@ using namespace std;
 
 #define OLDLOGO
 
-#define VERSION "Version beta 0.7"
+#define VERSION "Version beta 0.8"
 
 namespace ConsoleGameEngine
 {
@@ -45,6 +45,7 @@ private:
 
     Vector2 position;
 
+    static void ExceptionHandler();
 public:
 
     Console();
@@ -73,6 +74,7 @@ public:
     bool SetCursorSize(uint8_t size, bool visible);
 
     void Update();
+
     //set font
     //get font
 };

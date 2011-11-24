@@ -190,12 +190,20 @@ uint16_t Sound::Copy(Sound &sound,uint16_t const &start, uint16_t  &size)
 bool Sound::Save(string const &filename)
 {
     std::FILE* file = fopen(filename.c_str(), "wb");
+
+    if(file == NULL)
+    {
+        return(false);
+    }
+
     for(uint16_t i = 0;i < this->size; ++i)
     {
         fwrite((void*)&notes[i].frequence, 2, 1, file);
         fwrite((void*)&notes[i].duration, 2, 1, file);
     }
     fclose(file);
+
+    return(true);
 }
 
 bool Sound::PlayBeep(Note const &note)

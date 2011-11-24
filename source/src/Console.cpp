@@ -4,6 +4,7 @@ using namespace ConsoleGameEngine;
 
 void Console::PreInit()
 {
+    std::set_terminate(ExceptionHandler);
     output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     handle = GetConsoleWindow();
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
@@ -287,22 +288,23 @@ void Console::ShowLogo()
 #endif
 }
 
-void Console::ShowError(const string &text, const bool close)
+void Console::ShowError(const string &text, const bool close = true)
 {
-    Resize(Vector2(80,25));
+    this->Resize(Vector2(80,25));
     while(!Keyboard::GetKey(VK_SPACE))
     {
-        Clear();
-        DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Colors::White, Colors::Black);
+        this->Clear();
+        this->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Colors::White, Colors::Black);
         this->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Colors::White, Colors::Black);
         this->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Colors::White, Colors::Black);
         this->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Colors::White, Colors::Black);
         this->DrawTextCenter(text, Vector2(this->GetSize().x / 2, 15), Colors::Red, Colors::Black);
-        this->DrawTextRight("Press space to close application", Vector2(this->GetSize().x -1, this->GetSize().y -1), Colors::White, Colors::Black);
+        this->DrawTextRight(close?"Press space to close application":"Press space to continue", Vector2(this->GetSize().x -1, this->GetSize().y -1), Colors::White, Colors::Black);
         this->Update();
         this->Clear();
     }
-    exit(1);
+    if(close)
+        exit(1);
 }
 
 bool Console::ShowDialog(const string &title, const string &text, string &result)
@@ -353,6 +355,7 @@ bool Console::ShowDialog(const string &title, const string &text, string &result
         this->DrawTextCenter("*                                                          *", Vector2(this->GetSize().x / 2, 10), Colors::Black, Colors::White);
         this->DrawTextCenter(result                                                        , Vector2(this->GetSize().x / 2, 10), Colors::Black, Colors::White);
         this->DrawTextCenter("************************************************************", Vector2(this->GetSize().x / 2, 11), Colors::Black, Colors::White);
+        this->DrawTextCenter("Press ESC to cancel", Vector2(this->GetSize().x / 2, 12), Colors::Black, Colors::White);
 
         this->Update();
         lastkey = Keyboard::GetNextKey();
@@ -465,4 +468,16 @@ void Console::Update()
     COORD start = {0, 0};
     SMALL_RECT srect = {0, 0, this->size.x, this->size.y};
     WriteConsoleOutput(output_handle, (CHAR_INFO*)winbuffer, size, start, &srect);
+}
+
+void Console::ExceptionHandler()
+{
+    try
+    {
+        throw;
+    }
+    catch(...)
+    {
+        //ShowError("UNEXPECTED ERROR");
+    }
 }

@@ -1,7 +1,9 @@
 #include "Console.h"
 #include "Utils.h"
 
-#define CURSOR_ICON 0xF4//0xFE//0x7F
+#define CURSOR_ICON 0x9E//0xFE//0x7F
+
+#define NOTE_ICON 0xF4
 
 using namespace ConsoleGameEngine;
 
@@ -143,19 +145,15 @@ int main()
         for(uint8_t x = 0; x < audio->GetSize(); ++x)
         {
             uint8_t y = audio->GetNote(x).frequence?(audio->GetNote(x).frequence * chanels) / max_frequence:0;
-            table(Vector2(x, y)).backcolor = y+1;
+            table(Vector2(x, y)).forecolor = y+1;
+            table(Vector2(x, y)).character = NOTE_ICON;
+            if(audio->IsPlaying() && x == audio->GetCurrent())
+            {
+                table(Vector2(x, y)).backcolor = y+1;
+            }
         }
-        if(audio->IsPlaying() && !audio->Paused())
-        {
-            uint8_t y = audio->GetNote(audio->GetCurrent()).frequence?(audio->GetNote(audio->GetCurrent()).frequence * chanels) / max_frequence:0;
-            table(Vector2(audio->GetCurrent(), y)).character = CURSOR_ICON;
-            table(Vector2(audio->GetCurrent(), y)).forecolor = Colors::White;
-        }
-        else
-        {
-            table(Vector2(cursor.x, cursor.y * chanels / max_frequence)).character = CURSOR_ICON;
-            table(Vector2(cursor.x, cursor.y * chanels / max_frequence)).forecolor = Colors::White;
-        }
+        table(Vector2(cursor.x, cursor.y * chanels / max_frequence)).character = CURSOR_ICON;
+        table(Vector2(cursor.x, cursor.y * chanels / max_frequence)).forecolor = (audio->GetNote(cursor.x).frequence?(audio->GetNote(cursor.x).frequence * chanels) / max_frequence:0) + 1;
 
         console.DrawSprite(table, Vector2(1, 5));
 

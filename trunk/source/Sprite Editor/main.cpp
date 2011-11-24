@@ -3,9 +3,9 @@
 
 #define AUTO_SAVE_INTERVAL 1000 * 60
 
-#define GRID_TOOL 2
-#define SELECTTOOL 4
-#define HELP 8
+#define TOOL_GRID 2
+#define TOOL_SELECT 4
+#define TOOL_HELP 8
 
 #define DOC_HEIGHT 40
 #define DOC_WIDTH 40
@@ -23,6 +23,8 @@ int main()
     console.Resize(Vector2(80, 50));
     console.SetPosition(Vector2(0, 0));
 
+    Sprite frame("./frame.cges");
+
     Vector2 cursor;
 
     Sprite workspace(Vector2(78, 40));
@@ -36,14 +38,15 @@ int main()
     char current_char = 0;
 
     Vector2 selection, grid_size;
+    //uint8_t tools = 0;
     bool selecttool = false, gridtool = false;
     uint32_t savetick = console.GetTick();
 
-    document->Clear(Colors::White);
+    document->Clear(Color::White);
 
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
-        console.Clear(Colors::White);
+        console.DrawSprite(frame, Vector2(0, 0));
 
         if((console.GetTick() - savetick) > AUTO_SAVE_INTERVAL)
         {
@@ -52,6 +55,59 @@ int main()
         }
 
         //leittura do teclado
+        if(Keyboard::GetKey('H'))
+        {
+            Sprite help("help.cges");
+            help.DrawText("HELP MENU", Vector2(1, 1), Color::Black, Color::Transparent);
+
+            help.DrawText("N = New file", Vector2(2, 4), Color::Black, Color::Transparent);
+            help.DrawText("O = Open file", Vector2(2, 5), Color::Black, Color::Transparent);
+            help.DrawText("S = Save file", Vector2(2, 6), Color::Black, Color::Transparent);
+            help.DrawText("R = Resize", Vector2(2, 7), Color::Black, Color::Transparent);
+            help.DrawText("A = Animate", Vector2(2, 8), Color::Black, Color::Transparent);
+            help.DrawText("E = Select tool", Vector2(2, 9), Color::Black, Color::Transparent);
+            help.DrawText("G = Grid tool", Vector2(2, 10), Color::Black, Color::Transparent);
+            help.DrawText("J = Config Grid", Vector2(2, 11), Color::Black, Color::Transparent);
+            help.DrawText("C = Copy", Vector2(2, 12), Color::Black, Color::Transparent);
+            help.DrawText("X = Cut", Vector2(2, 13), Color::Black, Color::Transparent);
+            help.DrawText("V = Paste", Vector2(2, 14), Color::Black, Color::Transparent);
+            help.DrawText("U = Undo", Vector2(2, 15), Color::Black, Color::Transparent);
+            help.DrawText("- = Previus Color", Vector2(2, 16), Color::Black, Color::Transparent);
+            help.DrawText("+ = Next Color", Vector2(2, 17), Color::Black, Color::Transparent);
+            help.DrawText("F = Font Color", Vector2(2, 18), Color::Black, Color::Transparent);
+            help.DrawText("B = Background Color", Vector2(2, 19), Color::Black, Color::Transparent);
+            help.DrawText("L = Replace Color", Vector2(2, 20), Color::Black, Color::Transparent);
+            help.DrawText("D = Flood background", Vector2(2, 21), Color::Black, Color::Transparent);
+            help.DrawText("? = Flood font", Vector2(2, 22), Color::Black, Color::Transparent);
+            help.DrawText("? = Flood character", Vector2(2, 23), Color::Black, Color::Transparent);
+            help.DrawText("W = Write character", Vector2(2, 24), Color::Black, Color::Transparent);
+
+            help.DrawText(". = Next character", Vector2(26, 4), Color::Black, Color::Transparent);
+            help.DrawText(", = Previus character", Vector2(26, 5), Color::Black, Color::Transparent);
+            help.DrawText("I = Input char code", Vector2(26, 6), Color::Black, Color::Transparent);
+//            help.DrawText("R = Resize", Vector2(26, 7), Color::Black, Color::Transparent);
+//            help.DrawText("A = Animate", Vector2(26, 8), Color::Black, Color::Transparent);
+//            help.DrawText("E = Select tool", Vector2(26, 9), Color::Black, Color::Transparent);
+//            help.DrawText("G = Grid tool", Vector2(26, 10), Color::Black, Color::Transparent);
+//            help.DrawText("J = Config Grid", Vector2(26, 11), Color::Black, Color::Transparent);
+//            help.DrawText("C = Copy", Vector2(26, 12), Color::Black, Color::Transparent);
+//            help.DrawText("X = Cut", Vector2(26, 13), Color::Black, Color::Transparent);
+//            help.DrawText("V = Paste", Vector2(26, 14), Color::Black, Color::Transparent);
+//            help.DrawText("U = Undo", Vector2(26, 15), Color::Black, Color::Transparent);
+//            help.DrawText("- = Previus Color", Vector2(26, 16), Color::Black, Color::Transparent);
+//            help.DrawText("+ = Next Color", Vector2(26, 17), Color::Black, Color::Transparent);
+//            help.DrawText("F = Font Color", Vector2(26, 18), Color::Black, Color::Transparent);
+//            help.DrawText("B = Background Color", Vector2(26, 19), Color::Black, Color::Transparent);
+//            help.DrawText("L = Replace Color", Vector2(26, 20), Color::Black, Color::Transparent);
+//            help.DrawText("D = Flood background", Vector2(26, 21), Color::Black, Color::Transparent);
+//            help.DrawText("? = Flood font", Vector2(26, 22), Color::Black, Color::Transparent);
+//            help.DrawText("? = Flood character", Vector2(26, 23), Color::Black, Color::Transparent);
+//            help.DrawText("W = Write character", Vector2(26, 24), Color::Black, Color::Transparent);
+            console.DrawSpriteCenter(help, Vector2(console.GetSize().x / 2, 5));
+            console.Update();
+            Keyboard::WaitKey('H');
+
+        }
         if(Keyboard::GetKey('+'))
         {
             current_color++;
@@ -176,7 +232,7 @@ int main()
                         Animation preview(*document, tilesize, start, count, interval);
                         while(!Keyboard::GetKey(VK_RETURN))
                         {
-                            console.Clear(Colors::White);
+                            console.Clear(Color::White);
                             console.DrawSpriteCenter(preview.CurrentFrame(), Vector2(console.GetSize().x / 2, 0));
                             console.Update();
                         }
@@ -266,7 +322,7 @@ int main()
                 doc_pos.x++;
         }
 
-        workspace.Clear(Colors::White);
+        workspace.Clear(Color::White);
         workspace.FillCharacter(WORKSPACE_CHAR);
         workspace.DrawSprite(*document, doc_pos);
 
@@ -280,7 +336,7 @@ int main()
                             ((y+1) % grid_size.y == 0)) && x < document->GetSize().x)
                     {
                         workspace(Vector2(doc_pos.x + x+1, doc_pos.y + y)).character = '°';
-                        workspace(Vector2(doc_pos.y + x+1, doc_pos.y + y)).forecolor = Colors::Gray;
+                        workspace(Vector2(doc_pos.y + x+1, doc_pos.y + y)).forecolor = Color::Gray;
                     }
                 }
                 if(selecttool && x + doc_pos.x < workspace.GetSize().x && y + doc_pos.y < workspace.GetSize().y)
@@ -289,7 +345,7 @@ int main()
                             x == cursor.x || y == cursor.y)
                     {
                         workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).character = '°';
-                        workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).forecolor = Colors::Gray;
+                        workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).forecolor = Color::Gray;
                     }
                 }
             }
@@ -303,32 +359,13 @@ int main()
         }
         catch(...)
         {
-            console.ShowError("Invalid cursor position", false);
+            //console.ShowError("Invalid cursor position", false);
         }
 
         console.DrawSprite(workspace, Vector2(1, 7));
 
-        //draw editor grid
-        for(uint8_t x = 0; x < console.GetSize().x; ++x)
-        {
-            for(uint8_t y = 0; y < console.GetSize().y; ++y)
-            {
-                if(y == 0 || x == 0 ||
-                        y == console.GetSize().y-1 ||
-                        x == console.GetSize().x-1 ||
-                        y == 2 || y == 4 || y == 6 ||
-                        y == console.GetSize().y - 3)
-                {
-                    console(Vector2(x, y)).character = '=';
-                    console(Vector2(x, y)).forecolor = Colors::Gray;
-                }
-            }
-        }
-
-        console(Vector2(console.GetSize().x - 8, 3)).character = '=';
-        console(Vector2(console.GetSize().x - 3, 3)).character = '=';
         console(Vector2(console.GetSize().x - 2, 3)).character = current_char;
-        console(Vector2(console.GetSize().x - 2, 3)).forecolor = current_color;
+        //console(Vector2(console.GetSize().x - 2, 3)).forecolor = current_color;
 
         //draw the color palette
         for(uint8_t c = 0; c < 18; ++c)
@@ -342,32 +379,32 @@ int main()
         }
 
         //Show the captions
-        console.DrawText("(N)ew (O)pen (S)ave (R)esize (A)nimate (C)opy (X)Cut (V)Paste S(e)lect (U)ndo", Vector2(1, 1), Colors::Black, Colors::White);
-        console.DrawTextRight("Char", Vector2(console.GetSize().x - 4, 3), Colors::Black, Colors::White);
-        console.DrawText("(-)Previus (+)Next (F)ore (B)ack Rep(l)ace Floo(d) <(W)r(i)te> (G)rid(H)", Vector2(1, 5), Colors::Black, Colors::White);
+        console.DrawText("(N)ew (O)pen (S)ave (R)esize (A)nimate (C)opy (X)Cut (V)Paste S(e)lect (U)ndo", Vector2(1, 1), Color::Black, Color::White);
+        console.DrawTextRight("Char", Vector2(console.GetSize().x - 4, 3), Color::Black, Color::White);
+        console.DrawText("(-)Previus (+)Next (F)ore (B)ack Rep(l)ace Floo(d) <(W)r(i)te> (G)rid(H)", Vector2(1, 5), Color::Black, Color::White);
         console.DrawText("Size " + IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y) + " = " +
                          "Selection " + IntToStr(selection.x) + " x " + IntToStr(selection.y) + " = " +
                          "Cursor " + IntToStr(cursor.x) + " x " + IntToStr(cursor.y) + " = " +
                          "Clipboard " + IntToStr(clipboard->GetSize().x) + " x " + IntToStr(clipboard->GetSize().y) + " = "
-                         , Vector2(1, console.GetSize().y - 2), Colors::Black, Colors::White);
+                         , Vector2(1, console.GetSize().y - 2), Color::Black, Color::White);
 
         //Show FPS
-        console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() > 59?Colors::Green:Colors::Red, Colors::White);
+        console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() > 59?Color::Green:Color::Red, Color::White);
 
         console.Update();
         if(!console.Focus())
         {
-            console.DrawTextCenter(" _       __      _ __  _            ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-5), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("| |     / /___ _(_) /_(_)___  ____ _", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-4), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("| | /| / / __ `/ / __/ / __ \\/ __ `/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-3), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("| |/ |/ / /_/ / / /_/ / / / / /_/ / ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-2), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("|__/|__/\\__,_/_/\\__/_/_/ /_/\\__, /  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-1), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("                           /____/   ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("    ______                     ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+1), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("   / ____/___  _______  _______", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+2), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("  / /_  / __ \\/ ___/ / / / ___/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+3), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter(" / __/ / /_/ / /__/ /_/ (__  ) ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+4), Colors::Black, Colors::Transparent);
-            console.DrawTextCenter("/_/    \\____/\\___/\\__,_/____/  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+5), Colors::Black, Colors::Transparent);
+            console.DrawTextCenter(" _       __      _ __  _            ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-5), Color::Black, Color::Transparent);
+            console.DrawTextCenter("| |     / /___ _(_) /_(_)___  ____ _", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-4), Color::Black, Color::Transparent);
+            console.DrawTextCenter("| | /| / / __ `/ / __/ / __ \\/ __ `/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-3), Color::Black, Color::Transparent);
+            console.DrawTextCenter("| |/ |/ / /_/ / / /_/ / / / / /_/ / ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-2), Color::Black, Color::Transparent);
+            console.DrawTextCenter("|__/|__/\\__,_/_/\\__/_/_/ /_/\\__, /  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-1), Color::Black, Color::Transparent);
+            console.DrawTextCenter("                           /____/   ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2), Color::Black, Color::Transparent);
+            console.DrawTextCenter("    ______                     ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+1), Color::Black, Color::Transparent);
+            console.DrawTextCenter("   / ____/___  _______  _______", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+2), Color::Black, Color::Transparent);
+            console.DrawTextCenter("  / /_  / __ \\/ ___/ / / / ___/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+3), Color::Black, Color::Transparent);
+            console.DrawTextCenter(" / __/ / /_/ / /__/ /_/ (__  ) ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+4), Color::Black, Color::Transparent);
+            console.DrawTextCenter("/_/    \\____/\\___/\\__,_/____/  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+5), Color::Black, Color::Transparent);
             console.Update();
             console.WaitFocus();
         }

@@ -18,7 +18,7 @@ namespace ConsoleGameEngine
 
 typedef uint8_t color;
 
-namespace Colors
+namespace Color
 {
 const color Black = 0;
 const color DarkBlue = 1;

@@ -42,6 +42,7 @@ Sound::Sound(uint16_t const &size)
 
 Sound::~Sound()
 {
+    this->Stop();
     delete [] notes;
 }
 

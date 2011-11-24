@@ -50,8 +50,8 @@ Pixel::Pixel()
 void Pixel::Reset()
 {
     character = ' ';
-    forecolor = Colors::Gray;
-    backcolor = Colors::Black;
+    forecolor = Color::Gray;
+    backcolor = Color::Black;
 }
 
 /*-------------------------*/

@@ -23,6 +23,12 @@ bool Keyboard::GetKey(char key)
     case '\b':
         key = VK_BACK;
         break;
+    case ',':
+        key = 0xBE;
+        break;
+    case '.':
+        key = 0xBC;
+        break;
     }
     return(GetAsyncKeyState(key) == -32767);
 }

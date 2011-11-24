@@ -81,20 +81,20 @@ void Console::ShowLogo()
 
     std::srand(GetTick());
 
-    logo.DrawTextCenter("  ______                       _       ",     Vector2(logo.GetSize().x / 2, 0), Colors::Blue, Colors::White);
-    logo.DrawTextCenter(" / _____)                     | |      ",     Vector2(logo.GetSize().x / 2, 1), Colors::Blue, Colors::White);
-    logo.DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(logo.GetSize().x / 2, 2), Colors::Blue, Colors::White);
-    logo.DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(logo.GetSize().x / 2, 3), Colors::Blue, Colors::White);
-    logo.DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(logo.GetSize().x / 2, 4), Colors::Blue, Colors::White);
-    logo.DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(logo.GetSize().x / 2, 5), Colors::Blue, Colors::White);
+    logo.DrawTextCenter("  ______                       _       ",     Vector2(logo.GetSize().x / 2, 0), Color::Blue, Color::White);
+    logo.DrawTextCenter(" / _____)                     | |      ",     Vector2(logo.GetSize().x / 2, 1), Color::Blue, Color::White);
+    logo.DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(logo.GetSize().x / 2, 2), Color::Blue, Color::White);
+    logo.DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(logo.GetSize().x / 2, 3), Color::Blue, Color::White);
+    logo.DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(logo.GetSize().x / 2, 4), Color::Blue, Color::White);
+    logo.DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(logo.GetSize().x / 2, 5), Color::Blue, Color::White);
 
-    logo.DrawTextCenter("  ______                      _______             _             ",        Vector2(logo.GetSize().x / 2, 7), Colors::Green, Colors::White);
-    logo.DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(logo.GetSize().x / 2, 8), Colors::Green, Colors::White);
-    logo.DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(logo.GetSize().x / 2, 9), Colors::Green, Colors::White);
-    logo.DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(logo.GetSize().x / 2, 10), Colors::Green, Colors::White);
-    logo.DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(logo.GetSize().x / 2, 11), Colors::Green, Colors::White);
-    logo.DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(logo.GetSize().x / 2, 12), Colors::Green, Colors::White);
-    logo.DrawTextCenter("                                           (_____|              ",        Vector2(logo.GetSize().x / 2, 13), Colors::Green, Colors::White);
+    logo.DrawTextCenter("  ______                      _______             _             ",        Vector2(logo.GetSize().x / 2, 7), Color::Green, Color::White);
+    logo.DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(logo.GetSize().x / 2, 8), Color::Green, Color::White);
+    logo.DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(logo.GetSize().x / 2, 9), Color::Green, Color::White);
+    logo.DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(logo.GetSize().x / 2, 10), Color::Green, Color::White);
+    logo.DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(logo.GetSize().x / 2, 11), Color::Green, Color::White);
+    logo.DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(logo.GetSize().x / 2, 12), Color::Green, Color::White);
+    logo.DrawTextCenter("                                           (_____|              ",        Vector2(logo.GetSize().x / 2, 13), Color::Green, Color::White);
 
     while(!Keyboard::GetKey(VK_SPACE) || effect < 2)
     {
@@ -111,11 +111,11 @@ void Console::ShowLogo()
                 {
                     for(register uint8_t y = 0; y < blood.GetSize().y; ++y)
                     {
-                        if(blood.data[x][y].backcolor != Colors::Red)
+                        if(blood.data[x][y].backcolor != Color::Red)
                         {
                             if((std::rand() % 101) == 0)
                             {
-                                blood.data[x][y].backcolor = Colors::Red;
+                                blood.data[x][y].backcolor = Color::Red;
                                 ++count;
                                 if(y > 10)
                                     bleed = false;
@@ -188,7 +188,7 @@ void Console::ShowLogo()
                     if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
                     {
                         buffer->data[x][y].character = 'ฐ';
-                        buffer->data[x][y].forecolor = Colors::Red;
+                        buffer->data[x][y].forecolor = Color::Red;
                     }
                 }
             }
@@ -203,17 +203,17 @@ void Console::ShowLogo()
             {
                 if(blink)
                 {
-                    buffer->DrawTextCenter("ฐฐฐฐฐฐฐฐฐฐฐฐฐฐฐ", Vector2(GetWindowSize().x / 2, 17), Colors::DarkRed, Colors::Transparent);
-                    buffer->DrawTextCenter("ฐฐฐฐฐฐฐฐฐฐฐฐฐฐฐ", Vector2(GetWindowSize().x / 2, 18), Colors::DarkRed, Colors::Transparent);
-                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 18), Colors::White, Colors::Transparent);
-                    buffer->DrawTextCenter("ฐฐฐฐฐฐฐฐฐฐฐฐฐฐฐ", Vector2(GetWindowSize().x / 2, 19), Colors::DarkRed, Colors::Transparent);
+                    buffer->DrawTextCenter("ฐฐฐฐฐฐฐฐฐฐฐฐฐฐฐ", Vector2(GetWindowSize().x / 2, 17), Color::DarkRed, Color::Transparent);
+                    buffer->DrawTextCenter("ฐฐฐฐฐฐฐฐฐฐฐฐฐฐฐ", Vector2(GetWindowSize().x / 2, 18), Color::DarkRed, Color::Transparent);
+                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 18), Color::White, Color::Transparent);
+                    buffer->DrawTextCenter("ฐฐฐฐฐฐฐฐฐฐฐฐฐฐฐ", Vector2(GetWindowSize().x / 2, 19), Color::DarkRed, Color::Transparent);
                 }
             }
 
-            buffer->DrawText("Developed by", Vector2(1, GetWindowSize().y -3), Colors::White, Colors::Transparent);
-            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetWindowSize().y -2), Colors::White, Colors::Transparent);
+            buffer->DrawText("Developed by", Vector2(1, GetWindowSize().y -3), Color::White, Color::Transparent);
+            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetWindowSize().y -2), Color::White, Color::Transparent);
 
-            buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Colors::White, Colors::Transparent);
+            buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Color::White, Color::Transparent);
 
             UpdateConsole();
         }
@@ -231,23 +231,23 @@ void Console::ShowLogo()
                 if(y == 0 || x == 0 || y == GetSize().y-1 || x == GetSize().x-1)
                 {
                     data[x][y].character = '*';
-                    data[x][y].forecolor = Colors::Blue;
+                    data[x][y].forecolor = Color::Blue;
                 }
 
-        DrawTextCenter("  ______                       _       ",     Vector2(GetSize().x / 2, 2), Colors::White, Colors::Black);
-        DrawTextCenter(" / _____)                     | |      ",     Vector2(GetSize().x / 2, 3), Colors::White, Colors::Black);
-        DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetSize().x / 2, 4), Colors::White, Colors::Black);
-        DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetSize().x / 2, 5), Colors::White, Colors::Black);
-        DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetSize().x / 2, 6), Colors::White, Colors::Black);
-        DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetSize().x / 2, 7), Colors::White, Colors::Black);
+        DrawTextCenter("  ______                       _       ",     Vector2(GetSize().x / 2, 2), Color::White, Color::Black);
+        DrawTextCenter(" / _____)                     | |      ",     Vector2(GetSize().x / 2, 3), Color::White, Color::Black);
+        DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetSize().x / 2, 4), Color::White, Color::Black);
+        DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetSize().x / 2, 5), Color::White, Color::Black);
+        DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetSize().x / 2, 6), Color::White, Color::Black);
+        DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetSize().x / 2, 7), Color::White, Color::Black);
 
-        DrawTextCenter("  ______                      _______             _             ",        Vector2(GetSize().x / 2, 10), Colors::White, Colors::Black);
-        DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetSize().x / 2, 11), Colors::White, Colors::Black);
-        DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetSize().x / 2, 12), Colors::White, Colors::Black);
-        DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetSize().x / 2, 13), Colors::White, Colors::Black);
-        DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetSize().x / 2, 14), Colors::White, Colors::Black);
-        DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetSize().x / 2, 15), Colors::White, Colors::Black);
-        DrawTextCenter("                                           (_____|              ",        Vector2(GetSize().x / 2, 16), Colors::White, Colors::Black);
+        DrawTextCenter("  ______                      _______             _             ",        Vector2(GetSize().x / 2, 10), Color::White, Color::Black);
+        DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetSize().x / 2, 11), Color::White, Color::Black);
+        DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetSize().x / 2, 12), Color::White, Color::Black);
+        DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetSize().x / 2, 13), Color::White, Color::Black);
+        DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetSize().x / 2, 14), Color::White, Color::Black);
+        DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetSize().x / 2, 15), Color::White, Color::Black);
+        DrawTextCenter("                                           (_____|              ",        Vector2(GetSize().x / 2, 16), Color::White, Color::Black);
 
         //effect
         static uint32_t lastpp = 0;
@@ -263,23 +263,23 @@ void Console::ShowLogo()
             {
                 if((col <= (GetSize().x / 2)) && x < col)
                 {
-                    data[x][y].forecolor = Colors::DarkGreen;
-                    data[(GetSize().x-1) - x][y].forecolor = Colors::Yellow;
+                    data[x][y].forecolor = Color::DarkGreen;
+                    data[(GetSize().x-1) - x][y].forecolor = Color::Yellow;
                 }
             }
 
-        data[59][10].forecolor = Colors::Blue;
-        data[59][11].forecolor = Colors::Blue;
-        data[58][11].forecolor = Colors::Blue;
-        data[60][11].forecolor = Colors::Blue;
+        data[59][10].forecolor = Color::Blue;
+        data[59][11].forecolor = Color::Blue;
+        data[58][11].forecolor = Color::Blue;
+        data[60][11].forecolor = Color::Blue;
         //effect
 
-        DrawText("Developed by", Vector2(1, GetSize().y -3), Colors::White, Colors::Black);
-        DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetSize().y -2), Colors::White, Colors::Black);
+        DrawText("Developed by", Vector2(1, GetSize().y -3), Color::White, Color::Black);
+        DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetSize().y -2), Color::White, Color::Black);
 
-        DrawTextRight(VERSION,Vector2(GetSize().x-2, GetSize().y-2), Colors::White, Colors::Black);
+        DrawTextRight(VERSION,Vector2(GetSize().x-2, GetSize().y-2), Color::White, Color::Black);
 
-        DrawTextCenter("Press space", Vector2(GetSize().x / 2, 19), Colors::White, Colors::Black);
+        DrawTextCenter("Press space", Vector2(GetSize().x / 2, 19), Color::White, Color::Black);
 
         Update();
         Clear();
@@ -294,12 +294,12 @@ void Console::ShowError(const string &text, const bool close = true)
     while(!Keyboard::GetKey(VK_SPACE))
     {
         this->Clear();
-        this->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Colors::White, Colors::Black);
-        this->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Colors::White, Colors::Black);
-        this->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Colors::White, Colors::Black);
-        this->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Colors::White, Colors::Black);
-        this->DrawTextCenter(text, Vector2(this->GetSize().x / 2, 15), Colors::Red, Colors::Black);
-        this->DrawTextRight(close?"Press space to close application":"Press space to continue", Vector2(this->GetSize().x -1, this->GetSize().y -1), Colors::White, Colors::Black);
+        this->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Color::White, Color::Black);
+        this->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Color::White, Color::Black);
+        this->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Color::White, Color::Black);
+        this->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Color::White, Color::Black);
+        this->DrawTextCenter(text, Vector2(this->GetSize().x / 2, 15), Color::Red, Color::Black);
+        this->DrawTextRight(close?"Press space to close application":"Press space to continue", Vector2(this->GetSize().x -1, this->GetSize().y -1), Color::White, Color::Black);
         this->Update();
         this->Clear();
     }
@@ -342,20 +342,20 @@ bool Console::ShowDialog(const string &title, const string &text, string &result
             result+= lastkey;
         }
 
-        this->Clear(Colors::White);
-        this->DrawTextCenter(       "******************************************"           ,Vector2(this->GetSize().x / 2, 5), Colors::Black, Colors::White);
-        this->DrawTextCenter(       "*                                        *"           , Vector2(this->GetSize().x / 2, 6), Colors::Black, Colors::White);
-        this->DrawTextCenter(title                                                         , Vector2(this->GetSize().x / 2, 6), Colors::Black, Colors::White);
+        this->Clear(Color::White);
+        this->DrawTextCenter("ษอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป", Vector2(this->GetSize().x / 2, 5), Color::Black, Color::White);
+        this->DrawTextCenter("บ                                                           บ", Vector2(this->GetSize().x / 2, 6), Color::Black, Color::White);
+        this->DrawTextCenter(title                                                         , Vector2(this->GetSize().x / 2, 6), Color::Black, Color::White);
 
-        this->DrawTextCenter("************************************************************", Vector2(this->GetSize().x / 2, 7), Colors::Black, Colors::White);
+        this->DrawTextCenter("ฬอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน", Vector2(this->GetSize().x / 2, 7), Color::Black, Color::White);
 
-        this->DrawTextCenter("*                                                          *", Vector2(this->GetSize().x / 2, 8), Colors::Black, Colors::White);
-        this->DrawTextCenter(text                                                          , Vector2(this->GetSize().x / 2, 8), Colors::Black, Colors::White);
-        this->DrawTextCenter("************************************************************", Vector2(this->GetSize().x / 2, 9), Colors::Black, Colors::White);
-        this->DrawTextCenter("*                                                          *", Vector2(this->GetSize().x / 2, 10), Colors::Black, Colors::White);
-        this->DrawTextCenter(result                                                        , Vector2(this->GetSize().x / 2, 10), Colors::Black, Colors::White);
-        this->DrawTextCenter("************************************************************", Vector2(this->GetSize().x / 2, 11), Colors::Black, Colors::White);
-        this->DrawTextCenter("Press ESC to cancel", Vector2(this->GetSize().x / 2, 12), Colors::Black, Colors::White);
+        this->DrawTextCenter("บ                                                           บ", Vector2(this->GetSize().x / 2, 8), Color::Black, Color::White);
+        this->DrawTextCenter(text                                                          , Vector2(this->GetSize().x / 2, 8), Color::Black, Color::White);
+        this->DrawTextCenter("ฬอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน", Vector2(this->GetSize().x / 2, 9), Color::Black, Color::White);
+        this->DrawTextCenter("บ                                                           บ", Vector2(this->GetSize().x / 2, 10), Color::Black, Color::White);
+        this->DrawTextCenter(result                                                        , Vector2(this->GetSize().x / 2, 10), Color::Black, Color::White);
+        this->DrawTextCenter("ศอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ", Vector2(this->GetSize().x / 2, 11), Color::Black, Color::White);
+        this->DrawTextCenter("Press ESC to cancel", Vector2(this->GetSize().x / 2, 12), Color::Black, Color::White);
 
         this->Update();
         lastkey = Keyboard::GetNextKey();

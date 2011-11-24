@@ -28,6 +28,7 @@ public:
     //revisar as funções abaixo da classe
     static char GetKey();
     static char GetNextKey();
+    static void WaitKey(char key);
 
     //static char TranslateKey(const char key);
 private:

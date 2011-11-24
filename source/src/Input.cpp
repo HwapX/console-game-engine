@@ -51,6 +51,11 @@ char Keyboard::GetKey()
     return(0);
 }
 
+void Keyboard::WaitKey(char key)
+{
+    while(!GetKey(key)){};
+}
+
 char Keyboard::GetNextKey()
 {
     char key = 0;

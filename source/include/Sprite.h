@@ -69,7 +69,8 @@ public:
     void FloodForecolor(const Vector2 &position, const color oldcolor, const color newcolor);
     void FloodCharacter(const Vector2 &position, const color oldchar, const color newchar);
 
-    void Clear(color backcolor, color forecolor);
+    void Clear(color backcolor, color forecolor, char character);
+    void Clear(color backcolor, char character);
     void Clear(color backcolor);
     void Clear();
 

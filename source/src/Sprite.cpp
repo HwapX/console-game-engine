@@ -40,7 +40,7 @@ bool Sprite::CreateFromTileset(Sprite &tileset, const Vector2 &tilesize, const u
     py = index / cx;
 
     this->AllocData(tilesize);
-    this->Clear(Colors::Transparent);
+    this->Clear(Color::Transparent);
     this->DrawSprite(tileset, Vector2(0, 0), Rect(Vector2(px * tilesize.x, py * tilesize.y), tilesize));
     return(true);
 }
@@ -106,12 +106,18 @@ bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position, const Rec
         {
             if((position.x + x < this->size.x) && (position.y + y < this->size.y) && (position.x + x >= 0 && position.y + y >= 0))
             {
-                if(sprite.data[x + rect.x][y + rect.y].backcolor != Colors::Transparent)
+                if(sprite.data[x + rect.x][y + rect.y].backcolor != Color::Transparent)
                 {
                     this->data[position.x + x][position.y + y].backcolor = sprite.data[x + rect.x][y + rect.y].backcolor;
                 }
-                this->data[position.x + x][position.y + y].forecolor = sprite.data[x + rect.x][y + rect.y].forecolor;
-                this->data[position.x + x][position.y + y].character = sprite.data[x + rect.x][y + rect.y].character;
+                if(sprite.data[x + rect.x][y + rect.y].character != 0)
+                {
+                    this->data[position.x + x][position.y + y].character = sprite.data[x + rect.x][y + rect.y].character;
+                }
+                if(sprite.data[x + rect.x][y + rect.y].forecolor != Color::Transparent)
+                {
+                    this->data[position.x + x][position.y + y].forecolor = sprite.data[x + rect.x][y + rect.y].forecolor;
+                }
             }
         }
     }
@@ -185,7 +191,7 @@ uint8_t Sprite::DrawText(const string &text, const Vector2 &position, const colo
         if((position.x + b) >= this->size.x)
             return(b);
         this->data[position.x + b][position.y].character = text[b];
-        if(backcolor != Colors::Transparent)
+        if(backcolor != Color::Transparent)
             this->data[position.x + b][position.y].backcolor = backcolor;
         this->data[position.x + b][position.y].forecolor = forecolor;
     }
@@ -215,7 +221,7 @@ uint8_t Sprite::DrawTextVert(const string &text, const Vector2 &position, const 
         if((position.y + b) >= this->size.y)
             return(b);
         this->data[position.x][position.y + b].character = text[b];
-        if(backcolor != Colors::Transparent)
+        if(backcolor != Color::Transparent)
             this->data[position.x][position.y + b].backcolor = backcolor;
         this->data[position.x][position.y + b].forecolor = forecolor;
     }
@@ -230,11 +236,6 @@ uint8_t Sprite::DrawTextVertCenter(const string &text, const Vector2 &position, 
 uint8_t Sprite::DrawTextVertTop(const string &text, const Vector2 &position, color forecolor, color backcolor)
 {
     return (this->DrawTextVert(text, Vector2(position.x, (position.y - (text.size() -1))), forecolor, backcolor));
-}
-
-void Sprite::Clear()
-{
-    this->Clear(Colors::Black);
 }
 
 void Sprite::FloodBackcolor(const Vector2 &position, const color oldcolor, const color newcolor)
@@ -392,13 +393,29 @@ bool Sprite::Resize(const Vector2 &newsize)
     return(true);
 }
 
+void Sprite::Clear()
+{
+    this->Clear(Color::Black);
+}
+
 void Sprite::Clear(color backcolor)
+{
+    this->Clear(backcolor, ' ');
+}
+
+void Sprite::Clear(color backcolor, char character)
+{
+    this->Clear(backcolor, Color::Gray, character);
+}
+
+void Sprite::Clear(color backcolor, color forecolor, char character)
 {
     for(register uint16_t x = 0; x < this->size.x; ++x)
     {
         for(register uint16_t y = 0; y < this->size.y; ++y)
         {
-            this->data[x][y].Reset();
+            this->data[x][y].character = character;
+            this->data[x][y].forecolor = forecolor;
             this->data[x][y].backcolor = backcolor;
         }
     }

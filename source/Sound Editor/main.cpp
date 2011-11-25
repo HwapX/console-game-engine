@@ -36,7 +36,7 @@ int main()
             string result;
             if(console.ShowDialog("Save File","Input the name of file!", result))
             {
-                track->Save("./Sound/" + result + ".cgea");
+                track->Save("./Sounds/" + result + ".cgea");
             }
         }
         else if(Keyboard::GetKey('L'))
@@ -45,7 +45,7 @@ int main()
             if(console.ShowDialog("Open File", "Input the name of file!", result))
             {
                 delete track;
-                track = new Sound("./Sound/" + result + ".cgea");
+                track = new Sound("./Sounds/" + result + ".cgea");
             }
         }
         if(Keyboard::GetKey('P'))

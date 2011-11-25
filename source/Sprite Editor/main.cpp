@@ -12,6 +12,10 @@
 
 #define CURSOR_ICON 0x7F
 #define COLOR_ICON 0x7F
+#define SELECTION_ICON 0xB0
+
+#define MIN_FPS 20
+#define MAX_FPS 30
 
 #define WORKSPACE_CHAR 0xB1
 
@@ -41,13 +45,11 @@ int main()
     //uint8_t tools = 0;
     bool selecttool = false, gridtool = false;
     uint32_t savetick = console.GetTick();
-
+    
     document->Clear(Color::White);
 
     while(!Keyboard::GetKey(VK_ESCAPE))
     {
-        console.DrawSprite(frame, Vector2(0, 0));
-
         if((console.GetTick() - savetick) > AUTO_SAVE_INTERVAL)
         {
             savetick = console.GetTick();
@@ -321,7 +323,8 @@ int main()
             if(doc_pos.x - document->GetSize().x < workspace.GetSize().x-1)
                 doc_pos.x++;
         }
-
+        
+        console.DrawSprite(frame, Vector2(0, 0));
         workspace.Clear(Color::White);
         workspace.FillCharacter(WORKSPACE_CHAR);
         workspace.DrawSprite(*document, doc_pos);
@@ -335,7 +338,7 @@ int main()
                     if((((x+1) % grid_size.x == 0) ||
                             ((y+1) % grid_size.y == 0)) && x < document->GetSize().x)
                     {
-                        workspace(Vector2(doc_pos.x + x+1, doc_pos.y + y)).character = '°';
+                        workspace(Vector2(doc_pos.x + x+1, doc_pos.y + y)).character = SELECTION_ICON;
                         workspace(Vector2(doc_pos.y + x+1, doc_pos.y + y)).forecolor = Color::Gray;
                     }
                 }
@@ -344,7 +347,7 @@ int main()
                     if(x == selection.x || y == selection.y ||
                             x == cursor.x || y == cursor.y)
                     {
-                        workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).character = '°';
+                        workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).character = SELECTION_ICON;
                         workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).forecolor = Color::Gray;
                     }
                 }
@@ -389,8 +392,8 @@ int main()
                          , Vector2(1, console.GetSize().y - 2), Color::Black, Color::White);
 
         //Show FPS
-        console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() > 59?Color::Green:Color::Red, Color::White);
-
+        console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() >= MIN_FPS?Color::Green:Color::Red, Color::White);
+        
         console.Update();
         if(!console.Focus())
         {

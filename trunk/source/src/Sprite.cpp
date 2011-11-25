@@ -419,7 +419,7 @@ bool Sprite::DoesItFit(Sprite& sprite, Vector2 position)
 
 void Sprite::Rotate(uint16_t graus)
 {
-    //Todo: Esta função deve fazer a rotação do sprite
+    //Todo: Esta funcao deve fazer a rotacao do sprite
 }
 
 void Sprite::Save(const string &filename)

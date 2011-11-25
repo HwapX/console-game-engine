@@ -7,8 +7,10 @@ void Console::PreInit()
     current_fps = 0;
     fps = 0;
     fps_time = 0;
+    lock_fps = 0;
+    sleep_time = 0;
     start_time = GetTick();
-    delta_time = 1;//?????????????????????
+    delta_time = 0;
     std::set_terminate(ExceptionHandler);
     output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     handle = GetConsoleWindow();
@@ -189,7 +191,7 @@ void Console::ShowLogo()
                 {
                     if(y == 0 || x == 0 || y == GetSize().y-1 || x == GetSize().x-1)
                     {
-                        this->GetPixel(Vector2(x, y)).character = '°';
+                        this->GetPixel(Vector2(x, y)).character = 'ï¿½';
                         this->GetPixel(Vector2(x, y)).forecolor = Color::Red;
                     }
                 }
@@ -205,10 +207,10 @@ void Console::ShowLogo()
             {
                 if(blink)
                 {
-                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 17), Color::DarkRed, Color::Transparent);
-                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 18), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°", Vector2(GetSize().x / 2, 17), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°", Vector2(GetSize().x / 2, 18), Color::DarkRed, Color::Transparent);
                     this->DrawTextCenter("Press space", Vector2(GetSize().x / 2, 18), Color::White, Color::Transparent);
-                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 19), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°", Vector2(GetSize().x / 2, 19), Color::DarkRed, Color::Transparent);
                 }
             }
 
@@ -292,29 +294,6 @@ void Console::ShowLogo()
 #endif
 }
 
-uint32_t Console::GetTick()
-{
-    static uint64_t tick_frequence = 0;
-    uint64_t counter = 0;
-    if(tick_frequence == 0)
-    {
-        if(!QueryPerformanceFrequency((LARGE_INTEGER*)&tick_frequence))
-        {
-            tick_frequence = 1000;
-        }
-    }
-
-    if(QueryPerformanceCounter((LARGE_INTEGER*)&counter))
-    {
-        return(counter / (tick_frequence / 1000));
-    }
-    else
-    {
-        return(GetTickCount());
-    }
-}
-
-
 void Console::ShowError(const string &text, const bool close = true)
 {
     this->Resize(Vector2(80,25));
@@ -371,18 +350,18 @@ bool Console::ShowDialog(const string &title, const string &text, string &result
         }
 
         this->Clear(Color::White);
-        this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2, 5), Color::Black, Color::White);
-        this->DrawTextCenter("º                                                           º", Vector2(this->GetSize().x / 2, 6), Color::Black, Color::White);
+        this->DrawTextCenter("Ã‰ÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ»", Vector2(this->GetSize().x / 2, 5), Color::Black, Color::White);
+        this->DrawTextCenter("Âº                                                           Âº", Vector2(this->GetSize().x / 2, 6), Color::Black, Color::White);
         this->DrawTextCenter(title                                                         , Vector2(this->GetSize().x / 2, 6), Color::Black, Color::White);
 
-        this->DrawTextCenter("ÌÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹", Vector2(this->GetSize().x / 2, 7), Color::Black, Color::White);
+        this->DrawTextCenter("ÃŒÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ¹", Vector2(this->GetSize().x / 2, 7), Color::Black, Color::White);
 
-        this->DrawTextCenter("º                                                           º", Vector2(this->GetSize().x / 2, 8), Color::Black, Color::White);
+        this->DrawTextCenter("Âº                                                           Âº", Vector2(this->GetSize().x / 2, 8), Color::Black, Color::White);
         this->DrawTextCenter(text                                                          , Vector2(this->GetSize().x / 2, 8), Color::Black, Color::White);
-        this->DrawTextCenter("ÌÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹", Vector2(this->GetSize().x / 2, 9), Color::Black, Color::White);
-        this->DrawTextCenter("º                                                           º", Vector2(this->GetSize().x / 2, 10), Color::Black, Color::White);
+        this->DrawTextCenter("ÃŒÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ¹", Vector2(this->GetSize().x / 2, 9), Color::Black, Color::White);
+        this->DrawTextCenter("Âº                                                           Âº", Vector2(this->GetSize().x / 2, 10), Color::Black, Color::White);
         this->DrawTextCenter(result                                                        , Vector2(this->GetSize().x / 2, 10), Color::Black, Color::White);
-        this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2, 11), Color::Black, Color::White);
+        this->DrawTextCenter("ÃˆÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ¼", Vector2(this->GetSize().x / 2, 11), Color::Black, Color::White);
         this->DrawTextCenter("Press ESC to cancel", Vector2(this->GetSize().x / 2, 12), Color::Black, Color::White);
 
         this->Update();
@@ -390,6 +369,28 @@ bool Console::ShowDialog(const string &title, const string &text, string &result
     }
 
     return(false);
+}
+
+uint32_t Console::GetTick()
+{
+    static uint64_t tick_frequence = 0;
+    uint64_t counter = 0;
+    if(tick_frequence == 0)
+    {
+        if(!QueryPerformanceFrequency((LARGE_INTEGER*)&tick_frequence))
+        {
+            tick_frequence = 1000;
+        }
+    }
+
+    if(QueryPerformanceCounter((LARGE_INTEGER*)&counter))
+    {
+        return(counter / (tick_frequence / 1000));
+    }
+    else
+    {
+        return(GetTickCount());
+    }
 }
 
 uint32_t Console::GetLifeTime()
@@ -400,6 +401,16 @@ uint32_t Console::GetLifeTime()
 uint32_t Console::GetDeltaTime()
 {
     return(this->delta_time);
+}
+
+uint16_t Console::GetCurrentFps()
+{
+    return(this->current_fps);
+}
+
+void Console::LockFps(uint8_t limit)
+{
+    this->lock_fps = limit;
 }
 
 bool Console::SetPosition(Vector2 position)
@@ -472,15 +483,10 @@ Vector2 Console::ScreenResolution()
     return(Vector2(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)));
 }
 
-uint16_t Console::GetCurrentFps()
-{
-    return(this->current_fps);
-}
-
 void Console::Update()
 {
     this->SetCursorPosition(Vector2(0, 0));
-    //TODO: fazer backup da posição anterior do cursor e restaurar novamente no final da função
+    //TODO: fazer backup da posiï¿½ï¿½o anterior do cursor e restaurar novamente no final da funï¿½ï¿½o
     CHAR_INFO winbuffer[this->size.y][this->size.x];
     //TODO:Corrigir o x e y invertido acima
 
@@ -504,6 +510,14 @@ void Console::Update()
         this->fps = 0;
     }
     ++this->fps;
+    if(lock_fps > 0)
+    {
+        sleep_time = (1000 / lock_fps) - (delta_time - sleep_time);
+        if(sleep_time > 0)
+        {
+            Sleep(sleep_time);
+        }
+    }
 }
 
 void Console::ExceptionHandler()

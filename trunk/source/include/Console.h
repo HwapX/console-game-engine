@@ -40,12 +40,14 @@ private:
     void PreInit();
     void PosInit();
 
-    uint32_t fps_time;
+    uint8_t lock_fps;
     uint16_t current_fps;
     uint16_t fps;
+    uint32_t fps_time;
     uint32_t start_time;
     uint32_t delta_time;//uint16_t
     uint32_t last_time;
+    int16_t sleep_time;
 
     Vector2 position;
 
@@ -70,7 +72,10 @@ public:
     uint32_t GetDeltaTime();//uint16_t
     uint32_t GetLifeTime();
     uint16_t GetCurrentFps();
-
+    void LockFps(uint8_t limit);
+    
+    void ShowDebugInfo();
+    
     Vector2 ScreenResolution();
     bool Resize(Vector2 size);
 

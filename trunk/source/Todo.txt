@@ -21,3 +21,5 @@ Pensar em colocar a classe engine herdando da classe sprite e se desfazer da var
 Criar cor invertida
 
 adicionar playfrom
+
+adicionar opção para travar fps

@@ -28,9 +28,10 @@ public:
 
     Vector2 GetSize();
 
-    bool PutPixel(const Vector2&, const Pixel&);
     Pixel &GetPixel(const Vector2&);
+    Pixel &GetPixel(uint16_t x, uint16_t y);
     Pixel &operator()(Vector2);
+    Pixel &operator()(uint16_t x, uint16_t y);
 
     Sprite(const string &filename);
     Sprite(const Vector2 &sprite_size);

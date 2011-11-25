@@ -1,7 +1,7 @@
 #include "Console.h"
 #include "Utils.h"
 
-#define AUTO_SAVE_INTERVAL 1000 * 60
+#define AUTO_SAVE_INTERVAL 60000
 
 #define TOOL_GRID 2
 #define TOOL_SELECT 4
@@ -74,21 +74,21 @@ int main()
             help.DrawText("U = Undo", Vector2(2, 15), Color::Black, Color::Transparent);
             help.DrawText("- = Previus Color", Vector2(2, 16), Color::Black, Color::Transparent);
             help.DrawText("+ = Next Color", Vector2(2, 17), Color::Black, Color::Transparent);
-            help.DrawText("F = Font Color", Vector2(2, 18), Color::Black, Color::Transparent);
+            help.DrawText("F = Foreground Color", Vector2(2, 18), Color::Black, Color::Transparent);
             help.DrawText("B = Background Color", Vector2(2, 19), Color::Black, Color::Transparent);
             help.DrawText("L = Replace Color", Vector2(2, 20), Color::Black, Color::Transparent);
             help.DrawText("D = Flood background", Vector2(2, 21), Color::Black, Color::Transparent);
-            help.DrawText("? = Flood font", Vector2(2, 22), Color::Black, Color::Transparent);
-            help.DrawText("? = Flood character", Vector2(2, 23), Color::Black, Color::Transparent);
+            help.DrawText("Q = Flood foreground", Vector2(2, 22), Color::Black, Color::Transparent);
+            help.DrawText("M = Flood character", Vector2(2, 23), Color::Black, Color::Transparent);
             help.DrawText("W = Write character", Vector2(2, 24), Color::Black, Color::Transparent);
 
             help.DrawText(". = Next character", Vector2(26, 4), Color::Black, Color::Transparent);
             help.DrawText(", = Previus character", Vector2(26, 5), Color::Black, Color::Transparent);
             help.DrawText("I = Input char code", Vector2(26, 6), Color::Black, Color::Transparent);
-//            help.DrawText("R = Resize", Vector2(26, 7), Color::Black, Color::Transparent);
-//            help.DrawText("A = Animate", Vector2(26, 8), Color::Black, Color::Transparent);
-//            help.DrawText("E = Select tool", Vector2(26, 9), Color::Black, Color::Transparent);
-//            help.DrawText("G = Grid tool", Vector2(26, 10), Color::Black, Color::Transparent);
+            help.DrawText("8 = Move document up", Vector2(26, 7), Color::Black, Color::Transparent);
+            help.DrawText("2 = Move document down", Vector2(26, 8), Color::Black, Color::Transparent);
+            help.DrawText("4 = Move document left", Vector2(26, 9), Color::Black, Color::Transparent);
+            help.DrawText("6 = Move document right", Vector2(26, 10), Color::Black, Color::Transparent);
 //            help.DrawText("J = Config Grid", Vector2(26, 11), Color::Black, Color::Transparent);
 //            help.DrawText("C = Copy", Vector2(26, 12), Color::Black, Color::Transparent);
 //            help.DrawText("X = Cut", Vector2(26, 13), Color::Black, Color::Transparent);
@@ -379,9 +379,9 @@ int main()
         }
 
         //Show the captions
-        console.DrawText("(N)ew (O)pen (S)ave (R)esize (A)nimate (C)opy (X)Cut (V)Paste S(e)lect (U)ndo", Vector2(1, 1), Color::Black, Color::White);
+        console.DrawText("(N)ew (O)pen (S)ave (R)esize S(e)lect (C)opy (X)Cut (V)Paste (U)ndo (H)elp", Vector2(1, 1), Color::Black, Color::White);
         console.DrawTextRight("Char", Vector2(console.GetSize().x - 4, 3), Color::Black, Color::White);
-        console.DrawText("(-)Previus (+)Next (F)ore (B)ack Rep(l)ace Floo(d) <(W)r(i)te> (G)rid(H)", Vector2(1, 5), Color::Black, Color::White);
+        console.DrawText("(-)Previus (+)Next (F)ore (B)ack Rep(l)ace Floo(d)", Vector2(1, 5), Color::Black, Color::White);
         console.DrawText("Size " + IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y) + " = " +
                          "Selection " + IntToStr(selection.x) + " x " + IntToStr(selection.y) + " = " +
                          "Cursor " + IntToStr(cursor.x) + " x " + IntToStr(cursor.y) + " = " +

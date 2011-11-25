@@ -3,9 +3,11 @@
 
 #include <string>
 #include <cstdlib>
+#include <cstdio>
 
 using namespace std;
 
-string IntToStr(uint32_t number);
+string IntToStr(const uint32_t number);
+string FloatToStr(const float number, const uint8_t places = 2);
 
 #endif // CGE_UTILS_H

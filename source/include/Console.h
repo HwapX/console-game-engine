@@ -19,6 +19,7 @@ using namespace std;
 #include "Animation.h"
 #include "Input.h"
 #include "Sound.h"
+#include "Utils.h"
 
 #define OLDLOGO
 
@@ -39,9 +40,12 @@ private:
     void PreInit();
     void PosInit();
 
-    uint16_t currentfps;
+    uint32_t fps_time;
+    uint16_t current_fps;
     uint16_t fps;
-    uint32_t fpstick;
+    uint32_t start_time;
+    uint32_t delta_time;//uint16_t
+    uint32_t last_time;
 
     Vector2 position;
 
@@ -59,12 +63,15 @@ public:
     void ShowError(const string &text, const bool close);
     bool ShowDialog(const string &title, const string &text, string &result);
 
-    static uint32_t GetTick();
     bool Focus();
     void WaitFocus();
-    uint16_t GetCurrentFps();
-    Vector2 ScreenResolution();
 
+    static uint32_t GetTick();
+    uint32_t GetDeltaTime();//uint16_t
+    uint32_t GetLifeTime();
+    uint16_t GetCurrentFps();
+
+    Vector2 ScreenResolution();
     bool Resize(Vector2 size);
 
     bool SetPosition(Vector2 position);
@@ -74,9 +81,6 @@ public:
     bool SetCursorSize(uint8_t size, bool visible);
 
     void Update();
-
-    //set font
-    //get font
 };
 
 }

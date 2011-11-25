@@ -328,19 +328,6 @@ void Sprite::FloodForecolor(const Vector2 &position, const color oldcolor, const
     }
 }
 
-bool Sprite::PutPixel(const Vector2 &coord, const Pixel &pixel_data)
-{
-    if((coord.x < this->size.x && coord.y < this->size.y) && !(coord.x < 0 && coord.y < 0))
-    {
-        this->data[coord.x][coord.y] = pixel_data;
-        return(true);
-    }
-    else
-    {
-        return(false);
-    }
-}
-
 Pixel &Sprite::GetPixel(const Vector2 &coord)
 {
     if((coord.x < this->size.x && coord.y < this->size.y) && (coord.x >= 0 && coord.y >= 0))

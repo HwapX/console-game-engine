@@ -4,15 +4,17 @@ using namespace ConsoleGameEngine;
 
 void Console::PreInit()
 {
+    current_fps = 0;
+    fps = 0;
+    fps_time = 0;
+    start_time = GetTick();
+    delta_time = 1;//?????????????????????
     std::set_terminate(ExceptionHandler);
     output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     handle = GetConsoleWindow();
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
     SetCursorSize(1, false);
     SetTitle("Console Game Engine");
-    currentfps = 0;
-    fps = 0;
-    fpstick = 0;
 }
 
 void Console::PosInit()
@@ -75,7 +77,7 @@ void Console::ShowLogo()
 {
 #ifndef OLDLOGO
     uint8_t colc = 0, colg = 0, effect = 0;
-    Sprite logo(Vector2(buffer->GetSize().x, 14)), blood(Vector2(buffer->GetSize().x - 2, buffer->GetSize().y- 2));
+    Sprite logo(Vector2(this->GetSize().x, 14)), blood(Vector2(this->GetSize().x - 2, this->GetSize().y- 2));
     uint32_t lasttick = GetTick(), blinktick = GetTick();
     bool blink = false;
 
@@ -111,11 +113,11 @@ void Console::ShowLogo()
                 {
                     for(register uint8_t y = 0; y < blood.GetSize().y; ++y)
                     {
-                        if(blood.data[x][y].backcolor != Color::Red)
+                        if(blood(Vector2(x, y)).backcolor != Color::Red)
                         {
                             if((std::rand() % 101) == 0)
                             {
-                                blood.data[x][y].backcolor = Color::Red;
+                                blood(Vector2(x, y)).backcolor = Color::Red;
                                 ++count;
                                 if(y > 10)
                                     bleed = false;
@@ -131,7 +133,7 @@ void Console::ShowLogo()
 
             }
 
-            buffer->DrawSprite(blood, Vector2(1, 1));
+            this->DrawSprite(blood, Vector2(1, 1));
 
             //console effect
             for(register uint8_t row = 2; row < 9; ++row)
@@ -140,13 +142,13 @@ void Console::ShowLogo()
                 {
                     if(row % 2)
                     {
-                        buffer->data[x][row].character = logo.data[x][row - 2].character;
-                        buffer->data[x][row].forecolor = logo.data[x][row - 2].forecolor;
+                        this->GetPixel(Vector2(x, row)).character = logo(Vector2(x, row - 2)).character;
+                        this->GetPixel(Vector2(x, row)).forecolor = logo(Vector2(x, row - 2)).forecolor;
                     }
                     else
                     {
-                        buffer->data[logo.GetSize().x - 1 - x][row].character = logo.data[logo.GetSize().x - 1 - x][row - 2].character;
-                        buffer->data[logo.GetSize().x - 1 - x][row].forecolor = logo.data[logo.GetSize().x - 1 - x][row - 2].forecolor;
+                        this->GetPixel(Vector2(logo.GetSize().x - 1 - x, row)).character = logo(Vector2(logo.GetSize().x - 1 - x, row - 2)).character;
+                        this->GetPixel(Vector2(logo.GetSize().x - 1 - x, row)).forecolor = logo(Vector2(logo.GetSize().x - 1 - x, row - 2)).forecolor;
                     }
                 }
             }
@@ -164,13 +166,13 @@ void Console::ShowLogo()
                     {
                         if(row % 2)
                         {
-                            buffer->data[x][row].character = logo.data[x][row - 2].character;
-                            buffer->data[x][row].forecolor = logo.data[x][row - 2].forecolor;
+                            this->GetPixel(Vector2(x, row)).character = logo(Vector2(x, row - 2)).character;
+                            this->GetPixel(Vector2(x, row)).forecolor = logo(Vector2(x, row - 2)).forecolor;
                         }
                         else
                         {
-                            buffer->data[logo.GetSize().x - 1 - x][row].character = logo.data[logo.GetSize().x - 1 - x][row - 2].character;
-                            buffer->data[logo.GetSize().x - 1 - x][row].forecolor = logo.data[logo.GetSize().x - 1 - x][row - 2].forecolor;
+                            this->GetPixel(Vector2(logo.GetSize().x - 1 - x, row)).character = logo(Vector2(logo.GetSize().x - 1 - x, row - 2)).character;
+                            this->GetPixel(Vector2(logo.GetSize().x - 1 - x, row)).forecolor = logo(Vector2(logo.GetSize().x - 1 - x, row - 2)).forecolor;
                         }
                     }
                 }
@@ -181,14 +183,14 @@ void Console::ShowLogo()
                     effect = 2;
             }
 
-            for(register uint8_t x = 0; x < GetWindowSize().x; ++x)
+            for(register uint8_t x = 0; x < GetSize().x; ++x)
             {
-                for(register uint8_t y = 0; y < GetWindowSize().y; ++y)
+                for(register uint8_t y = 0; y < GetSize().y; ++y)
                 {
-                    if(y == 0 || x == 0 || y == GetWindowSize().y-1 || x == GetWindowSize().x-1)
+                    if(y == 0 || x == 0 || y == GetSize().y-1 || x == GetSize().x-1)
                     {
-                        buffer->data[x][y].character = '°';
-                        buffer->data[x][y].forecolor = Color::Red;
+                        this->GetPixel(Vector2(x, y)).character = '°';
+                        this->GetPixel(Vector2(x, y)).forecolor = Color::Red;
                     }
                 }
             }
@@ -203,19 +205,19 @@ void Console::ShowLogo()
             {
                 if(blink)
                 {
-                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 17), Color::DarkRed, Color::Transparent);
-                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 18), Color::DarkRed, Color::Transparent);
-                    buffer->DrawTextCenter("Press space", Vector2(GetWindowSize().x / 2, 18), Color::White, Color::Transparent);
-                    buffer->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetWindowSize().x / 2, 19), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 17), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 18), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("Press space", Vector2(GetSize().x / 2, 18), Color::White, Color::Transparent);
+                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 19), Color::DarkRed, Color::Transparent);
                 }
             }
 
-            buffer->DrawText("Developed by", Vector2(1, GetWindowSize().y -3), Color::White, Color::Transparent);
-            buffer->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetWindowSize().y -2), Color::White, Color::Transparent);
+            this->DrawText("Developed by", Vector2(1, GetSize().y -3), Color::White, Color::Transparent);
+            this->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetSize().y -2), Color::White, Color::Transparent);
 
-            buffer->DrawTextRight(VERSION,Vector2(GetWindowSize().x-2, GetWindowSize().y-2), Color::White, Color::Transparent);
+            this->DrawTextRight(VERSION,Vector2(GetSize().x-2, GetSize().y-2), Color::White, Color::Transparent);
 
-            UpdateConsole();
+            this->Update();
         }
     }
 
@@ -259,6 +261,7 @@ void Console::ShowLogo()
         }
 
         for(register uint8_t y = 2; y < 17; ++y)
+        {
             for(register uint8_t x = 2; x < GetSize().x; ++x)
             {
                 if((col <= (GetSize().x / 2)) && x < col)
@@ -267,6 +270,7 @@ void Console::ShowLogo()
                     data[(GetSize().x-1) - x][y].forecolor = Color::Yellow;
                 }
             }
+        }
 
         data[59][10].forecolor = Color::Blue;
         data[59][11].forecolor = Color::Blue;
@@ -288,6 +292,29 @@ void Console::ShowLogo()
 #endif
 }
 
+uint32_t Console::GetTick()
+{
+    static uint64_t tick_frequence = 0;
+    uint64_t counter = 0;
+    if(tick_frequence == 0)
+    {
+        if(!QueryPerformanceFrequency((LARGE_INTEGER*)&tick_frequence))
+        {
+            tick_frequence = 1000;
+        }
+    }
+
+    if(QueryPerformanceCounter((LARGE_INTEGER*)&counter))
+    {
+        return(counter / (tick_frequence / 1000));
+    }
+    else
+    {
+        return(GetTickCount());
+    }
+}
+
+
 void Console::ShowError(const string &text, const bool close = true)
 {
     this->Resize(Vector2(80,25));
@@ -306,6 +333,7 @@ void Console::ShowError(const string &text, const bool close = true)
     if(close)
         exit(1);
 }
+
 
 bool Console::ShowDialog(const string &title, const string &text, string &result)
 {
@@ -364,9 +392,14 @@ bool Console::ShowDialog(const string &title, const string &text, string &result
     return(false);
 }
 
-uint32_t Console::GetTick()
+uint32_t Console::GetLifeTime()
 {
-    return(GetTickCount());
+    return(GetTick() - this->start_time);
+}
+
+uint32_t Console::GetDeltaTime()
+{
+    return(this->delta_time);
 }
 
 bool Console::SetPosition(Vector2 position)
@@ -441,7 +474,7 @@ Vector2 Console::ScreenResolution()
 
 uint16_t Console::GetCurrentFps()
 {
-    return(this->currentfps);
+    return(this->current_fps);
 }
 
 void Console::Update()
@@ -450,13 +483,6 @@ void Console::Update()
     //TODO: fazer backup da posição anterior do cursor e restaurar novamente no final da função
     CHAR_INFO winbuffer[this->size.y][this->size.x];
     //TODO:Corrigir o x e y invertido acima
-    if((this->GetTick() - this->fpstick) > 1000)
-    {
-        this->fpstick = this->GetTick();
-        this->currentfps = this->fps;
-        this->fps = 0;
-    }
-    this->fps++;
 
     for(register uint8_t x = 0; x < this->size.x; ++x)
         for(register uint8_t y = 0; y < this->size.y; ++y)
@@ -468,6 +494,16 @@ void Console::Update()
     COORD start = {0, 0};
     SMALL_RECT srect = {0, 0, this->size.x, this->size.y};
     WriteConsoleOutput(output_handle, (CHAR_INFO*)winbuffer, size, start, &srect);
+
+    this->delta_time = this->GetLifeTime() - this->last_time;
+    this->last_time = this->GetLifeTime();
+    if(last_time - fps_time > 1000)
+    {
+        this->current_fps = this->fps;
+        this->fps_time = this->GetLifeTime();
+        this->fps = 0;
+    }
+    ++this->fps;
 }
 
 void Console::ExceptionHandler()

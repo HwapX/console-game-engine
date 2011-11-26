@@ -78,6 +78,9 @@ Console::Console(const string &title, const Vector2 &position, const Vector2 &si
 void Console::ShowLogo()
 {
 #ifndef OLDLOGO
+
+    #define BORDER_CHAR 0xB0
+
     uint8_t colc = 0, colg = 0, effect = 0;
     Sprite logo(Vector2(this->GetSize().x, 14)), blood(Vector2(this->GetSize().x - 2, this->GetSize().y- 2));
     uint32_t lasttick = GetTick(), blinktick = GetTick();
@@ -191,7 +194,7 @@ void Console::ShowLogo()
                 {
                     if(y == 0 || x == 0 || y == GetSize().y-1 || x == GetSize().x-1)
                     {
-                        this->GetPixel(Vector2(x, y)).character = 'ï¿½';
+                        this->GetPixel(Vector2(x, y)).character = BORDER_CHAR;
                         this->GetPixel(Vector2(x, y)).forecolor = Color::Red;
                     }
                 }
@@ -207,10 +210,10 @@ void Console::ShowLogo()
             {
                 if(blink)
                 {
-                    this->DrawTextCenter("Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°", Vector2(GetSize().x / 2, 17), Color::DarkRed, Color::Transparent);
-                    this->DrawTextCenter("Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°", Vector2(GetSize().x / 2, 18), Color::DarkRed, Color::Transparent);
-                    this->DrawTextCenter("Press space", Vector2(GetSize().x / 2, 18), Color::White, Color::Transparent);
-                    this->DrawTextCenter("Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°Â°", Vector2(GetSize().x / 2, 19), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 17), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 18), Color::DarkRed, Color::Transparent);
+                    this->DrawTextCenter(  "Press space"  , Vector2(GetSize().x / 2, 18), Color::White, Color::Transparent);
+                    this->DrawTextCenter("°°°°°°°°°°°°°°°", Vector2(GetSize().x / 2, 19), Color::DarkRed, Color::Transparent);
                 }
             }
 
@@ -314,61 +317,138 @@ void Console::ShowError(const string &text, const bool close = true)
 }
 
 
-bool Console::ShowDialog(const string &title, const string &text, string &result)
+bool Console::InputDialog(const string &title, const string &text, string &result)
 {
-    result.clear();
     char lastkey = 0;
     bool cancel = false;
 
-    while(!cancel)
+    Sprite buffer_bkp(*this);
+
+    result.clear();
+
+    while(lastkey != '\n')
     {
         if(lastkey == VK_ESCAPE)
         {
             return(false);
         }
-        if(lastkey == '\n')
-        {
-            if(result.empty())
-            {
-                return(false);
-            }
-            else
-            {
-                return(true);
-            }
-        }
-        else if(lastkey == VK_BACK)
+        if(lastkey == VK_BACK)
         {
             if(result.size() > 0)
             {
                 result.erase(result.size() -1);
             }
         }
-        else if((lastkey > 64 && lastkey < 91) || (lastkey > 47 && lastkey < 58) || lastkey == ' ')
+        else if(lastkey == VK_LEFT)
+        {
+            cancel = false;
+        }
+        else if(lastkey == VK_RIGHT)
+        {
+            cancel = true;
+        }
+        else if(((lastkey > 64 && lastkey < 91) || (lastkey > 47 && lastkey < 58) || lastkey == ' ') && result.length() < 38)
         {
             result+= lastkey;
         }
 
-        this->Clear(Color::White);
-        this->DrawTextCenter("Ã‰ÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ»", Vector2(this->GetSize().x / 2, 5), Color::Black, Color::White);
-        this->DrawTextCenter("Âº                                                           Âº", Vector2(this->GetSize().x / 2, 6), Color::Black, Color::White);
-        this->DrawTextCenter(title                                                         , Vector2(this->GetSize().x / 2, 6), Color::Black, Color::White);
+        this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 -3), Color::Black, Color::White);
+        this->DrawTextCenter("º                                        º", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 -2), Color::Black, Color::White);
+        this->DrawTextCenter(title                                       , Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 -2), Color::Black, Color::White);
+        this->DrawTextCenter("ÌÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 -1), Color::Black, Color::White);
+        this->DrawTextCenter("º                                        º", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2), Color::Black, Color::White);
+        this->DrawTextCenter(text                                        , Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2), Color::Black, Color::White);
+        this->DrawTextCenter("ÌÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +1), Color::Black, Color::White);
+        this->DrawTextCenter("º                                        º", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +2), Color::Black, Color::White);
+        this->DrawTextCenter(result + TEXT_CURSOR                        , Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +2), Color::Black, Color::White);
+        this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +3), Color::Black, Color::White);
 
-        this->DrawTextCenter("ÃŒÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ¹", Vector2(this->GetSize().x / 2, 7), Color::Black, Color::White);
 
-        this->DrawTextCenter("Âº                                                           Âº", Vector2(this->GetSize().x / 2, 8), Color::Black, Color::White);
-        this->DrawTextCenter(text                                                          , Vector2(this->GetSize().x / 2, 8), Color::Black, Color::White);
-        this->DrawTextCenter("ÃŒÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ¹", Vector2(this->GetSize().x / 2, 9), Color::Black, Color::White);
-        this->DrawTextCenter("Âº                                                           Âº", Vector2(this->GetSize().x / 2, 10), Color::Black, Color::White);
-        this->DrawTextCenter(result                                                        , Vector2(this->GetSize().x / 2, 10), Color::Black, Color::White);
-        this->DrawTextCenter("ÃˆÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÃÂ¼", Vector2(this->GetSize().x / 2, 11), Color::Black, Color::White);
-        this->DrawTextCenter("Press ESC to cancel", Vector2(this->GetSize().x / 2, 12), Color::Black, Color::White);
+        this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +5), Color::Black, Color::White);
+        this->DrawTextCenter("º        º", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +6), Color::Black, Color::White);
+        this->DrawTextCenter( "Cancel"  , Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +6), cancel?Color::White:Color::Black, cancel?Color::Black:Color::White);
+        this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +7), Color::Black, Color::White);
+        this->DrawTextCenter("\x1B    \x1A", Vector2(this->GetSize().x / 2, this->GetSize().y / 2 +6), Color::Black, Color::White);
+
+        this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +5), Color::Black, Color::White);
+        this->DrawTextCenter("º        º", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +6), Color::Black, Color::White);
+        this->DrawTextCenter( "  Ok  "  , Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +6), cancel?Color::Black:Color::White, cancel?Color::White:Color::Black);
+        this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +7), Color::Black, Color::White);
 
         this->Update();
         lastkey = Keyboard::GetNextKey();
     }
 
-    return(false);
+    this->DrawSprite(buffer_bkp, Vector2(0, 0));
+
+    return(!cancel && !result.empty());
+}
+
+bool Console::MsgDialog(const string &title, const string &text, const bool only_ok)
+{
+    char lastkey = 0;
+    bool cancel = false;
+    Sprite buffer_bkp(*this);
+
+    buffer_bkp = *this;
+
+    while(lastkey != '\n' && lastkey != ' ')
+    {
+        this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 -2), Color::Black, Color::White);
+        this->DrawTextCenter("º                                        º", Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 -1), Color::Black, Color::White);
+        this->DrawTextCenter(title                                       , Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 -1), Color::Black, Color::White);
+        this->DrawTextCenter("ÌÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹", Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2), Color::Black, Color::White);
+        this->DrawTextCenter("º                                        º", Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 +1), Color::Black, Color::White);
+        this->DrawTextCenter(text                                        , Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 +1), Color::Black, Color::White);
+        this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 +2), Color::Black, Color::White);
+
+        if(only_ok)
+        {
+            this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +4), Color::Black, Color::White);
+            this->DrawTextCenter("º        º", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +5), Color::Black, Color::White);
+            this->DrawTextCenter( "  Ok  "   , Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +5),  Color::White, Color::Black);
+            this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +6), Color::Black, Color::White);
+        }
+        else
+        {
+            if(lastkey == VK_LEFT)
+            {
+                cancel = false;
+            }
+            else if(lastkey == VK_RIGHT)
+            {
+                cancel = true;
+            }
+            this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +4), Color::Black, Color::White);
+            this->DrawTextCenter("º        º", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +5), Color::Black, Color::White);
+            this->DrawTextCenter( "Cancel"  , Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +5), cancel?Color::White:Color::Black, cancel?Color::Black:Color::White);
+            this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +6), Color::Black, Color::White);
+            this->DrawTextCenter("\x1B    \x1A", Vector2(this->GetSize().x / 2, this->GetSize().y / 2 +7), Color::Black, Color::White);
+
+            this->DrawTextCenter("ÉÍÍÍÍÍÍÍÍ»", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +4), Color::Black, Color::White);
+            this->DrawTextCenter("º        º", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +5), Color::Black, Color::White);
+            this->DrawTextCenter( "  Ok  "  , Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +5), cancel?Color::Black:Color::White, cancel?Color::White:Color::Black);
+            this->DrawTextCenter("ÈÍÍÍÍÍÍÍÍ¼", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +6), Color::Black, Color::White);
+        }
+
+        this->Update();
+        lastkey = Keyboard::GetNextKey();
+    }
+
+    this->DrawSprite(buffer_bkp, Vector2(0, 0));
+    return(!cancel);
+}
+
+void Console::DrawDebugInfo()
+{
+    this->DrawText("Frames per second: " + IntToStr(current_fps), Vector2(0, 0), Color::White, Color::Black);
+    this->DrawText("Delta time: " + IntToStr(delta_time), Vector2(0, 1), Color::White, Color::Black);
+    this->DrawText("Life time: " + IntToStr(this->GetLifeTime()), Vector2(0, 2), Color::White, Color::Black);
+    this->DrawText("Locked Frame: " + lock_fps > 0?"Yes":"No", Vector2(0, 3), lock_fps > 0?Color::Green:Color::Red, Color::Black);
+    this->DrawText("Locked Frame at: " + IntToStr(lock_fps), Vector2(0, 4), Color::White, Color::Black);
+    this->DrawText("Sleep interval: " + IntToStr(sleep_time), Vector2(0, 5), Color::White, Color::Black);
+    this->DrawText("Buffer memory: " + sizeof(Pixel) * size.x * size.y, Vector2(0, 6), Color::White, Color::Black);
+    this->DrawText(": " + IntToStr(sleep_time), Vector2(0, 7), Color::White, Color::Black);
 }
 
 uint32_t Console::GetTick()
@@ -486,7 +566,7 @@ Vector2 Console::ScreenResolution()
 void Console::Update()
 {
     this->SetCursorPosition(Vector2(0, 0));
-    //TODO: fazer backup da posiï¿½ï¿½o anterior do cursor e restaurar novamente no final da funï¿½ï¿½o
+    //TODO: fazer backup da posicao anterior do cursor e restaurar novamente no final da funcao
     CHAR_INFO winbuffer[this->size.y][this->size.x];
     //TODO:Corrigir o x e y invertido acima
 
@@ -506,7 +586,7 @@ void Console::Update()
     if(last_time - fps_time > 1000)
     {
         this->current_fps = this->fps;
-        this->fps_time = this->GetLifeTime();
+        this->fps_time = this->last_time;
         this->fps = 0;
     }
     ++this->fps;

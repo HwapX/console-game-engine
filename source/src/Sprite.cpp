@@ -2,6 +2,13 @@
 
 using namespace ConsoleGameEngine;
 
+Sprite::Sprite(Sprite &sprite)
+{
+    //AllocData(sprite.GetSize());
+    data = NULL;
+    *this = sprite;
+}
+
 Sprite::Sprite(const string &filename)
 {
     Vector2 temp_size;
@@ -78,19 +85,22 @@ Vector2 Sprite::GetSize()
     return(size);
 }
 
-void Sprite::DeallocData(const uint16_t size_x)
+void Sprite::DeallocData()
 {
-    for(register uint16_t i = 0; i < size_x; ++i)
+    if(this->data != NULL)
     {
-        delete [] this->data[i];
+        for(register uint16_t i = 0; i < size.x; ++i)
+        {
+            delete [] this->data[i];
+        }
+        delete [] this->data;
+        this->size = Vector2(0, 0);
     }
-    delete [] this->data;
-    this->size = Vector2(0, 0);
 }
 
 Sprite::~Sprite()
 {
-    DeallocData(this->size.x);
+    DeallocData();
 }
 
 bool Sprite::DrawSprite(const Sprite &sprite, const Vector2 &position)
@@ -189,11 +199,21 @@ uint8_t Sprite::DrawText(const string &text, const Vector2 &position, const colo
     for(b = 0; b < len; ++b)
     {
         if((position.x + b) >= this->size.x)
+        {
             return(b);
-        this->data[position.x + b][position.y].character = text[b];
+        }
+//        if(text[b] != '\0')
+//        {
+            this->data[position.x + b][position.y].character = text[b];
+//        }
         if(backcolor != Color::Transparent)
+        {
             this->data[position.x + b][position.y].backcolor = backcolor;
-        this->data[position.x + b][position.y].forecolor = forecolor;
+        }
+        if(forecolor != Color::Transparent)
+        {
+            this->data[position.x + b][position.y].forecolor = forecolor;
+        }
     }
     return b;
 }
@@ -345,6 +365,14 @@ Pixel &Sprite::operator()(Vector2 coord)
     return(this->GetPixel(coord));
 }
 
+Sprite &Sprite::operator=(Sprite &sprite)
+{
+    this->DeallocData();
+    this->AllocData(sprite.GetSize());
+    this->DrawSprite(sprite, Vector2(0, 0));
+    return(*this);
+}
+
 void Sprite::ReplaceBackcolor(const color oldcolor, const color newcolor)
 {
     for(register uint16_t x = 0; x < this->size.x; ++x)
@@ -374,7 +402,7 @@ bool Sprite::Resize(const Vector2 &newsize)
     Sprite bkp(this->size);
 
     bkp.DrawSprite(*this, Vector2(0, 0));
-    this->DeallocData(this->size.x);
+    this->DeallocData();
     this->AllocData(newsize);
     this->DrawSprite(bkp, Vector2(0, 0));
     return(true);

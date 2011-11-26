@@ -25,6 +25,8 @@ using namespace std;
 
 #define VERSION "Version beta 0.8"
 
+#define TEXT_CURSOR "\x16"
+
 namespace ConsoleGameEngine
 {
 
@@ -63,7 +65,8 @@ public:
 
     void ShowLogo();
     void ShowError(const string &text, const bool close);
-    bool ShowDialog(const string &title, const string &text, string &result);
+    bool InputDialog(const string &title, const string &text, string &result);
+    bool MsgDialog(const string &title, const string &text, const bool only_ok = true);
 
     bool Focus();
     void WaitFocus();
@@ -73,9 +76,9 @@ public:
     uint32_t GetLifeTime();
     uint16_t GetCurrentFps();
     void LockFps(uint8_t limit);
-    
-    void ShowDebugInfo();
-    
+
+    void DrawDebugInfo();
+
     Vector2 ScreenResolution();
     bool Resize(Vector2 size);
 

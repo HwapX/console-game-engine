@@ -1,1 +1,3 @@
 Criar menu de ajuda
+
+adicionar regua

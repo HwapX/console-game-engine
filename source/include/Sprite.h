@@ -23,7 +23,7 @@ protected:
     Vector2 size;
     Pixel** data;
     bool AllocData(const Vector2 &data_size);
-    void DeallocData(const uint16_t size_x);
+    void DeallocData();
 public:
 
     Vector2 GetSize();
@@ -32,7 +32,9 @@ public:
     Pixel &GetPixel(uint16_t x, uint16_t y);
     Pixel &operator()(Vector2);
     Pixel &operator()(uint16_t x, uint16_t y);
+    Sprite &operator=(Sprite &sprite);
 
+    Sprite(Sprite &sprite);
     Sprite(const string &filename);
     Sprite(const Vector2 &sprite_size);
     Sprite(Sprite &tileset, const Vector2 &tilesize, const uint8_t index);

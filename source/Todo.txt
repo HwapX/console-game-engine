@@ -14,12 +14,20 @@ ascii art
 
 passar copia dos dados do som
 
-Pegar a posição atual do som tocado pela soma de todos as notas até todas até o momento
+Pegar o tempo atual do som tocado pela soma de todos as notas até todas até o momento
 
-Pensar em colocar a classe engine herdando da classe sprite e se desfazer da variavel buffer
+Invert Color =
 
-Criar cor invertida
+PlayFrom =
 
-adicionar playfrom
+Lock FPS = OK
 
-adicionar opção para travar fps
+Find the memory leak
+
+Adicionar opção de sound loop
+
+Abrir arquivo passado como argumento para o programa
+
+Corrigir grade
+
+Show error statica

@@ -31,3 +31,7 @@ Abrir arquivo passado como argumento para o programa
 Corrigir grade
 
 Show error statica
+
+pensar e muito se devo permitir a escrita direta no console em vez do buffer
+
+ver event type na leitura do teclado focus

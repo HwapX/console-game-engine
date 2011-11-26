@@ -36,7 +36,8 @@ namespace ConsoleGameEngine
 class Console : public Sprite
 {
 private:
-    HANDLE output_handle;
+    HANDLE out_handle;
+    HANDLE in_handle;
     HWND handle;
 
     void PreInit();
@@ -77,7 +78,7 @@ public:
     uint16_t GetCurrentFps();
     void LockFps(uint8_t limit);
 
-    void DrawDebugInfo();
+    void ShowDebugInfo();
 
     Vector2 ScreenResolution();
     bool Resize(Vector2 size);

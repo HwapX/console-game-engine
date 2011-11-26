@@ -12,7 +12,8 @@ void Console::PreInit()
     start_time = GetTick();
     delta_time = 0;
     std::set_terminate(ExceptionHandler);
-    output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    in_handle = GetStdHandle(STD_INPUT_HANDLE);
     handle = GetConsoleWindow();
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
     SetCursorSize(1, false);
@@ -439,7 +440,7 @@ bool Console::MsgDialog(const string &title, const string &text, const bool only
     return(!cancel);
 }
 
-void Console::DrawDebugInfo()
+void Console::ShowDebugInfo()
 {
     this->DrawText("Frames per second: " + IntToStr(current_fps), Vector2(0, 0), Color::White, Color::Black);
     this->DrawText("Delta time: " + IntToStr(delta_time), Vector2(0, 1), Color::White, Color::Black);
@@ -509,9 +510,9 @@ bool Console::Resize(Vector2 new_size)
 
     COORD coord = {new_size.x, new_size.y};
 
-    if(SetConsoleScreenBufferSize(output_handle, coord))
+    if(SetConsoleScreenBufferSize(out_handle, coord))
     {
-        if(SetConsoleWindowInfo(output_handle, TRUE, &displayarea))
+        if(SetConsoleWindowInfo(out_handle, TRUE, &displayarea))
         {
             if(this->size.x != new_size.x || this->size.y != new_size.y)
             {
@@ -538,13 +539,13 @@ void Console::WaitFocus()
 
 bool Console::SetTextColor (color forecolor, color backcolor)
 {
-    return (SetConsoleTextAttribute (output_handle, forecolor | backcolor << 4) == TRUE);
+    return (SetConsoleTextAttribute (out_handle, forecolor | backcolor << 4) == TRUE);
 }
 
 bool Console::SetCursorPosition(Vector2 position)
 {
     COORD coord = {position.x, position.y};
-    return (SetConsoleCursorPosition(output_handle, coord) == TRUE);
+    return (SetConsoleCursorPosition(out_handle, coord) == TRUE);
 }
 
 bool Console::SetTitle(const string &title)
@@ -555,7 +556,7 @@ bool Console::SetTitle(const string &title)
 bool Console::SetCursorSize(uint8_t size, bool visible)
 {
     CONSOLE_CURSOR_INFO cursorinfo = { size, visible };
-    return (SetConsoleCursorInfo (output_handle, &cursorinfo) == TRUE);
+    return (SetConsoleCursorInfo (out_handle, &cursorinfo) == TRUE);
 }
 
 Vector2 Console::ScreenResolution()
@@ -579,7 +580,7 @@ void Console::Update()
     COORD size = {this->size.x, this->size.y};
     COORD start = {0, 0};
     SMALL_RECT srect = {0, 0, this->size.x, this->size.y};
-    WriteConsoleOutput(output_handle, (CHAR_INFO*)winbuffer, size, start, &srect);
+    WriteConsoleOutput(out_handle, (CHAR_INFO*)winbuffer, size, start, &srect);
 
     this->delta_time = this->GetLifeTime() - this->last_time;
     this->last_time = this->GetLifeTime();

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <windows.h>
 
+#define TRANSPARENT_CHAR 0xFF
 
 using namespace std;
 

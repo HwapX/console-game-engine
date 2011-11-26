@@ -21,7 +21,7 @@
 
 using namespace ConsoleGameEngine;
 
-int main()
+int main(int argc, char* argv[])
 {
     Console console("Console Game Engine Sprite Editor");
     console.Resize(Vector2(80, 50));
@@ -36,7 +36,7 @@ int main()
     Vector2 doc_pos((workspace.GetSize().x - document->GetSize().x) / 2, 0);
 
     Sprite *clipboard = new Sprite(Vector2(0, 0));
-    Sprite sprite_undo(document->GetSize());
+    Sprite sprite_undo(*document);
 
     color current_color = 0;
     char current_char = 0;
@@ -45,7 +45,7 @@ int main()
     //uint8_t tools = 0;
     bool selecttool = false, gridtool = false;
     uint32_t savetick = console.GetTick();
-    
+
     document->Clear(Color::White);
 
     while(!Keyboard::GetKey(VK_ESCAPE))
@@ -127,7 +127,7 @@ int main()
             string result;
             Vector2 new_size;
 
-            if(console.ShowDialog("Resize document", "Input new size (width X height)", result))
+            if(console.InputDialog("Resize document", "Input new size (width X height)", result))
             {
                 sscanf(result.c_str(), "%hd X %hd", &new_size.x, &new_size.y);
                 cursor = Vector2();
@@ -200,20 +200,19 @@ int main()
         }
         else if(Keyboard::GetKey('V'))
         {
-            sprite_undo.DrawSprite(*document, Vector2(0, 0));
+            sprite_undo = *document;
             document->DrawSprite(*clipboard, cursor);
         }
         else if(Keyboard::GetKey('D'))
         {
-            sprite_undo.DrawSprite(*document, Vector2(0, 0));
+            sprite_undo = *document;
             document->FloodBackcolor(cursor, document->GetPixel(Vector2(cursor.x, cursor.y)).backcolor, current_color);
         }
         else if(Keyboard::GetKey('U'))
         {
-            Sprite temp(document->GetSize());
-            temp.DrawSprite(*document, Vector2(0, 0));
-            document->DrawSprite(sprite_undo, Vector2(0, 0));
-            sprite_undo.DrawSprite(temp, Vector2(0, 0));
+            Sprite temp(*document);
+            *document = sprite_undo;
+            sprite_undo = temp;
         }
         else if(Keyboard::GetKey('A'))
         {
@@ -222,13 +221,13 @@ int main()
             uint16_t start = 0, count = 0;
             uint16_t interval = 0;
 
-            if(console.ShowDialog("Preview Animation", "input tile size (width X height)", result))
+            if(console.InputDialog("Preview Animation", "input tile size (width X height)", result))
             {
                 sscanf(result.c_str(), "%hd X %hd", &tilesize.x, &tilesize.y);
-                if(console.ShowDialog("Preview Animation", "input frames (start X count)", result))
+                if(console.InputDialog("Preview Animation", "input frames (start X count)", result))
                 {
                     sscanf(result.c_str(), "%hd X %hd", &start, &count);
-                    if(console.ShowDialog("Preview Animation", "input interval (interval)", result))
+                    if(console.InputDialog("Preview Animation", "input interval (interval)", result))
                     {
                         sscanf(result.c_str(), "%hd", &interval);
                         Animation preview(*document, tilesize, start, count, interval);
@@ -247,7 +246,7 @@ int main()
         {
             string result;
 
-            if(console.ShowDialog("Grid size", "Input grid size (width X height)", result))
+            if(console.InputDialog("Grid size", "Input grid size (width X height)", result))
             {
                 sscanf(result.c_str(), "%hd X %hd", &grid_size.x, &grid_size.y);
             }
@@ -259,7 +258,7 @@ int main()
         else if(Keyboard::GetKey('S'))
         {
             string result;
-            if(console.ShowDialog("Save File","Input the name of file!", result))
+            if(console.InputDialog("Save File","Input the name of file!", result))
             {
                 document->Save("./sprites/" + result + ".cges");
             }
@@ -267,11 +266,18 @@ int main()
         else if(Keyboard::GetKey('O'))
         {
             string result;
-            if(console.ShowDialog("Open File", "Input the name of file!", result))
+            if(console.InputDialog("Open File", "Input the name of file!", result))
             {
-                sprite_undo.DrawSprite(*document, Vector2(0, 0));
+                sprite_undo = *document;
                 delete document;
-                document = new Sprite("./sprites/" + result + ".cges");
+                try
+                {
+                    document = new Sprite("./sprites/" + result + ".cges");
+                }
+                catch(...){
+                    console.MsgDialog("Error", "Cant open the file");
+                    document = new Sprite(sprite_undo);
+                }
             }
         }
         else if(Keyboard::GetKey(','))
@@ -323,7 +329,7 @@ int main()
             if(doc_pos.x - document->GetSize().x < workspace.GetSize().x-1)
                 doc_pos.x++;
         }
-        
+
         console.DrawSprite(frame, Vector2(0, 0));
         workspace.Clear(Color::White);
         workspace.FillCharacter(WORKSPACE_CHAR);
@@ -368,7 +374,8 @@ int main()
         console.DrawSprite(workspace, Vector2(1, 7));
 
         console(Vector2(console.GetSize().x - 2, 3)).character = current_char;
-        //console(Vector2(console.GetSize().x - 2, 3)).forecolor = current_color;
+        console(Vector2(console.GetSize().x - 2, 3)).forecolor = Color::Black;
+        console.DrawTextRight(IntToStr(current_char), Vector2(console.GetSize().x - 2, 5), Color::Black, Color::Transparent);
 
         //draw the color palette
         for(uint8_t c = 0; c < 18; ++c)
@@ -393,7 +400,7 @@ int main()
 
         //Show FPS
         console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() >= MIN_FPS?Color::Green:Color::Red, Color::White);
-        
+
         console.Update();
         if(!console.Focus())
         {

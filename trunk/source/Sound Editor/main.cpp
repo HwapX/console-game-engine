@@ -1,9 +1,9 @@
 #include "Console.h"
 #include "Utils.h"
 
-#define CURSOR_ICON 0xDB//0xFE//0x7F
+#define CURSOR_ICON 0x0D//0xDB//0xFE//0x7F
 
-#define NOTE_ICON 0xF4
+#define NOTE_ICON 0x0E//0xF4
 
 using namespace ConsoleGameEngine;
 
@@ -34,7 +34,7 @@ int main()
         if(Keyboard::GetKey('S'))
         {
             string result;
-            if(console.ShowDialog("Save File","Input the name of file!", result))
+            if(console.InputDialog("Save File","Input the name of file!", result))
             {
                 track->Save("./Sounds/" + result + ".cgea");
             }
@@ -42,7 +42,7 @@ int main()
         else if(Keyboard::GetKey('L'))
         {
             string result;
-            if(console.ShowDialog("Open File", "Input the name of file!", result))
+            if(console.InputDialog("Open File", "Input the name of file!", result))
             {
                 delete track;
                 track = new Sound("./Sounds/" + result + ".cgea");

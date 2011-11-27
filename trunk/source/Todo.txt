@@ -35,3 +35,27 @@ Show error statica
 pensar e muito se devo permitir a escrita direta no console em vez do buffer
 
 ver event type na leitura do teclado focus
+
+tratar teclas ctrol alt etc..
+
+Refletir se é necessario limpar o buffer na função WaitKey
+
+adicionar opção de cor nas caixas de dialogo
+
+criar backup na hora de salvar caso o arquivo já exista, adicionar pergunta se a pessoa deseja salvar por cima do antigo arquivo
+
+implementar suporte ao mouse na engine e no editor
+
+verificar funçaõ IntToHex
+
+adicionar opção load na classe sprite
+
+implementar suporte a quebra de linha no DrawText
+
+permitir o carregamento de arquivos de recurso imbutidos
+
+criar um conversor de imagens
+
+carregar formato art
+
+

@@ -7,7 +7,7 @@
 
 /*Necessario para VK_OEM_PLUS e VK_OEM_MINUS*/
 #ifndef WINVER
-    #define WINVER 0x0501
+#define WINVER 0x0501
 #endif
 
 #include <windows.h>
@@ -33,11 +33,10 @@ namespace ConsoleGameEngine
 /**
 *the main class
 */
-class Console : public Sprite
+class Console : public Sprite, public Input
 {
 private:
     HANDLE out_handle;
-    HANDLE in_handle;
     HWND handle;
 
     void PreInit();
@@ -65,9 +64,11 @@ public:
     Console(const string &title, const Vector2 &position, const Vector2 &size);
 
     void ShowLogo();
-    void ShowError(const string &text, const bool close);
-    bool InputDialog(const string &title, const string &text, string &result);
+    static void ShowError(const string &text, const bool close = true);
+    bool InputDialog(const string &title, const string &text, string &result, uint8_t number_base = 0);
+    bool InputDialog(const string title, const string text, int32_t &result);
     bool MsgDialog(const string &title, const string &text, const bool only_ok = true);
+    void ShowDebugInfo();
 
     bool Focus();
     void WaitFocus();
@@ -77,8 +78,6 @@ public:
     uint32_t GetLifeTime();
     uint16_t GetCurrentFps();
     void LockFps(uint8_t limit);
-
-    void ShowDebugInfo();
 
     Vector2 ScreenResolution();
     bool Resize(Vector2 size);

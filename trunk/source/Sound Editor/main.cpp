@@ -10,6 +10,7 @@ using namespace ConsoleGameEngine;
 int main()
 {
     Console console("Console Game Engine Sound Editor", Vector2(80, 37));
+    Input &input = console;
 
     Sprite frame("./frame.cges");
 
@@ -21,35 +22,34 @@ int main()
     Vector2 cursor;
     Note current_note(0, 500);
 
+    string input_result;
+
     for(uint8_t i = 0; i < track->GetSize(); ++i)
     {
         track->ReplaceNote(i, Note(i*100 + 2000, 300));
     }
 
-    while(!Keyboard::GetKey(VK_ESCAPE))
+    while(!input.GetKey(Key::Escape))
     {
         console.DrawSprite(frame, Vector2(0, 0));
         table.Clear(Color::Transparent, 0);
 
-        if(Keyboard::GetKey('S'))
+        switch(ToUpper(input.GetChar()))
         {
-            string result;
-            if(console.InputDialog("Save File","Input the name of file!", result))
+        case 'S':
+            if(console.InputDialog("Save File","Input the name of file!", input_result))
             {
-                track->Save("./Sounds/" + result + ".cgea");
+                track->Save("./Sounds/" + input_result + ".cgea");
             }
-        }
-        else if(Keyboard::GetKey('L'))
-        {
-            string result;
-            if(console.InputDialog("Open File", "Input the name of file!", result))
+            break;
+        case 'L':
+            if(console.InputDialog("Open File", "Input the name of file!", input_result))
             {
                 delete track;
-                track = new Sound("./Sounds/" + result + ".cgea");
+                track = new Sound("./Sounds/" + input_result + ".cgea");
             }
-        }
-        if(Keyboard::GetKey('P'))
-        {
+            break;
+        case 'P':
             if(track->IsPlaying() && !track->Paused())
             {
                 track->Pause();
@@ -58,73 +58,80 @@ int main()
             {
                 track->Play();
             }
-        }
-        else if(Keyboard::GetKey('O'))
-        {
+            break;
+        case 'O':
             track->Stop();
-        }
-        else if(Keyboard::GetKey('Y'))
-        {
+            break;
+        case 'Y':
             //tocar nota atual da faixa
-            Sound note(1);
-            note.ReplaceNote(0, track->GetNote(cursor.x));
-            note.Play(true);
-        }
-        else if(Keyboard::GetKey('T'))
-        {
+            {
+                Sound note(1);
+                note.ReplaceNote(0, track->GetNote(cursor.x));
+                note.Play(true);
+            }
+        break;
+        case 'T':
             //tocar nota atual
-            Sound note(1);
-            note.ReplaceNote(0, current_note);
-            note.Play(true);
-        }
-        else if(Keyboard::GetKey('N'))
-        {
+            {
+                Sound note(1);
+                note.ReplaceNote(0, current_note);
+                note.Play(true);
+            }
+        break;
+        case 'N':
             track->ReplaceNote(cursor.x , Note(0, current_note.duration));
-        }
-        else if(Keyboard::GetKey(' '))
-        {
+            break;
+        case ' ':
             track->ReplaceNote(cursor.x , current_note);
-        }
-        else if(Keyboard::GetKey('-'))
-        {
+            break;
+        case '-':
             if(current_note.duration > 0)
+            {
                 current_note.duration-=10;
-        }
-        else if(Keyboard::GetKey('+'))
-        {
+            }
+            break;
+        case '+':
             current_note.duration+=10;
-        }
-        else if(Keyboard::GetKey(','))
-        {
+            break;
+        case ',':
             if(current_note.frequence > 0)
+            {
                 current_note.frequence-=25;
-        }
-        else if(Keyboard::GetKey('.'))
-        {
+            }
+            break;
+        case '.':
             current_note.frequence+=25;
+            break;
         }
 
-        if(Keyboard::GetKey(VK_UP))
+        switch(input.GetKey())
         {
+        case Key::Up:
             if(cursor.y > 0)
-                cursor.y--;
+            {
+                --cursor.y;
+            }
             current_note.frequence = max_frequence / chanels * (cursor.y + 1);
-        }
-        else if(Keyboard::GetKey(VK_DOWN))
-        {
+            break;
+        case Key::Down:
             if(cursor.y < chanels-1)
-                cursor.y++;
+            {
+                ++cursor.y;
+            }
             current_note.frequence = max_frequence / chanels * (cursor.y + 1);
-        }
-        else if(Keyboard::GetKey(VK_LEFT))
-        {
+            break;
+        case Key::Left:
             if(cursor.x > 0)
-                cursor.x--;
-        }
-        else if(Keyboard::GetKey(VK_RIGHT))
-        {
+            {
+                --cursor.x;
+            }
+            break;
+        case Key::Right:
             if(cursor.x < track->GetSize())
-                cursor.x++;
+            {
+                ++cursor.x;
+            }
+            break;
         }
 
         console.DrawText("(S)ave (L)oad (C)hanels (D)istance (F)requence (R)esize (P)lay/Pause St(o)p", Vector2(1, 1), Color::White, Color::Transparent);

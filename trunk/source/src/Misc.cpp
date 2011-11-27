@@ -55,7 +55,7 @@ void Pixel::Reset()
 }
 
 /*-------------------------*/
-/*----------Pixel----------*/
+/*-----------Note----------*/
 /*-------------------------*/
 
 Note::Note()
@@ -68,4 +68,38 @@ Note::Note(uint16_t frequence, uint16_t duration)
 {
     this->frequence = frequence;
     this->duration = duration;
+}
+
+/*-------------------------*/
+/*----------KeyInfo--------*/
+/*-------------------------*/
+
+KeyInfo::KeyInfo()
+{
+    this->Invalidate();
+}
+
+bool KeyInfo::IsValid()
+{
+    return(this->code);// + this->character);
+}
+
+void KeyInfo::Invalidate()
+{
+    this->code = 0;
+    this->character = 0;
+    this->down = false;
+}
+
+/*-------------------------*/
+/*--------MouseInfo--------*/
+/*-------------------------*/
+
+MouseInfo::MouseInfo()
+{
+    wheel = 0;
+    hwheel = 0;
+    left =0;
+    right = 0;
+    moving = false;
 }

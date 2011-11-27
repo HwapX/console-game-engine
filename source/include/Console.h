@@ -67,7 +67,7 @@ public:
     static void ShowError(const string &text, const bool close = true);
     bool InputDialog(const string &title, const string &text, string &result, uint8_t number_base = 0);
     bool InputDialog(const string title, const string text, int32_t &result);
-    bool MsgDialog(const string &title, const string &text, const bool only_ok = true);
+    bool MsgDialog(const string &title, const string &text, const bool only_ok = true, const bool option = true);
     void ShowDebugInfo();
 
     bool Focus();

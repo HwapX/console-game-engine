@@ -422,9 +422,9 @@ bool Console::InputDialog(const string title, const string text, int32_t &result
     return(ret);
 }
 
-bool Console::MsgDialog(const string &title, const string &text, const bool only_ok)
+bool Console::MsgDialog(const string &title, const string &text, const bool only_ok, const bool option)
 {
-    bool cancel = false;
+    bool cancel = !only_ok?!option:false;
     Sprite buffer_bkp(*this);
 
     Input::ClearKeyBuffer();

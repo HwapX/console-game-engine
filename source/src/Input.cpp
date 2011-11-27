@@ -72,12 +72,18 @@ char Keyboard::GetNextKey()
 /*---------Keyboard--------*/
 /*-------------------------*/
 
-void Keyboard::KeyEventProc(const KeyInfo keys[])
+Keyboard::Keyboard()
+{
+    control_keys = 0;
+}
+
+void Keyboard::KeyEventProc(const KeyInfo keys[], const uint8_t ctrl_keys)
 {
     for(uint8_t i = 0; i < KEY_BUFFER; ++i)
     {
         key_buffer[i] = keys[i];
     }
+    control_keys = ctrl_keys;
 }
 
 KeyInfo Keyboard::GetKeyInfo()
@@ -192,6 +198,29 @@ bool Keyboard::IsPrintable(const char character)
     return(true);
 }
 
+uint8_t Keyboard::GetControlKeys()
+{
+    return(control_keys);
+}
+
+bool Keyboard::GetCapsLock()
+{
+    return(GetKeyState(0x90) | 1);
+    //return(control_keys & Key::CapsLock_On);
+}
+
+bool Keyboard::GetNumLock()
+{
+    return(GetKeyState(0x14) | 1);
+    //return(control_keys & Key::NumLock_On);
+}
+
+bool Keyboard::GetScrollLock()
+{
+    return(GetKeyState(0x91) & 1);
+    //return(control_keys & Key::ScrollLock_On);
+}
+
 /*-------------------------*/
 /*----------Mouse----------*/
 /*-------------------------*/
@@ -211,12 +240,12 @@ uint8_t Mouse::LeftButton()
     return(mouse_info.left);
 }
 
-int8_t Mouse::Whell()
+int8_t Mouse::Wheel()
 {
     return(mouse_info.wheel);
 }
 
-int8_t Mouse::HWhell()
+int8_t Mouse::HWheel()
 {
     return(mouse_info.hwheel);
 }
@@ -224,6 +253,34 @@ int8_t Mouse::HWhell()
 bool Mouse::IsMoving()
 {
     return(mouse_info.moving);
+}
+
+Vector2 Mouse::GetPosition()
+{
+    return(mouse_info.position);
+}
+
+uint8_t Mouse::GetButton()
+{
+    uint8_t result = 0;
+    if(this->LeftButton())
+    {
+        result = result | MouseLeft;
+    }
+    else if(this->RightButton())
+    {
+        result = result | MouseRight;
+    }
+    else if(this->Wheel())
+    {
+        result = result | MouseWheel;
+    }
+    else if(this->HWheel())
+    {
+        result = result | MouseHWheel;
+    }
+    return(result);
+    //return(this->LeftButton() | this->RightButton() | this->Wheel() | this->HWheel());
 }
 
 /*-------------------------*/
@@ -281,6 +338,7 @@ void Input::ProcessEvents()
     uint32_t total = 0;
     KeyInfo keys[KEY_BUFFER];
     MouseInfo mouse_info;
+    uint8_t ctrl_keys = 0;
     GetNumberOfConsoleInputEvents(in_handle, (DWORD*)&total);
     if(total > 0)
     {
@@ -304,6 +362,7 @@ void Input::ProcessEvents()
                             ++key_count;
                         }
                     }
+                    ctrl_keys = events[i].Event.KeyEvent.dwControlKeyState;
                     break;
                 case MOUSE_EVENT:
                     switch(events[i].Event.MouseEvent.dwEventFlags)
@@ -312,33 +371,59 @@ void Input::ProcessEvents()
                         switch(events[i].Event.MouseEvent.dwButtonState)
                         {
                         case FROM_LEFT_1ST_BUTTON_PRESSED:
-                            mouse_info.left = 1;
+                            mouse_info.left = Mouse::ButtonClick;
                             break;
                         case RIGHTMOST_BUTTON_PRESSED:
-                            mouse_info.right = 1;
+                            mouse_info.right = Mouse::ButtonClick;
                             break;
+                        case FROM_LEFT_2ND_BUTTON_PRESSED:
+                            mouse_info.middle = Mouse::ButtonClick;
+                            break;
+                        //case 0:
+                            //any button up
                         }
                         break;
                     case DOUBLE_CLICK:
                         switch(events[i].Event.MouseEvent.dwButtonState)
                         {
                         case FROM_LEFT_1ST_BUTTON_PRESSED:
-                            mouse_info.left = 2;
+                            mouse_info.left = Mouse::ButtonDoubleClick;
                             break;
                         case RIGHTMOST_BUTTON_PRESSED:
-                            mouse_info.right = 2;
+                            mouse_info.right = Mouse::ButtonDoubleClick;
                             break;
+                        case FROM_LEFT_2ND_BUTTON_PRESSED:
+                            mouse_info.middle = Mouse::ButtonDoubleClick;
+                            break;
+                        //case 0:
+                            //?
                         }
                         break;
                     case MOUSE_MOVED:
                         mouse_info.moving = true;
+                        switch(events[i].Event.MouseEvent.dwButtonState)
+                        {
+                        case FROM_LEFT_1ST_BUTTON_PRESSED:
+                            mouse_info.left = Mouse::ButtonPressed;
+                            break;
+                        case RIGHTMOST_BUTTON_PRESSED:
+                            mouse_info.right = Mouse::ButtonPressed;
+                            break;
+                        case FROM_LEFT_2ND_BUTTON_PRESSED:
+                            mouse_info.middle = Mouse::ButtonPressed;
+                            break;
+                        //case 0:
+                            //???????????????
+                        }
                         break;
                     case MOUSE_WHEELED:
-                        mouse_info.wheel = 1;//terminar
+                        mouse_info.wheel = 3;//terminar
                         break;
                     case 0x0008://MOUSE_HWHEELED:
-                        mouse_info.hwheel = 1;//terminar
+                        mouse_info.hwheel = 3;//terminar
                         break;
+//                    default:
+//                        break;
                     }
                     mouse_info.position.x = events[i].Event.MouseEvent.dwMousePosition.X;
                     mouse_info.position.y = events[i].Event.MouseEvent.dwMousePosition.Y;
@@ -347,5 +432,7 @@ void Input::ProcessEvents()
             }
         }
     }
-    this->KeyEventProc(keys);
+
+    this->MouseEventProc(mouse_info);
+    this->KeyEventProc(keys, ctrl_keys);
 }

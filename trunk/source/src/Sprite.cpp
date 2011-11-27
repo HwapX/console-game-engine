@@ -399,9 +399,8 @@ void Sprite::ReplaceForecolor(const color oldcolor, const color newcolor)
 
 bool Sprite::Resize(const Vector2 &newsize)
 {
-    Sprite bkp(this->size);
+    Sprite bkp(*this);
 
-    bkp.DrawSprite(*this, Vector2(0, 0));
     this->DeallocData();
     this->AllocData(newsize);
     this->DrawSprite(bkp, Vector2(0, 0));

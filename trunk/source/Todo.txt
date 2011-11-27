@@ -58,4 +58,8 @@ criar um conversor de imagens
 
 carregar formato art
 
+tratar teclas ctrol alt etc..
 
+mudança do cursor do mouse
+
+terminar o tratamento das teclas de controle

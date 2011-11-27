@@ -20,9 +20,10 @@ class Keyboard
 {
 private:
     KeyInfo key_buffer[KEY_BUFFER];
+    uint8_t control_keys;
 
 protected:
-    void KeyEventProc(const KeyInfo key[]);
+    void KeyEventProc(const KeyInfo key[], const uint8_t ctrl_keys);
 
 public:
     /*
@@ -38,6 +39,8 @@ public:
     //char GetNextKey();
     //char GetChar();
 
+    Keyboard();
+
     keycode GetKey();
     bool GetKey(const keycode key);
     bool GetKeyUp(const keycode key);
@@ -51,6 +54,11 @@ public:
 
     KeyInfo GetKeyInfo();
 
+    uint8_t GetControlKeys();
+    bool GetCapsLock();
+    bool GetNumLock();
+    bool GetScrollLock();
+
     bool IsPrintable(const char character);
 
     void ClearKeyBuffer();
@@ -63,11 +71,23 @@ private:
 protected:
     virtual void MouseEventProc(MouseInfo mouse);
 public:
-    virtual uint8_t RightButton();
-    virtual uint8_t LeftButton();
-    virtual int8_t Whell();
-    virtual int8_t HWhell();
-    virtual bool IsMoving();
+    static const uint8_t MouseLeft = 2;
+    static const uint8_t MouseRight = 4;
+    static const uint8_t MouseWheel = 8;
+    static const uint8_t MouseHWheel = 16;
+
+    static const uint8_t ButtonPressed = 1;
+    static const uint8_t ButtonClick = 2;
+    static const uint8_t ButtonDoubleClick = 3;
+
+    Vector2 GetPosition();
+    uint8_t GetButton();
+    uint8_t RightButton();
+    uint8_t LeftButton();
+    uint8_t GetMiddle();
+    int8_t Wheel();
+    int8_t HWheel();
+    bool IsMoving();
 };
 
 typedef void*(*KeyProc)(KeyInfo *);

@@ -21,15 +21,15 @@ string FloatToStr(const float number, const uint8_t digits)
     return(num);
 }
 
-string BoolToStr(const bool expression)
+string BoolToStr(const bool expression, const string &yes, const string &no)
 {
     if(expression)
     {
-        return("true");
+        return(yes);
     }
     else
     {
-        return("false");
+        return(no);
     }
 }
 
@@ -74,4 +74,9 @@ char ToUpper(char character)
 char ToLower(char character)
 {
     return(tolower(character));
+}
+
+bool FileExists(const string &filename)
+{
+    return(GetFileAttributes(filename.c_str()) != 0xFFFFFFFF);
 }

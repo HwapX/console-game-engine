@@ -5,3 +5,11 @@ adicionar regua
 preview clipboard
 
 fill rect
+
+mostrar informações do pixel atual
+
+segurar o botão para mostrar a tela de ajuda
+
+Mover o documento com o mouse possivelmente segurando a roda do mouse
+
+usar uma classe rect para representar a seleção

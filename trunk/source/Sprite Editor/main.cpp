@@ -3,9 +3,14 @@
 
 #define AUTO_SAVE_INTERVAL 60000
 
-#define TOOL_GRID 2
-#define TOOL_SELECT 4
-#define TOOL_HELP 8
+#define GRID_TOOL 2
+#define SELECT_TOOL 4
+#define HELP_TOOL 8
+#define RULE_TOOL 16
+#define MOUSE_TOOL 32
+
+#define WORKSPACE_X 1
+#define WORKSPACE_Y 7
 
 #define DOC_HEIGHT 40
 #define DOC_WIDTH 40
@@ -43,13 +48,14 @@ int main(int argc, char* argv[])
     char current_char = 0;
 
     Vector2 selection, grid_size;
-    //uint8_t tools = 0;
+    uint8_t active_tools = 0;
     bool selecttool = false, gridtool = false;
     uint32_t savetick = console.GetTick();
 
     string input_result;
 
     document->Clear(Color::White);
+    console.LockFps(60);
 
     while(!input.GetKey(VK_ESCAPE))
     {
@@ -106,7 +112,7 @@ int main(int argc, char* argv[])
             help.DrawText("Z = Copy forecolor", Vector2(26, 18), Color::Black, Color::Transparent);
             help.DrawText("Q = Copy backcolor", Vector2(26, 19), Color::Black, Color::Transparent);
             help.DrawText("M = Copy character", Vector2(26, 20), Color::Black, Color::Transparent);
-            //            help.DrawText("U = Undo", Vector2(26, 15), Color::Black, Color::Transparent);
+            help.DrawText("Scrool lock = Mouse", Vector2(26, 21), Color::Black, Color::Transparent);
             //            help.DrawText("- = Previus Color", Vector2(26, 16), Color::Black, Color::Transparent);
             //            help.DrawText("+ = Next Color", Vector2(26, 17), Color::Black, Color::Transparent);
             //            help.DrawText("F = Font Color", Vector2(26, 18), Color::Black, Color::Transparent);
@@ -134,10 +140,10 @@ int main(int argc, char* argv[])
             current_color--;
             break;
         case 'R':
-            if(console.InputDialog("Resize document", "Input new size (width X height)", input_result))
+            if(console.InputDialog("Resize document", "Input new size (width x height)", input_result))
             {
                 Vector2 new_size;
-                sscanf(input_result.c_str(), "%hd X %hd", &new_size.x, &new_size.y);
+                sscanf(input_result.c_str(), "%hd x %hd", &new_size.x, &new_size.y);
                 cursor = Vector2();
                 document->Resize(new_size);
             }
@@ -213,16 +219,16 @@ int main(int argc, char* argv[])
         }
         break;
         case 'A':
-            if(console.InputDialog("Preview Animation", "input tile size (width X height)", input_result))
+            if(console.InputDialog("Preview Animation", "input tile size (width x height)", input_result))
             {
                 Vector2 tilesize;
 
-                sscanf(input_result.c_str(), "%hd X %hd", &tilesize.x, &tilesize.y);
-                if(console.InputDialog("Preview Animation", "input frames (start X count)", input_result))
+                sscanf(input_result.c_str(), "%hd x %hd", &tilesize.x, &tilesize.y);
+                if(console.InputDialog("Preview Animation", "input frames (start x count)", input_result))
                 {
                     uint16_t start = 0, count = 0;
 
-                    sscanf(input_result.c_str(), "%hd X %hd", &start, &count);
+                    sscanf(input_result.c_str(), "%hd x %hd", &start, &count);
                     if(console.InputDialog("Preview Animation", "input interval (interval)", input_result))
                     {
                         uint16_t interval = 0;
@@ -241,9 +247,9 @@ int main(int argc, char* argv[])
             }
             break;
         case 'J':
-            if(console.InputDialog("Grid size", "Input grid size (width X height)", input_result))
+            if(console.InputDialog("Grid size", "Input grid size (width x height)", input_result))
             {
-                sscanf(input_result.c_str(), "%hd X %hd", &grid_size.x, &grid_size.y);
+                sscanf(input_result.c_str(), "%hd x %hd", &grid_size.x, &grid_size.y);
             }
             break;
         case 'G':
@@ -252,7 +258,17 @@ int main(int argc, char* argv[])
         case 'S':
             if(console.InputDialog("Save File","Input the name of file!", input_result))
             {
-                document->Save("./" + input_result + ".cges");//Todo:Criar uma função para verificar se foi informada a extenção caso não adicionar automaticamente
+                if(FileExists("./" + input_result + ".cges"))
+                {
+                    if(console.MsgDialog("Save File", "File exists overwrite?", false, false))
+                    {
+                        document->Save("./" + input_result + ".cges");//Todo:Criar uma função para verificar se foi informada a extenção caso não adicionar automaticamente
+                    }
+                }
+                else
+                {
+                    document->Save("./" + input_result + ".cges");//Todo:Criar uma função para verificar se foi informada a extenção caso não adicionar automaticamente
+                }
             }
             break;
         case 'O':
@@ -295,7 +311,8 @@ int main(int argc, char* argv[])
             }
             break;
         case 'I':
-            //input.ClearKeyBuffer();
+            console.DrawText("Waiting input of new character..", Vector2(1, console.GetSize().y - 2), Color::Black, Color::White);
+            console.Update();
             current_char = input.WaitChar();
             break;
         case ',':
@@ -328,6 +345,9 @@ int main(int argc, char* argv[])
                 doc_pos.x++;
             }
             break;
+        case '\'':
+            //draw extra info
+            break;
         }
 
         switch(input.GetKey())
@@ -358,25 +378,67 @@ int main(int argc, char* argv[])
             break;
         }
 
+        if(input.GetScrollLock())
+        {
+            if((input.GetPosition().x >= WORKSPACE_X && (input.GetPosition().x - WORKSPACE_X) < workspace.GetSize().x &&
+               input.GetPosition().x - WORKSPACE_X - doc_pos.x >= 0 && input.GetPosition().x - WORKSPACE_X - doc_pos.x < document->GetSize().x)
+               && (input.GetPosition().y >= WORKSPACE_Y && (input.GetPosition().y - WORKSPACE_Y) < workspace.GetSize().y &&
+               input.GetPosition().y - WORKSPACE_Y - doc_pos.y >= 0 && input.GetPosition().y - WORKSPACE_Y - doc_pos.y < document->GetSize().y))
+            {
+                cursor.x = input.GetPosition().x - WORKSPACE_X - doc_pos.x;
+                cursor.y = input.GetPosition().y - WORKSPACE_Y - doc_pos.y;
+
+                switch(input.GetButton())
+                {
+                case Mouse::MouseLeft:
+                    document->GetPixel(Vector2(cursor.x, cursor.y)).backcolor = current_color;
+                    break;
+                case Mouse::MouseRight:
+                    document->GetPixel(Vector2(cursor.x, cursor.y)).forecolor = current_color;
+                    document->GetPixel(Vector2(cursor.x, cursor.y)).character = current_char;
+                    break;
+                case Mouse::MouseWheel:
+
+                    break;
+                }
+            }
+        }
+
         console.DrawSprite(frame, Vector2(0, 0));
         workspace.Clear(Color::White);
         workspace.FillCharacter(WORKSPACE_CHAR);
         workspace.DrawSprite(*document, doc_pos);
 
-        for(uint8_t x = 0; x < document->GetSize().x; ++x)
+        for(int16_t x = 0; x < document->GetSize().x; ++x)
         {
-            for(uint8_t y = 0; y < document->GetSize().y; ++y)
+            if((x + doc_pos.x) >= workspace.GetSize().x)
             {
+                break;
+            }
+            if((x + doc_pos.x) < 0)
+            {
+                x = doc_pos.x * -1;
+            }
+            for(int8_t y = 0; y < document->GetSize().y; ++y)
+            {
+                if((y + doc_pos.y) >= workspace.GetSize().y)
+                {
+                    break;
+                }
+                if((y + doc_pos.y) < 0)
+                {
+                    y = doc_pos.y * -1;
+                }
                 if(gridtool && (grid_size.x > 0 && grid_size.y > 0))
                 {
                     if((((x+1) % grid_size.x == 0) ||
                             ((y+1) % grid_size.y == 0)) && x < document->GetSize().x)
                     {
-                        workspace(Vector2(doc_pos.x + x+1, doc_pos.y + y)).character = SELECTION_ICON;
-                        workspace(Vector2(doc_pos.y + x+1, doc_pos.y + y)).forecolor = Color::Gray;
+                        workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).character = SELECTION_ICON;
+                        workspace(Vector2(doc_pos.y + x, doc_pos.y + y)).forecolor = Color::Gray;
                     }
                 }
-                if(selecttool && (x + doc_pos.x < workspace.GetSize().x) && (y + doc_pos.y < workspace.GetSize().y) && (x + doc_pos.x >= 0) && (y + doc_pos.y >= 0))
+                if(selecttool)
                 {
                     if(x == selection.x || y == selection.y ||
                             x == cursor.x || y == cursor.y)
@@ -387,7 +449,6 @@ int main(int argc, char* argv[])
                 }
             }
         }
-
         //Show the cursor
         try
         {
@@ -399,12 +460,12 @@ int main(int argc, char* argv[])
             //console.ShowError("Invalid cursor position");
         }
 
-        console.DrawSprite(workspace, Vector2(1, 7));
+        console.DrawSprite(workspace, Vector2(WORKSPACE_X, WORKSPACE_Y));
 
         console(Vector2(console.GetSize().x - 2, 3)).character = current_char;
         console(Vector2(console.GetSize().x - 2, 3)).forecolor = Color::Black;
-        console.DrawTextRight("0x" + ToUpper(IntToHex(static_cast<uint8_t>(current_char), 2)), Vector2(console.GetSize().x - 2, 5), Color::Black, Color::Transparent);
-        console.DrawTextRight(IntToStr(static_cast<uint8_t>(current_char), 3), Vector2(console.GetSize().x - 7, 5), Color::Black, Color::Transparent);
+        //console.DrawTextRight("0x" + ToUpper(IntToHex(static_cast<uint8_t>(current_char), 2)), Vector2(console.GetSize().x - 2, 5), Color::Black, Color::Transparent);
+        console.DrawTextRight(IntToStr(static_cast<uint8_t>(current_char), 3), Vector2(console.GetSize().x - 2, 5), Color::Black, Color::Transparent);
 
         //draw the color palette
         for(uint8_t c = 0; c < 18; ++c)
@@ -420,16 +481,14 @@ int main(int argc, char* argv[])
         //Show the captions
         console.DrawText("(N)ew (O)pen (S)ave (R)esize S(e)lect (C)opy (X)Cut (V)Paste (U)ndo (H)elp", Vector2(1, 1), Color::Black, Color::White);
         console.DrawTextRight("Char", Vector2(console.GetSize().x - 4, 3), Color::Black, Color::White);
-        console.DrawTextRight("Char code", Vector2(console.GetSize().x - 11, 5), Color::Black, Color::Transparent);
+        console.DrawTextRight("Char code", Vector2(console.GetSize().x - 6, 5), Color::Black, Color::Transparent);
         console.DrawText("(-)Previus (+)Next (F)ore (B)ack Rep(l)ace Floo(d)", Vector2(1, 5), Color::Black, Color::White);
-        console.DrawText("Size " + IntToStr(document->GetSize().x) + " x " + IntToStr(document->GetSize().y) + " = " +
-                         "Selection " + IntToStr(selection.x) + " x " + IntToStr(selection.y) + " = " +
-                         "Cursor " + IntToStr(cursor.x) + " x " + IntToStr(cursor.y) + " = " +
-                         "Clipboard " + IntToStr(clipboard->GetSize().x) + " x " + IntToStr(clipboard->GetSize().y) + " = "
-                         , Vector2(1, console.GetSize().y - 2), Color::Black, Color::White);
 
-        //Show FPS
-        console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() >= MIN_FPS?Color::Green:Color::Red, Color::White);
+        console.DrawTextRight(IntToStr(document->GetSize().x, 3) + "x" + IntToStr(document->GetSize().y, 3), Vector2(console.GetSize().x - 10, console.GetSize().y - 2), Color::Black, Color::White);//document size
+        console.DrawTextRight(IntToStr(cursor.x +1, 3) + "x" + IntToStr(cursor.y +1, 3), Vector2(console.GetSize().x - 18, console.GetSize().y - 2), Color::Black, Color::White);//cursor position
+        console.DrawTextRight(IntToStr(selection.x, 2) + "x" + IntToStr(selection.y , 2), Vector2(console.GetSize().x - 30, console.GetSize().y - 2), Color::Black, Color::White);//cursor position
+        console.DrawTextRight(BoolToStr(input.GetScrollLock(), "ON", "OFF"), Vector2(console.GetSize().x - 26, console.GetSize().y - 2), input.GetScrollLock()?Color::Green:Color::Red, Color::White);//mouse on/off
+        console.DrawTextRight("FPS:" + IntToStr(console.GetCurrentFps()), Vector2(78, console.GetSize().y -2), console.GetCurrentFps() >= MIN_FPS?Color::Green:Color::Red, Color::White);//fps
 
         console.Update();
         if(!console.Focus())

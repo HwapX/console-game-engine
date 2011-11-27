@@ -53,11 +53,29 @@ const keycode Down = VK_DOWN;
 const keycode Backspace = VK_BACK;
 const keycode Enter = VK_RETURN;
 const keycode Escape = VK_ESCAPE;
+const keycode ScrollLock = VK_SCROLL;
+const keycode CapsLock = VK_CONTROL;
+const keycode NumLock = VK_NUMLOCK;
+const keycode Shift = VK_SHIFT;
+const keycode LeftShift = VK_LSHIFT;
+const keycode RightShift = VK_RSHIFT;
+const keycode LeftControl = VK_LCONTROL;
+const keycode RightControl = VK_RCONTROL;
+const keycode Alt = VK_MENU;
+const keycode LeftAlt = VK_LMENU;
+const keycode RightAlt = VK_RMENU;
 
 //const keycode Numpad1
 //const keycode Num1
 //const keycode A
+
+const keycode CapsLock_On = CAPSLOCK_ON;
+const keycode NumLock_On = NUMLOCK_ON;
+const keycode ScrollLock_On = SCROLLLOCK_ON;
 }
+
+const char TransparentChar = 0xFF;
+const char NullChar = 0;
 
 class Vector2
 {
@@ -77,32 +95,15 @@ public:
     Rect();
 };
 
-/**
-*A representation of a pixel on console
-*This class represent a cell on console screen and store all attributes of this
-*/
 class Pixel
 {
 public:
-    /**
-    *this represent the character displayed
-    */
     char character;
-    /**
-    *this represent the foreground color(font color)
-    */
     color forecolor;
-    /**
-    *this represent the background color
-    */
     color backcolor;
-    /**
-    *the constructor
-    */
+
     Pixel();
-    /**
-    *this function reset the pixel to default values
-    */
+
     void Reset();
 };
 
@@ -135,6 +136,7 @@ public:
     uint8_t right;
     int8_t wheel;
     int8_t hwheel;
+    int8_t middle;
     bool moving;
 
     MouseInfo();

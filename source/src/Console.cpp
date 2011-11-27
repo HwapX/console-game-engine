@@ -13,9 +13,8 @@ void Console::PreInit()
     delta_time = 0;
     std::set_terminate(ExceptionHandler);
     out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    in_handle = GetStdHandle(STD_INPUT_HANDLE);
     handle = GetConsoleWindow();
-    CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
+    //CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
     SetCursorSize(1, false);
     SetTitle("Console Game Engine");
 }
@@ -80,7 +79,7 @@ void Console::ShowLogo()
 {
 #ifndef OLDLOGO
 
-    #define BORDER_CHAR 0xB0
+#define BORDER_CHAR 0xB0
 
     uint8_t colc = 0, colg = 0, effect = 0;
     Sprite logo(Vector2(this->GetSize().x, 14)), blood(Vector2(this->GetSize().x - 2, this->GetSize().y- 2));
@@ -104,7 +103,7 @@ void Console::ShowLogo()
     logo.DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(logo.GetSize().x / 2, 12), Color::Green, Color::White);
     logo.DrawTextCenter("                                           (_____|              ",        Vector2(logo.GetSize().x / 2, 13), Color::Green, Color::White);
 
-    while(!Keyboard::GetKey(VK_SPACE) || effect < 2)
+    while(!Input::GetKey(VK_SPACE) || effect < 2)
     {
         if((GetTick() - lasttick) > 25)
         {
@@ -231,7 +230,7 @@ void Console::ShowLogo()
 
     uint8_t col = 0;
 
-    while(!Keyboard::GetKey(VK_SPACE))
+    while(!Input::GetKey(VK_SPACE))
     {
 
         for(register uint8_t x = 0; x < GetSize().x; ++x)
@@ -298,59 +297,88 @@ void Console::ShowLogo()
 #endif
 }
 
-void Console::ShowError(const string &text, const bool close = true)
+void Console::ShowError(const string &text, const bool close)
 {
-    this->Resize(Vector2(80,25));
-    while(!Keyboard::GetKey(VK_SPACE))
-    {
-        this->Clear();
-        this->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Color::White, Color::Black);
-        this->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Color::White, Color::Black);
-        this->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Color::White, Color::Black);
-        this->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Color::White, Color::Black);
-        this->DrawTextCenter(text, Vector2(this->GetSize().x / 2, 15), Color::Red, Color::Black);
-        this->DrawTextRight(close?"Press space to close application":"Press space to continue", Vector2(this->GetSize().x -1, this->GetSize().y -1), Color::White, Color::Black);
-        this->Update();
-        this->Clear();
-    }
+//    this->Resize(Vector2(80,25));
+//    while(!Input::GetKey(VK_SPACE))
+//    {
+//        this->Clear();
+//        this->DrawText(" ____ ____ ____ ____ ____ ", Vector2(0, 0), Color::White, Color::Black);
+//        this->DrawText("||E |||r |||r |||o |||r ||", Vector2(0, 1), Color::White, Color::Black);
+//        this->DrawText("||__|||__|||__|||__|||__||", Vector2(0, 2), Color::White, Color::Black);
+//        this->DrawText("|/__\\|/__\\|/__\\|/__\\|/__\\|", Vector2(0, 3), Color::White, Color::Black);
+//        this->DrawTextCenter(text, Vector2(this->GetSize().x / 2, 15), Color::Red, Color::Black);
+//        this->DrawTextRight(close?"Press space to close application":"Press space to continue", Vector2(this->GetSize().x -1, this->GetSize().y -1), Color::White, Color::Black);
+//        this->Update();
+//        this->Clear();
+//    }
+    cout << string(80 * 80, ' ');
+    cout << " ____ ____ ____ ____ ____ " << endl;
+    cout << "||E |||r |||r |||o |||r ||" << endl;
+    cout << "||__|||__|||__|||__|||__||" << endl;
+    cout << "|/__\\|/__\\|/__\\|/__\\|/__\\|" << endl;
+    cout << endl << endl << endl << text.c_str() << endl;
+    cout << endl << endl << (close?"Press any key to close application":"Press any key to continue") << endl;
+
+    cin.get();
+
     if(close)
         exit(1);
 }
 
 
-bool Console::InputDialog(const string &title, const string &text, string &result)
+bool Console::InputDialog(const string &title, const string &text, string &result, uint8_t number_base)
 {
-    char lastkey = 0;
-    bool cancel = false;
-
+    bool cancel = false, blink = true;
+    uint32_t blink_tick = this->GetTick();
     Sprite buffer_bkp(*this);
 
     result.clear();
+    Input::ClearKeyBuffer();
 
-    while(lastkey != '\n')
+    while(!Input::GetKey(Key::Enter))
     {
-        if(lastkey == VK_ESCAPE)
+        switch(Input::GetKey())
         {
+        case Key::Escape:
             return(false);
-        }
-        if(lastkey == VK_BACK)
-        {
+            break;
+        case Key::Backspace:
             if(result.size() > 0)
             {
                 result.erase(result.size() -1);
             }
-        }
-        else if(lastkey == VK_LEFT)
-        {
+            break;
+        case Key::Left:
             cancel = false;
-        }
-        else if(lastkey == VK_RIGHT)
-        {
+            break;
+        case Key::Right:
             cancel = true;
+            break;
+        default:
+            char last_char = Input::GetChar();
+            if(last_char != 0 && result.size() < 39)
+            {
+                switch(number_base)
+                {
+                case 0:
+                    result+= last_char;
+                    break;
+                case 10:
+                    if((last_char >= '0' && last_char <= '9') || (last_char == '-' || last_char == '+'))
+                    {
+                        result+= last_char;
+                    }
+                    break;
+                }
+            }
+            break;
         }
-        else if(((lastkey > 64 && lastkey < 91) || (lastkey > 47 && lastkey < 58) || lastkey == ' ') && result.length() < 38)
+
+        if(this->GetTick() - blink_tick > 500)
         {
-            result+= lastkey;
+            blink_tick = this->GetTick();
+            blink = !blink;
         }
 
         this->DrawTextCenter("ษออออออออออออออออออออออออออออออออออออออออป", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 -3), Color::Black, Color::White);
@@ -361,23 +389,23 @@ bool Console::InputDialog(const string &title, const string &text, string &resul
         this->DrawTextCenter(text                                        , Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2), Color::Black, Color::White);
         this->DrawTextCenter("ฬออออออออออออออออออออออออออออออออออออออออน", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +1), Color::Black, Color::White);
         this->DrawTextCenter("บ                                        บ", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +2), Color::Black, Color::White);
-        this->DrawTextCenter(result + TEXT_CURSOR                        , Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +2), Color::Black, Color::White);
+        this->DrawTextCenter(result                                      , Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +2), Color::Black, Color::White);
+        this->DrawTextCenter(TEXT_CURSOR                                 , Vector2(this->GetSize().x / 2 + result.size() / 2, this->GetSize().y / 2 +2), blink?Color::Black:Color::White, Color::White);
         this->DrawTextCenter("ศออออออออออออออออออออออออออออออออออออออออผ", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +3), Color::Black, Color::White);
 
 
-        this->DrawTextCenter("ษออออออออป", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +5), Color::Black, Color::White);
-        this->DrawTextCenter("บ        บ", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +6), Color::Black, Color::White);
-        this->DrawTextCenter( "Cancel"  , Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +6), cancel?Color::White:Color::Black, cancel?Color::Black:Color::White);
-        this->DrawTextCenter("ศออออออออผ", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +7), Color::Black, Color::White);
-        this->DrawTextCenter("\x1B    \x1A", Vector2(this->GetSize().x / 2, this->GetSize().y / 2 +6), Color::Black, Color::White);
+        this->DrawTextCenter("ษออออออออป", Vector2(this->GetSize().x / 2 +9, this->GetSize().y / 2 +5), Color::Black, Color::White);
+        this->DrawTextCenter("บ        บ", Vector2(this->GetSize().x / 2 +9, this->GetSize().y / 2 +6), Color::Black, Color::White);
+        this->DrawTextCenter( "Cancel"  , Vector2(this->GetSize().x / 2 +9, this->GetSize().y / 2 +6), cancel?Color::White:Color::Black, cancel?Color::Black:Color::White);
+        this->DrawTextCenter("ศออออออออผ", Vector2(this->GetSize().x / 2 +9, this->GetSize().y / 2 +7), Color::Black, Color::White);
+        this->DrawTextCenter("\x1B    \x1A", Vector2(this->GetSize().x / 2-1, this->GetSize().y / 2 +6), Color::Black, Color::White);
 
-        this->DrawTextCenter("ษออออออออป", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +5), Color::Black, Color::White);
-        this->DrawTextCenter("บ        บ", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +6), Color::Black, Color::White);
-        this->DrawTextCenter( "  Ok  "  , Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +6), cancel?Color::Black:Color::White, cancel?Color::White:Color::Black);
-        this->DrawTextCenter("ศออออออออผ", Vector2(this->GetSize().x / 2 -10, this->GetSize().y / 2 +7), Color::Black, Color::White);
+        this->DrawTextCenter("ษออออออออป", Vector2(this->GetSize().x / 2 -11, this->GetSize().y / 2 +5), Color::Black, Color::White);
+        this->DrawTextCenter("บ        บ", Vector2(this->GetSize().x / 2 -11, this->GetSize().y / 2 +6), Color::Black, Color::White);
+        this->DrawTextCenter( "  Ok  "  , Vector2(this->GetSize().x / 2 -11, this->GetSize().y / 2 +6), cancel?Color::Black:Color::White, cancel?Color::White:Color::Black);
+        this->DrawTextCenter("ศออออออออผ", Vector2(this->GetSize().x / 2 -11, this->GetSize().y / 2 +7), Color::Black, Color::White);
 
         this->Update();
-        lastkey = Keyboard::GetNextKey();
     }
 
     this->DrawSprite(buffer_bkp, Vector2(0, 0));
@@ -385,15 +413,23 @@ bool Console::InputDialog(const string &title, const string &text, string &resul
     return(!cancel && !result.empty());
 }
 
+bool Console::InputDialog(const string title, const string text, int32_t &result)
+{
+    bool ret = false;
+    string text_result;
+    ret = this->InputDialog(title, text, text_result, 10);
+    result = atoi(text_result.c_str());
+    return(ret);
+}
+
 bool Console::MsgDialog(const string &title, const string &text, const bool only_ok)
 {
-    char lastkey = 0;
     bool cancel = false;
     Sprite buffer_bkp(*this);
 
-    buffer_bkp = *this;
+    Input::ClearKeyBuffer();
 
-    while(lastkey != '\n' && lastkey != ' ')
+    while(!Input::GetKey(Key::Enter))
     {
         this->DrawTextCenter("ษออออออออออออออออออออออออออออออออออออออออป", Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 -2), Color::Black, Color::White);
         this->DrawTextCenter("บ                                        บ", Vector2(this->GetSize().x / 2 -1, this->GetSize().y / 2 -1), Color::Black, Color::White);
@@ -412,13 +448,14 @@ bool Console::MsgDialog(const string &title, const string &text, const bool only
         }
         else
         {
-            if(lastkey == VK_LEFT)
+            switch(Input::GetKey())
             {
+            case Key::Left:
                 cancel = false;
-            }
-            else if(lastkey == VK_RIGHT)
-            {
+                break;
+            case Key::Right:
                 cancel = true;
+                break;
             }
             this->DrawTextCenter("ษออออออออป", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +4), Color::Black, Color::White);
             this->DrawTextCenter("บ        บ", Vector2(this->GetSize().x / 2 +10, this->GetSize().y / 2 +5), Color::Black, Color::White);
@@ -433,7 +470,6 @@ bool Console::MsgDialog(const string &title, const string &text, const bool only
         }
 
         this->Update();
-        lastkey = Keyboard::GetNextKey();
     }
 
     this->DrawSprite(buffer_bkp, Vector2(0, 0));
@@ -599,6 +635,7 @@ void Console::Update()
             Sleep(sleep_time);
         }
     }
+    this->ProcessEvents();
 }
 
 void Console::ExceptionHandler()

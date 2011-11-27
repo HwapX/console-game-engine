@@ -1,3 +1,7 @@
 Criar menu de ajuda
 
 adicionar regua
+
+preview clipboard
+
+fill rect

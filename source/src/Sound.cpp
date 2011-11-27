@@ -197,7 +197,7 @@ bool Sound::Save(string const &filename)
         return(false);
     }
 
-    for(uint16_t i = 0;i < this->size; ++i)
+    for(uint16_t i = 0; i < this->size; ++i)
     {
         fwrite((void*)&notes[i].frequence, 2, 1, file);
         fwrite((void*)&notes[i].duration, 2, 1, file);

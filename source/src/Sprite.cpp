@@ -204,7 +204,7 @@ uint8_t Sprite::DrawText(const string &text, const Vector2 &position, const colo
         }
 //        if(text[b] != '\0')
 //        {
-            this->data[position.x + b][position.y].character = text[b];
+        this->data[position.x + b][position.y].character = text[b];
 //        }
         if(backcolor != Color::Transparent)
         {

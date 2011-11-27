@@ -43,7 +43,7 @@ public:
     void ReplaceBackcolor(const color oldcolor, const color newcolor);
     void ReplaceForecolor(const color oldcolor, const color newcolor);
 
-    bool Resize(const Vector2 &newsize);
+    virtual bool Resize(const Vector2 &newsize);
 
     ~Sprite();
 

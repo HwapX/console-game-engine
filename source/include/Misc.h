@@ -42,9 +42,22 @@ const color Invert = 0xFD;
 const color Transparent = 0xFF;//17//16;
 }
 
-/**
-*????
-*/
+typedef uint8_t keycode;
+
+namespace Key
+{
+const keycode Left = VK_LEFT;
+const keycode Right = VK_RIGHT;
+const keycode Up = VK_UP;
+const keycode Down = VK_DOWN;
+const keycode Backspace = VK_BACK;
+const keycode Enter = VK_RETURN;
+const keycode Escape = VK_ESCAPE;
+
+//const keycode Numpad1
+//const keycode Num1
+//const keycode A
+}
 
 class Vector2
 {
@@ -102,6 +115,30 @@ public:
     Note(uint16_t frequence, uint16_t duration);
 };
 
+class KeyInfo
+{
+public:
+    bool down;
+    uint8_t code;
+    char character;
+
+    KeyInfo();
+    bool IsValid();
+    void Invalidate();
+};
+
+class MouseInfo
+{
+public:
+    Vector2 position;
+    uint8_t left;
+    uint8_t right;
+    int8_t wheel;
+    int8_t hwheel;
+    bool moving;
+
+    MouseInfo();
+};
 }
 
 #endif // CGE_MISC_H

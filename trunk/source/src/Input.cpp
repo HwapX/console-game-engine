@@ -74,16 +74,23 @@ char Keyboard::GetNextKey()
 
 Keyboard::Keyboard()
 {
-    control_keys = 0;
+    for(uint16_t i = 0; i < 257; ++i)
+    {
+        keyboard_state[i] = 0;
+    }
 }
 
-void Keyboard::KeyEventProc(const KeyInfo keys[], const uint8_t ctrl_keys)
+void Keyboard::KeyEventProc(const KeyInfo keys[], const uint8_t key_state[])
 {
     for(uint8_t i = 0; i < KEY_BUFFER; ++i)
     {
         key_buffer[i] = keys[i];
     }
-    control_keys = ctrl_keys;
+
+    for(uint16_t i = 0; i < 257; ++i)
+    {
+        keyboard_state[i] = key_state[i];
+    }
 }
 
 KeyInfo Keyboard::GetKeyInfo()
@@ -96,7 +103,6 @@ KeyInfo Keyboard::GetKeyInfo()
             if(key_buffer[i].down)
             {
                 result = key_buffer[i];
-                key_buffer[i].Invalidate();
                 return(result);
             }
         }
@@ -156,6 +162,10 @@ bool Keyboard::GetKeyUp(const keycode key_code)
 
 bool Keyboard::GetKey(const keycode key_code)
 {
+    //GetKeySate
+    //GetKeyStateAsync
+    //if(GeyKeyState)
+
     for(uint8_t i = 0; i < KEY_BUFFER; ++i)
     {
         if(key_buffer[i].IsValid())//.code
@@ -196,11 +206,6 @@ void Keyboard::ClearKeyBuffer()
 bool Keyboard::IsPrintable(const char character)
 {
     return(true);
-}
-
-uint8_t Keyboard::GetControlKeys()
-{
-    return(control_keys);
 }
 
 bool Keyboard::GetCapsLock()
@@ -338,7 +343,8 @@ void Input::ProcessEvents()
     uint32_t total = 0;
     KeyInfo keys[KEY_BUFFER];
     MouseInfo mouse_info;
-    uint8_t ctrl_keys = 0;
+    uint8_t key_state[256];
+
     GetNumberOfConsoleInputEvents(in_handle, (DWORD*)&total);
     if(total > 0)
     {
@@ -354,7 +360,15 @@ void Input::ProcessEvents()
                 case KEY_EVENT:
                     if(key_count < KEY_BUFFER)
                     {
-                        for(uint8_t e = 0; e < events[i].Event.KeyEvent.wRepeatCount; ++e)
+                        bool flag = true;
+                        for(uint8_t e = 0; e < key_count; ++e)
+                        {
+                            if(keys[e].code == events[i].Event.KeyEvent.wVirtualKeyCode && keys[e].down == events[i].Event.KeyEvent.bKeyDown)
+                            {
+                                flag = false;
+                            }
+                        }
+                        if(flag == true)
                         {
                             keys[key_count].down = events[i].Event.KeyEvent.bKeyDown;
                             keys[key_count].code = events[i].Event.KeyEvent.wVirtualKeyCode;
@@ -362,7 +376,6 @@ void Input::ProcessEvents()
                             ++key_count;
                         }
                     }
-                    ctrl_keys = events[i].Event.KeyEvent.dwControlKeyState;
                     break;
                 case MOUSE_EVENT:
                     switch(events[i].Event.MouseEvent.dwEventFlags)
@@ -433,6 +446,13 @@ void Input::ProcessEvents()
         }
     }
 
+    for(uint16_t i = 0; i < 256; ++i)
+    {
+        key_state[i] = 0;
+    }
+
+    GetKeyboardState(key_state);
+
     this->MouseEventProc(mouse_info);
-    this->KeyEventProc(keys, ctrl_keys);
+    this->KeyEventProc(keys, key_state);
 }

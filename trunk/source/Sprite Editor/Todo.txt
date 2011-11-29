@@ -13,3 +13,9 @@ segurar o botão para mostrar a tela de ajuda
 Mover o documento com o mouse possivelmente segurando a roda do mouse
 
 usar uma classe rect para representar a seleção
+
+Mostrar todos os caracteres
+
+Permitir a Escrita de textos(mostrando a inputdialog para que a pessoa digite o texto e colocando ele apartir da posição atual
+
+Permitir que a pessoa escolha o caractere com o cursor quando mostrar todos os caracteres

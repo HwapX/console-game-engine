@@ -360,6 +360,11 @@ Pixel &Sprite::GetPixel(const Vector2 &coord)
     }
 }
 
+Pixel &Sprite::operator()(const uint16_t x, const uint16_t y)
+{
+    return(this->GetPixel(Vector2(x, y)));
+}
+
 Pixel &Sprite::operator()(Vector2 coord)
 {
     return(this->GetPixel(coord));

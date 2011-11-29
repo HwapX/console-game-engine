@@ -21,11 +21,12 @@ using namespace std;
 #include "Sound.h"
 #include "Utils.h"
 
-#define OLDLOGO
-
-#define VERSION "Version beta 0.8"
+#define VERSION "Rev 41"//"Version beta 0.8"
 
 #define TEXT_CURSOR "\x16"
+
+#define DEFAULT_SIZE_Y 40
+#define DEFAULT_SIZE_X 80
 
 namespace ConsoleGameEngine
 {
@@ -79,8 +80,11 @@ public:
     uint16_t GetCurrentFps();
     void LockFps(uint8_t limit);
 
-    Vector2 ScreenResolution();
     bool Resize(Vector2 size);
+
+    Vector2 WindowPosition();
+    Vector2 WindowSize();
+    Vector2 ScreenResolution();
 
     bool SetPosition(Vector2 position);
     bool SetTitle(const string &title);

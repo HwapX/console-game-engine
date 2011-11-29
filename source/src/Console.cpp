@@ -15,78 +15,91 @@ void Console::PreInit()
     out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     handle = GetConsoleWindow();
     //CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
-    SetCursorSize(1, false);
-    SetTitle("Console Game Engine");
+    this->SetCursorSize(1, false);
+    this->SetTitle("Console Game Engine");
 }
 
 void Console::PosInit()
 {
-    Resize(size);
-    ShowLogo();
+    this->Resize(size);
+    this->SetPosition(Vector2(this->ScreenResolution().x / 2 - this->WindowSize().x / 2, this->ScreenResolution().y / 2 - this->WindowSize().y / 2));
+    this->ShowLogo();
 }
 
-Console::Console() : Sprite::Sprite(Vector2(80, 25))
+Console::Console() : Sprite::Sprite(Vector2(80, 40))
 {
     PreInit();
     PosInit();
 }
 
-Console::Console(const string &title) : Sprite::Sprite(Vector2(80, 25))
+Console::Console(const string &title) : Sprite::Sprite(Vector2(80, 40))
 {
-    PreInit();
+    this->PreInit();
 
-    SetTitle(title);
+    this->SetTitle(title);
 
-    PosInit();
+    this->PosInit();
 }
 
 Console::Console(const Vector2 &position, const Vector2 &size) : Sprite::Sprite(size)
 {
-    PreInit();
+    this->PreInit();
 
-    SetPosition(position);
+    this->SetPosition(position);
 
-    PosInit();
+    this->PosInit();
 }
 
 Console::Console(const Vector2 &size) : Sprite::Sprite(size)
 {
-    PreInit();
+    this->PreInit();
 
-    PosInit();
+    this->PosInit();
 }
 
 Console::Console(const string &title, const Vector2 &size) : Sprite::Sprite(size)
 {
-    PreInit();
+    this->PreInit();
 
-    SetTitle(title);
+    this->SetTitle(title);
 
-    PosInit();
+    this->PosInit();
 }
 
 Console::Console(const string &title, const Vector2 &position, const Vector2 &size) : Sprite::Sprite(size)
 {
-    PreInit();
+    this->PreInit();
 
-    SetTitle(title);
-    SetPosition(position);
+    this->SetTitle(title);
+    this->SetPosition(position);
 
-    PosInit();
+    this->PosInit();
 }
 
 void Console::ShowLogo()
 {
-#ifndef OLDLOGO
-
 #define BORDER_CHAR 0xB0
 
     uint8_t colc = 0, colg = 0, effect = 0;
     Sprite logo(Vector2(this->GetSize().x, 14)), blood(Vector2(this->GetSize().x - 2, this->GetSize().y- 2));
-    uint32_t lasttick = GetTick(), blinktick = GetTick();
-    bool blink = false;
+    uint32_t lasttick = this->GetTick();
 
-    std::srand(GetTick());
+    Vector2 shot, nave_pos(this->GetSize().x / 2 - 3, this->GetSize().y - 8);
+    Sprite nave(Vector2(5, 3));
+
+    shot.y = -1;
+
+    nave.Clear(Color::Transparent, Color::White, ' ');
+    nave(1, 1).character = '/';
+    nave(2, 0).character = 30;
+    nave(3, 1).character = '\\';
+    nave(0, 2).character = '(';
+    nave(1, 2).character = '_';
+    nave(2, 2).character = '_';
+    nave(3, 2).character = '_';
+    nave(4, 2).character = ')';
+
+    logo.Clear(Color::Black, ' ');
 
     logo.DrawTextCenter("  ______                       _       ",     Vector2(logo.GetSize().x / 2, 0), Color::Blue, Color::White);
     logo.DrawTextCenter(" / _____)                     | |      ",     Vector2(logo.GetSize().x / 2, 1), Color::Blue, Color::White);
@@ -103,42 +116,30 @@ void Console::ShowLogo()
     logo.DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(logo.GetSize().x / 2, 12), Color::Green, Color::White);
     logo.DrawTextCenter("                                           (_____|              ",        Vector2(logo.GetSize().x / 2, 13), Color::Green, Color::White);
 
-    while(!Input::GetKey(VK_SPACE) || effect < 2)
+#ifdef _DEBUG
+    while(!Input::GetKey(Key::Escape))
+#else
+    while(!Input::GetKey(Key::Escape) || effect < 2)
+#endif
     {
         if((GetTick() - lasttick) > 25)
         {
-            lasttick = GetTick();
-
-            //blood effect
-            static bool bleed = true;
-            if(effect > 1 && bleed)
+            this->Clear();
+            if(Input::GetKey(Key::Left))
             {
-                uint8_t count = 0;
-                for(register uint8_t x = 0; x < blood.GetSize().x; ++x)
-                {
-                    for(register uint8_t y = 0; y < blood.GetSize().y; ++y)
-                    {
-                        if(blood(Vector2(x, y)).backcolor != Color::Red)
-                        {
-                            if((std::rand() % 101) == 0)
-                            {
-                                blood(Vector2(x, y)).backcolor = Color::Red;
-                                ++count;
-                                if(y > 10)
-                                    bleed = false;
-                            }
-                            break;
-                        }
-                    }
-                    if(count > 2)
-                    {
-                        break;
-                    }
-                }
-
+                --nave_pos.x;
+            }
+            else if(Input::GetKey(Key::Right))
+            {
+                ++nave_pos.x;
+            }
+            if(Input::GetKey(Key::Space) && shot.y == -1)
+            {
+                shot.x = nave_pos.x + 2;
+                shot.y = nave_pos.y;
             }
 
-            this->DrawSprite(blood, Vector2(1, 1));
+            lasttick = GetTick();
 
             //console effect
             for(register uint8_t row = 2; row < 9; ++row)
@@ -200,101 +201,36 @@ void Console::ShowLogo()
                 }
             }
 
-            if((GetTick() - blinktick) > 1000)
+            if(shot.y != -1)
             {
-                blinktick = GetTick();
-                blink = !blink;
-            }
+                --shot.y;
 
-            if(effect > 1)
-            {
-                if(blink)
+                if(this->GetPixel(shot).character != ' ')
                 {
-                    this->DrawTextCenter("같같같같같같같�", Vector2(GetSize().x / 2, 17), Color::DarkRed, Color::Transparent);
-                    this->DrawTextCenter("같같같같같같같�", Vector2(GetSize().x / 2, 18), Color::DarkRed, Color::Transparent);
-                    this->DrawTextCenter(  "Press space"  , Vector2(GetSize().x / 2, 18), Color::White, Color::Transparent);
-                    this->DrawTextCenter("같같같같같같같�", Vector2(GetSize().x / 2, 19), Color::DarkRed, Color::Transparent);
+                    logo(Vector2(shot.x, shot.y - 2)).character = ' ';
+                    shot.y = -1;
+                }
+                else
+                {
+                    this->DrawText("\x1E", shot, Color::Red, Color::Transparent);
                 }
             }
 
+            if(shot.y < 2)
+            {
+                shot.y = -1;
+            }
+
+            this->DrawSprite(nave, nave_pos);
             this->DrawText("Developed by", Vector2(1, GetSize().y -3), Color::White, Color::Transparent);
-            this->DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetSize().y -2), Color::White, Color::Transparent);
+            this->DrawText("HwapX->Luis Henrique", Vector2(1, GetSize().y -2), Color::White, Color::Transparent);
 
             this->DrawTextRight(VERSION,Vector2(GetSize().x-2, GetSize().y-2), Color::White, Color::Transparent);
 
             this->Update();
         }
     }
-
-#else
-
-    uint8_t col = 0;
-
-    while(!Input::GetKey(VK_SPACE))
-    {
-
-        for(register uint8_t x = 0; x < GetSize().x; ++x)
-            for(register uint8_t y = 0; y < GetSize().y; ++y)
-                if(y == 0 || x == 0 || y == GetSize().y-1 || x == GetSize().x-1)
-                {
-                    data[x][y].character = '*';
-                    data[x][y].forecolor = Color::Blue;
-                }
-
-        DrawTextCenter("  ______                       _       ",     Vector2(GetSize().x / 2, 2), Color::White, Color::Black);
-        DrawTextCenter(" / _____)                     | |      ",     Vector2(GetSize().x / 2, 3), Color::White, Color::Black);
-        DrawTextCenter("| /      ___  ____   ___  ___ | | ____ ",     Vector2(GetSize().x / 2, 4), Color::White, Color::Black);
-        DrawTextCenter("| |     / _ \\|  _ \\ /___)/ _ \\| |/ _  )",  Vector2(GetSize().x / 2, 5), Color::White, Color::Black);
-        DrawTextCenter("| \\____| |_| | | | |___ | |_| | ( (/ / ",    Vector2(GetSize().x / 2, 6), Color::White, Color::Black);
-        DrawTextCenter(" \\______)___/|_| |_(___/ \\___/|_|\\____)",  Vector2(GetSize().x / 2, 7), Color::White, Color::Black);
-
-        DrawTextCenter("  ______                      _______             _             ",        Vector2(GetSize().x / 2, 10), Color::White, Color::Black);
-        DrawTextCenter(" / _____)                    (_______)           (_)            ",        Vector2(GetSize().x / 2, 11), Color::White, Color::Black);
-        DrawTextCenter("| /  ___  ____ ____   ____    _____   ____   ____ _ ____   ____ ",        Vector2(GetSize().x / 2, 12), Color::White, Color::Black);
-        DrawTextCenter("| | (___)/ _  |    \\ / _  )  |  ___) |  _ \\ / _  | |  _ \\ / _  )",     Vector2(GetSize().x / 2, 13), Color::White, Color::Black);
-        DrawTextCenter("| \\____/( ( | | | | ( (/ /   | |_____| | | ( ( | | | | | ( (/ / ",       Vector2(GetSize().x / 2, 14), Color::White, Color::Black);
-        DrawTextCenter(" \\_____/ \\_||_|_|_|_|\\____)  |_______)_| |_|\\_|| |_|_| |_|\\____)",   Vector2(GetSize().x / 2, 15), Color::White, Color::Black);
-        DrawTextCenter("                                           (_____|              ",        Vector2(GetSize().x / 2, 16), Color::White, Color::Black);
-
-        //effect
-        static uint32_t lastpp = 0;
-
-        if(((GetTick() - lastpp) > 100) && (col < (GetSize().x / 2)))
-        {
-            lastpp = GetTick();
-            ++col;
-        }
-
-        for(register uint8_t y = 2; y < 17; ++y)
-        {
-            for(register uint8_t x = 2; x < GetSize().x; ++x)
-            {
-                if((col <= (GetSize().x / 2)) && x < col)
-                {
-                    data[x][y].forecolor = Color::DarkGreen;
-                    data[(GetSize().x-1) - x][y].forecolor = Color::Yellow;
-                }
-            }
-        }
-
-        data[59][10].forecolor = Color::Blue;
-        data[59][11].forecolor = Color::Blue;
-        data[58][11].forecolor = Color::Blue;
-        data[60][11].forecolor = Color::Blue;
-        //effect
-
-        DrawText("Developed by", Vector2(1, GetSize().y -3), Color::White, Color::Black);
-        DrawText("HwapX->Luis Henrique Barbosa de Lima", Vector2(1, GetSize().y -2), Color::White, Color::Black);
-
-        DrawTextRight(VERSION,Vector2(GetSize().x-2, GetSize().y-2), Color::White, Color::Black);
-
-        DrawTextCenter("Press space", Vector2(GetSize().x / 2, 19), Color::White, Color::Black);
-
-        Update();
-        Clear();
-    }
-
-#endif
+    Input::ClearKeyBuffer();
 }
 
 void Console::ShowError(const string &text, const bool close)
@@ -589,10 +525,24 @@ bool Console::SetTitle(const string &title)
     return SetConsoleTitle ((LPCSTR)title.c_str());
 }
 
-bool Console::SetCursorSize(uint8_t size, bool visible)
+bool Console::SetCursorSize(uint8_t new_size, bool visible)
 {
-    CONSOLE_CURSOR_INFO cursorinfo = { size, visible };
-    return (SetConsoleCursorInfo (out_handle, &cursorinfo) == TRUE);
+    CONSOLE_CURSOR_INFO cursorinfo = { new_size, visible };
+    return (SetConsoleCursorInfo (this->out_handle, &cursorinfo) == TRUE);
+}
+
+Vector2 Console::WindowSize()
+{
+    RECT rect;
+    GetWindowRect(this->handle, &rect);
+    return(Vector2(rect.right - rect.left, rect.bottom - rect.top));
+}
+
+Vector2 Console::WindowPosition()
+{
+    RECT rect;
+    GetWindowRect(this->handle, &rect);
+    return(Vector2(rect.left, rect.top));
 }
 
 Vector2 Console::ScreenResolution()

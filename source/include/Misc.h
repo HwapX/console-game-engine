@@ -65,6 +65,8 @@ const keycode Alt = VK_MENU;
 const keycode LeftAlt = VK_LMENU;
 const keycode RightAlt = VK_RMENU;
 
+const keycode Space = VK_SPACE;
+
 //const keycode Numpad1
 //const keycode Num1
 //const keycode A

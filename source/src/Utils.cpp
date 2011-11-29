@@ -80,3 +80,10 @@ bool FileExists(const string &filename)
 {
     return(GetFileAttributes(filename.c_str()) != 0xFFFFFFFF);
 }
+/*
+uint32_t CompressRLE(const std::vector &data, const uint32_t size, char result[])
+{
+    uint32_t sequence_size = 0;
+    char current = data[0];
+
+}*/

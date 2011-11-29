@@ -28,9 +28,10 @@ using namespace ConsoleGameEngine;
 
 int main(int argc, char* argv[])
 {
-    Console console("Console Game Engine Sprite Editor");
-    console.Resize(Vector2(80, 50));
-    console.SetPosition(Vector2(0, 0));
+    Console console("Console Game Engine Sprite Editor", Vector2(80, 50));
+    //console.Resize(Vector2(80, 50));
+    //console.SetPosition(Vector2(console.ScreenResolution().x / 2 - console.WindowSize().x / 2, console.ScreenResolution().y / 2 - console.WindowSize().y / 2));
+
     Input &input = console;
 
     Sprite frame("./frame.cges");
@@ -89,7 +90,7 @@ int main(int argc, char* argv[])
             help.DrawText("+ = Next Color", Vector2(2, 17), Color::Black, Color::Transparent);
             help.DrawText("F = Foreground Color", Vector2(2, 18), Color::Black, Color::Transparent);
             help.DrawText("B = Background Color", Vector2(2, 19), Color::Black, Color::Transparent);
-            help.DrawText("L = Replace Color", Vector2(2, 20), Color::Black, Color::Transparent);
+            help.DrawText("L = Replace backcolor", Vector2(2, 20), Color::Black, Color::Transparent);
             help.DrawText("D = Flood background", Vector2(2, 21), Color::Black, Color::Transparent);
             help.DrawText("Q = Flood foreground", Vector2(2, 22), Color::Black, Color::Transparent);
             help.DrawText("M = Flood character", Vector2(2, 23), Color::Black, Color::Transparent);
@@ -113,20 +114,39 @@ int main(int argc, char* argv[])
             help.DrawText("Q = Copy backcolor", Vector2(26, 19), Color::Black, Color::Transparent);
             help.DrawText("M = Copy character", Vector2(26, 20), Color::Black, Color::Transparent);
             help.DrawText("Scrool lock = Mouse", Vector2(26, 21), Color::Black, Color::Transparent);
-            //            help.DrawText("- = Previus Color", Vector2(26, 16), Color::Black, Color::Transparent);
-            //            help.DrawText("+ = Next Color", Vector2(26, 17), Color::Black, Color::Transparent);
-            //            help.DrawText("F = Font Color", Vector2(26, 18), Color::Black, Color::Transparent);
-            //            help.DrawText("B = Background Color", Vector2(26, 19), Color::Black, Color::Transparent);
-            //            help.DrawText("L = Replace Color", Vector2(26, 20), Color::Black, Color::Transparent);
-            //            help.DrawText("D = Flood background", Vector2(26, 21), Color::Black, Color::Transparent);
-            //            help.DrawText("? = Flood font", Vector2(26, 22), Color::Black, Color::Transparent);
-            //            help.DrawText("? = Flood character", Vector2(26, 23), Color::Black, Color::Transparent);
-            //            help.DrawText("W = Write character", Vector2(26, 24), Color::Black, Color::Transparent);
+            help.DrawText("Left click = backcolor", Vector2(26, 22), Color::Black, Color::Transparent);
+            help.DrawText("Right click = char and", Vector2(26, 23), Color::Black, Color::Transparent);
+            help.DrawText("forecolor", Vector2(26, 24), Color::Black, Color::Transparent);
+            help.DrawText("? = replace forecolor", Vector2(26, 24), Color::Black, Color::Transparent);
+            help.DrawText("? = replace character", Vector2(26, 25), Color::Black, Color::Transparent);
+            help.DrawText("? = Show all chars", Vector2(26, 26), Color::Black, Color::Transparent);
+            help.DrawText("? = Input text", Vector2(26, 27), Color::Black, Color::Transparent);
             console.DrawSpriteCenter(help, Vector2(console.GetSize().x / 2, 5));
             console.Update();
             input.WaitKey('H');
         }
         break;
+        case 'P':
+            {
+                Sprite char_map("help.cges");
+                uint8_t col = 2, row = 4;
+                char_map.DrawText("CHAR MAP", Vector2(1, 1), Color::Black, Color::Transparent);
+
+                for(uint16_t c = 0; c <= 255; ++c)
+                {
+                    char_map.DrawText(string(1, c), Vector2(col, row), Color::Black, Color::Transparent);
+                    if(col == char_map.GetSize().x - 4)
+                    {
+                        row+=2;
+                        col = 0;
+                    }
+                    col+=2;
+                }
+                console.DrawSpriteCenter(char_map, Vector2(console.GetSize().x / 2, 5));
+                console.Update();
+                input.WaitKey('P');
+            }
+            break;
         case '+':
             current_color++;
             if(current_color == 17)
@@ -275,6 +295,11 @@ int main(int argc, char* argv[])
             if(console.InputDialog("Open File", "Input the name of file!", input_result))
             {
                 sprite_undo = *document;
+                if(!FileExists(input_result))
+                {
+                    console.MsgDialog("Error", "File not found");
+                    break;
+                }
                 delete document;
                 try
                 {
@@ -346,7 +371,13 @@ int main(int argc, char* argv[])
             }
             break;
         case '\'':
-            //draw extra info
+            //draw extra info cursor pos etc..
+            break;
+        case 'T':
+            if(console.InputDialog("Text","Input the text", input_result))
+            {
+                document->DrawText(input_result, cursor, current_color, Color::Transparent);
+            }
             break;
         }
 
@@ -493,17 +524,18 @@ int main(int argc, char* argv[])
         console.Update();
         if(!console.Focus())
         {
-            console.DrawTextCenter(" _       __      _ __  _            ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-5), Color::Black, Color::Transparent);
-            console.DrawTextCenter("| |     / /___ _(_) /_(_)___  ____ _", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-4), Color::Black, Color::Transparent);
-            console.DrawTextCenter("| | /| / / __ `/ / __/ / __ \\/ __ `/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-3), Color::Black, Color::Transparent);
-            console.DrawTextCenter("| |/ |/ / /_/ / / /_/ / / / / /_/ / ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-2), Color::Black, Color::Transparent);
-            console.DrawTextCenter("|__/|__/\\__,_/_/\\__/_/_/ /_/\\__, /  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-1), Color::Black, Color::Transparent);
-            console.DrawTextCenter("                           /____/   ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2), Color::Black, Color::Transparent);
-            console.DrawTextCenter("    ______                     ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+1), Color::Black, Color::Transparent);
-            console.DrawTextCenter("   / ____/___  _______  _______", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+2), Color::Black, Color::Transparent);
-            console.DrawTextCenter("  / /_  / __ \\/ ___/ / / / ___/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+3), Color::Black, Color::Transparent);
-            console.DrawTextCenter(" / __/ / /_/ / /__/ /_/ (__  ) ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+4), Color::Black, Color::Transparent);
-            console.DrawTextCenter("/_/    \\____/\\___/\\__,_/____/  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+5), Color::Black, Color::Transparent);
+//            console.DrawTextCenter(" _       __      _ __  _            ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-5), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("| |     / /___ _(_) /_(_)___  ____ _", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-4), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("| | /| / / __ `/ / __/ / __ \\/ __ `/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-3), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("| |/ |/ / /_/ / / /_/ / / / / /_/ / ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-2), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("|__/|__/\\__,_/_/\\__/_/_/ /_/\\__, /  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2-1), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("                           /____/   ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("    ______                     ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+1), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("   / ____/___  _______  _______", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+2), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("  / /_  / __ \\/ ___/ / / / ___/", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+3), Color::Black, Color::Transparent);
+//            console.DrawTextCenter(" / __/ / /_/ / /__/ /_/ (__  ) ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+4), Color::Black, Color::Transparent);
+//            console.DrawTextCenter("/_/    \\____/\\___/\\__,_/____/  ", Vector2(console.GetSize().x / 2, console.GetSize().y / 2+5), Color::Black, Color::Transparent);
+            console.DrawText("Waiting focus..", Vector2(1, console.GetSize().y - 2), Color::Black, Color::White);
             console.Update();
             console.WaitFocus();
         }

@@ -16,37 +16,21 @@ passar copia dos dados do som
 
 Pegar o tempo atual do som tocado pela soma de todos as notas até todas até o momento
 
-Invert Color =
+Adicionar cor Invert
 
-PlayFrom =
-
-Lock FPS = OK
-
-Find the memory leak
+Adicionar PlayFrom
 
 Adicionar opção de sound loop
 
 Abrir arquivo passado como argumento para o programa
 
-Corrigir grade
-
-Show error statica
-
 pensar e muito se devo permitir a escrita direta no console em vez do buffer
 
-ver event type na leitura do teclado focus
-
-tratar teclas ctrol alt etc..
-
-Refletir se é necessario limpar o buffer na função WaitKey
+Checar se posso tirar proveito da EventType Focus no processamento de eventos
 
 adicionar opção de cor nas caixas de dialogo
 
-criar backup na hora de salvar caso o arquivo já exista, adicionar pergunta se a pessoa deseja salvar por cima do antigo arquivo
-
-implementar suporte ao mouse na engine e no editor
-
-verificar funçaõ IntToHex
+criar backup na hora de salvar caso o arquivo já exista?
 
 adicionar opção load na classe sprite
 
@@ -54,12 +38,18 @@ implementar suporte a quebra de linha no DrawText
 
 permitir o carregamento de arquivos de recurso imbutidos
 
-criar um conversor de imagens
+Converter imagens normais para o formato de Sprite da engine
 
-carregar formato art
+Importar formato Art
 
-tratar teclas ctrol alt etc..
+Mudar cursor do Mouse
 
-mudança do cursor do mouse
+terminar o tratamento das teclas de controle(Ctrl, Alt, Shift, CapsLock, ScrollLock, NumLock)
 
-terminar o tratamento das teclas de controle
+importar textos ascii
+
+alterar as funções de leitura do teclado deixando o parametro key opcional com valor padrão 0 e movendo o overload GetKey() para ela caso o key seja 0
+
+fazer verificação do texto na função DrawText
+
+verificar oque eu posso fazer com o problema da função setposition

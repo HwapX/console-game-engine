@@ -14,16 +14,14 @@ namespace ConsoleGameEngine
 
 #define KEY_BUFFER 10
 
-//typedef uint8_t key;
-
 class Keyboard
 {
 private:
     KeyInfo key_buffer[KEY_BUFFER];
-    uint8_t control_keys;
+    uint8_t keyboard_state[256];
 
 protected:
-    void KeyEventProc(const KeyInfo key[], const uint8_t ctrl_keys);
+    void KeyEventProc(const KeyInfo key[], const uint8_t key_state[]);
 
 public:
     /*
@@ -54,7 +52,7 @@ public:
 
     KeyInfo GetKeyInfo();
 
-    uint8_t GetControlKeys();
+    //uint8_t GetControlKeys();
     bool GetCapsLock();
     bool GetNumLock();
     bool GetScrollLock();

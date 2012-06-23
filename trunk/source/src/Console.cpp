@@ -11,6 +11,7 @@ void Console::PreInit()
     sleep_time = 0;
     start_time = GetTick();
     delta_time = 0;
+    last_time = 0;
     std::set_terminate(ExceptionHandler);
     out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     handle = GetConsoleWindow();
@@ -76,8 +77,66 @@ Console::Console(const string &title, const Vector2 &position, const Vector2 &si
     this->PosInit();
 }
 
+
+class Strip : public Sprite
+{
+private:
+    uint8_t max_size;
+    uint8_t cur_pos;
+
+public:
+    Vector2 pos;
+    bool active;
+    Strip();
+    void Reset(uint8_t sizey);
+    void Process();
+};
+
+Strip::Strip() : Sprite::Sprite(Vector2(0, 0))
+{
+    this->Reset(80);
+    this->active = false;
+}
+
+void Strip::Reset(uint8_t sizey)
+{
+    cur_pos = 0;
+
+    if(rand() % 10 == 0)
+    {
+        this->Resize(Vector2(1, rand() % 8 +6));
+        this->FillForecolor(Color::White);
+    }
+    else if(rand() % 4 == 0)
+    {
+        this->Resize(Vector2(1, rand() % 6 +6));
+        this->FillForecolor(Color::Green);
+    }
+    else
+    {
+        this->Resize(Vector2(1, rand() % (sizey * 2) + 12));
+        this->FillForecolor(Color::DarkGreen);
+    }
+
+    this->FillCharacter(0);
+}
+
+void Strip::Process()
+{
+    if(cur_pos < this->GetSize().y)
+    {
+        this->GetPixel(Vector2(0, cur_pos)).character = rand() % 150;
+        this->cur_pos++;
+    }
+    else
+    {
+        this->pos.y++;
+    }
+}
+
 void Console::ShowLogo()
 {
+    return;
 #define BORDER_CHAR 0xB0
 
     uint8_t colc = 0, colg = 0, effect = 0;
@@ -481,15 +540,20 @@ bool Console::Resize(Vector2 new_size)
     displayarea.Right = new_size.x-1;
 
     COORD coord = {new_size.x, new_size.y};
-
-    if(SetConsoleScreenBufferSize(out_handle, coord))
+    SetConsoleScreenBufferSize(out_handle, coord);
+    if(SetConsoleWindowInfo(out_handle, TRUE, &displayarea))
     {
-        if(SetConsoleWindowInfo(out_handle, TRUE, &displayarea))
+        if(SetConsoleScreenBufferSize(out_handle, coord))
         {
             if(this->size.x != new_size.x || this->size.y != new_size.y)
             {
                 Sprite::Resize(new_size);
             }
+            //waiting for windows resize the window
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            do {
+                GetConsoleScreenBufferInfo(out_handle, &csbi);
+            } while(displayarea.Bottom != csbi.srWindow.Bottom || displayarea.Right != csbi.srWindow.Right);
             return (true);
         }
     }
@@ -599,3 +663,7 @@ void Console::ExceptionHandler()
         //ShowError("UNEXPECTED ERROR");
     }
 }
+/*
+bool Console::SetColorPallete(int ) {
+
+}*/

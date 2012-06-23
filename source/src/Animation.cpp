@@ -8,6 +8,8 @@ void Animation::CreateAnimation(Sprite &tileset, const Vector2 &tilesize, const 
     this->current_frame = 0;
     this->frame_interval = interval;
     this->lasttick = 0;
+    this->paused = true;
+    this->repeat = false;
 
     for(register uint8_t b = 0; b < count; ++b)
     {
@@ -38,12 +40,39 @@ Animation::~Animation()
 
 Sprite &Animation::CurrentFrame()
 {
-    if((Console::GetTick() - this->lasttick) > this->frame_interval)
+    if(((Console::GetTick() - this->lasttick) > this->frame_interval) && !this->paused)
     {
         this->lasttick = Console::GetTick();
-        ++this->current_frame;
-        if(this->current_frame == this->frame_count)
+        if(this->current_frame < this->frame_count-1) {
+            ++this->current_frame;
+        } else if (this->repeat) {
             this->current_frame = 0;
+        }
     }
     return(*this->frames[this->current_frame]);
+}
+
+void Animation::Play() {
+    this->paused = false;
+}
+
+void Animation::Pause() {
+    this->paused = true;
+}
+
+uint8_t Animation::GetFrame() {
+    return(this->current_frame);
+}
+
+bool Animation::SetFrame(uint8_t frame) {
+    if(frame < frame_count) {
+        this->current_frame = frame;
+        return(true);
+    } else {
+        return(false);
+    }
+}
+
+void Animation::SetRepeat(bool value) {
+    this->repeat = value;
 }

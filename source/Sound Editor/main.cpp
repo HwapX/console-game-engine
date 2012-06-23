@@ -64,19 +64,19 @@ int main()
             break;
         case 'Y':
             //tocar nota atual da faixa
-            {
-                Sound note(1);
-                note.ReplaceNote(0, track->GetNote(cursor.x));
-                note.Play(true);
-            }
+        {
+            Sound note(1);
+            note.ReplaceNote(0, track->GetNote(cursor.x));
+            note.Play(true);
+        }
         break;
         case 'T':
             //tocar nota atual
-            {
-                Sound note(1);
-                note.ReplaceNote(0, current_note);
-                note.Play(true);
-            }
+        {
+            Sound note(1);
+            note.ReplaceNote(0, current_note);
+            note.Play(true);
+        }
         break;
         case 'N':
             track->ReplaceNote(cursor.x , Note(0, current_note.duration));
@@ -138,9 +138,9 @@ int main()
         console.DrawText("(+)Duration(-) (,)(Up)Frequence(Down)(.) (A)ctual (T)est", Vector2(1, 3), Color::White, Color::Transparent);
 
         console.DrawText(" Frequence = " + IntToStr(track->GetNote(cursor.x).frequence) + " Duration = " + IntToStr(track->GetNote(cursor.x).duration),
-                                 Vector2(1, console.GetSize().y - 2), Color::White, Color::Transparent);
+                         Vector2(1, console.GetSize().y - 2), Color::White, Color::Transparent);
         console.DrawTextRight("Note = " + IntToStr(cursor.x) + " Frequence = " + IntToStr(current_note.frequence) + " Duration = " + IntToStr(current_note.duration),
-                                 Vector2(console.GetSize().x -2, console.GetSize().y - 2), Color::White, Color::Transparent);
+                              Vector2(console.GetSize().x -2, console.GetSize().y - 2), Color::White, Color::Transparent);
 
         /*for(uint8_t i = 0; i < track->GetSize(); ++i)
         {

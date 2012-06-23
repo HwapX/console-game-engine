@@ -68,6 +68,29 @@ Sprite::Sprite(const Vector2 &sprite_size)
     AllocData(sprite_size);
 }
 
+Sprite::Sprite(const short resid)
+{
+    char *resdata = NULL;
+    int ressize = GetResource(resid, RT_RCDATA, (void**)&resdata);
+    if(ressize > 0)
+    {
+        uint16_t p = 4;
+        AllocData(Vector2(*(short*)&resdata[0], *(short*)&resdata[2]));
+        for(register uint16_t x = 0; x < size.x; ++x)
+        {
+            for(register uint16_t y = 0; y < size.y; ++y)
+            {
+                data[x][y].character = resdata[p];
+                ++p;
+                this->data[x][y].forecolor = resdata[p];
+                ++p;
+                this->data[x][y].backcolor = resdata[p];
+                ++p;
+            }
+        }
+    }
+}
+
 bool Sprite::AllocData(const Vector2 &data_size)
 {
     data = new Pixel*[data_size.x];
@@ -258,8 +281,9 @@ uint8_t Sprite::DrawTextVertTop(const string &text, const Vector2 &position, col
     return (this->DrawTextVert(text, Vector2(position.x, (position.y - (text.size() -1))), forecolor, backcolor));
 }
 
-void Sprite::FloodBackcolor(const Vector2 &position, const color oldcolor, const color newcolor)
+void Sprite::FloodBackcolor(const Vector2 &position, const color newcolor)
 {
+    color oldcolor = this->GetPixel(position).backcolor;
     if(oldcolor == newcolor)
         return;
     if(position.x < this->size.x && position.y < this->size.y && position.x >= 0 && position.y >= 0)
@@ -269,27 +293,28 @@ void Sprite::FloodBackcolor(const Vector2 &position, const color oldcolor, const
     if(position.x+1 < this->size.x)
     {
         if(this->data[position.x +1][position.y].backcolor == oldcolor)
-            this->FloodBackcolor(Vector2(position.x+1, position.y), oldcolor, newcolor);
+            this->FloodBackcolor(Vector2(position.x+1, position.y),newcolor);
     }
     if(position.x-1 >= 0)
     {
         if(this->data[position.x-1][position.y].backcolor == oldcolor)
-            this->FloodBackcolor(Vector2(position.x-1, position.y), oldcolor, newcolor);
+            this->FloodBackcolor(Vector2(position.x-1, position.y), newcolor);
     }
     if(position.y+1 < this->size.y)
     {
         if(this->data[position.x][position.y +1].backcolor == oldcolor)
-            this->FloodBackcolor(Vector2(position.x, position.y+1), oldcolor, newcolor);
+            this->FloodBackcolor(Vector2(position.x, position.y+1), newcolor);
     }
     if(position.y-1 >= 0)
     {
         if(this->data[position.x][position.y-1].backcolor == oldcolor)
-            this->FloodBackcolor(Vector2(position.x, position.y -1), oldcolor, newcolor);
+            this->FloodBackcolor(Vector2(position.x, position.y -1), newcolor);
     }
 }
 
-void Sprite::FloodCharacter(const Vector2 &position, const color oldchar, const color newchar)
+void Sprite::FloodCharacter(const Vector2 &position, const char newchar)
 {
+    char oldchar = this->GetPixel(position).character;
     if(oldchar == newchar)
         return;
     if(position.x < this->size.x && position.y < this->size.y && position.x >= 0 && position.y >= 0)
@@ -299,27 +324,28 @@ void Sprite::FloodCharacter(const Vector2 &position, const color oldchar, const 
     if(position.x+1 < this->size.x)
     {
         if(this->data[position.x +1][position.y].character == oldchar)
-            this->FloodCharacter(Vector2(position.x+1, position.y), oldchar, newchar);
+            this->FloodCharacter(Vector2(position.x+1, position.y), newchar);
     }
     if(position.x-1 >= 0)
     {
         if(this->data[position.x-1][position.y].character == oldchar)
-            this->FloodCharacter(Vector2(position.x-1, position.y), oldchar, newchar);
+            this->FloodCharacter(Vector2(position.x-1, position.y), newchar);
     }
     if(position.y+1 < this->size.y)
     {
         if(this->data[position.x][position.y +1].character == oldchar)
-            this->FloodCharacter(Vector2(position.x, position.y+1), oldchar, newchar);
+            this->FloodCharacter(Vector2(position.x, position.y+1), newchar);
     }
     if(position.y-1 >= 0)
     {
         if(this->data[position.x][position.y-1].character == oldchar)
-            this->FloodCharacter(Vector2(position.x, position.y -1), oldchar, newchar);
+            this->FloodCharacter(Vector2(position.x, position.y -1), newchar);
     }
 }
 
-void Sprite::FloodForecolor(const Vector2 &position, const color oldcolor, const color newcolor)
+void Sprite::FloodForecolor(const Vector2 &position, const color newcolor)
 {
+    color oldcolor = this->GetPixel(position).forecolor;
     if(oldcolor == newcolor)
         return;
     if(position.x < this->size.x && position.y < this->size.y && position.x >= 0 && position.y >= 0)
@@ -329,22 +355,22 @@ void Sprite::FloodForecolor(const Vector2 &position, const color oldcolor, const
     if(position.x+1 < this->size.x)
     {
         if(this->data[position.x +1][position.y].forecolor == oldcolor)
-            this->FloodForecolor(Vector2(position.x+1, position.y), oldcolor, newcolor);
+            this->FloodForecolor(Vector2(position.x+1, position.y), newcolor);
     }
     if(position.x-1 >= 0)
     {
         if(this->data[position.x-1][position.y].forecolor == oldcolor)
-            this->FloodForecolor(Vector2(position.x-1, position.y), oldcolor, newcolor);
+            this->FloodForecolor(Vector2(position.x-1, position.y), newcolor);
     }
     if(position.y+1 < this->size.y)
     {
         if(this->data[position.x][position.y +1].forecolor == oldcolor)
-            this->FloodForecolor(Vector2(position.x, position.y+1), oldcolor, newcolor);
+            this->FloodForecolor(Vector2(position.x, position.y+1), newcolor);
     }
     if(position.y-1 >= 0)
     {
         if(this->data[position.x][position.y-1].forecolor == oldcolor)
-            this->FloodForecolor(Vector2(position.x, position.y -1), oldcolor, newcolor);
+            this->FloodForecolor(Vector2(position.x, position.y -1), newcolor);
     }
 }
 
@@ -376,6 +402,18 @@ Sprite &Sprite::operator=(Sprite &sprite)
     this->AllocData(sprite.GetSize());
     this->DrawSprite(sprite, Vector2(0, 0));
     return(*this);
+}
+
+void Sprite::ReplaceCharacter(const char oldchar, const char newchar)
+{
+    for(register uint16_t x = 0; x < this->size.x; ++x)
+    {
+        for(register uint16_t y = 0; y < this->size.y; ++y)
+        {
+            if(this->data[x][y].character == oldchar)
+                this->data[x][y].character = newchar;
+        }
+    }
 }
 
 void Sprite::ReplaceBackcolor(const color oldcolor, const color newcolor)

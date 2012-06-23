@@ -95,6 +95,10 @@ int main(int argc, char* argv[])
             help.DrawText("Q = Flood foreground", Vector2(2, 22), Color::Black, Color::Transparent);
             help.DrawText("M = Flood character", Vector2(2, 23), Color::Black, Color::Transparent);
             help.DrawText("W = Write character", Vector2(2, 24), Color::Black, Color::Transparent);
+            help.DrawText("? = Rotate backcolor", Vector2(2, 25), Color::Black, Color::Transparent);
+            help.DrawText("? = Rotate character", Vector2(2, 26), Color::Black, Color::Transparent);
+            help.DrawText("? = Rotate forecolor", Vector2(2, 27), Color::Black, Color::Transparent);
+
 
             help.DrawText(". = Next character", Vector2(26, 4), Color::Black, Color::Transparent);
             help.DrawText(", = Previus character", Vector2(26, 5), Color::Black, Color::Transparent);
@@ -119,34 +123,34 @@ int main(int argc, char* argv[])
             help.DrawText("forecolor", Vector2(26, 24), Color::Black, Color::Transparent);
             help.DrawText("? = replace forecolor", Vector2(26, 24), Color::Black, Color::Transparent);
             help.DrawText("? = replace character", Vector2(26, 25), Color::Black, Color::Transparent);
-            help.DrawText("? = Show all chars", Vector2(26, 26), Color::Black, Color::Transparent);
-            help.DrawText("? = Input text", Vector2(26, 27), Color::Black, Color::Transparent);
+            help.DrawText("P = Show all chars", Vector2(26, 26), Color::Black, Color::Transparent);
+            help.DrawText("T = Input text", Vector2(26, 27), Color::Black, Color::Transparent);
             console.DrawSpriteCenter(help, Vector2(console.GetSize().x / 2, 5));
             console.Update();
             input.WaitKey('H');
         }
         break;
         case 'P':
-            {
-                Sprite char_map("help.cges");
-                uint8_t col = 2, row = 4;
-                char_map.DrawText("CHAR MAP", Vector2(1, 1), Color::Black, Color::Transparent);
+        {
+            Sprite char_map("help.cges");
+            uint8_t col = 2, row = 4;
+            char_map.DrawText("CHAR MAP", Vector2(1, 1), Color::Black, Color::Transparent);
 
-                for(uint16_t c = 0; c <= 255; ++c)
+            for(uint16_t c = 0; c <= 255; ++c)
+            {
+                char_map.DrawText(string(1, c), Vector2(col, row), Color::Black, Color::Transparent);
+                if(col == char_map.GetSize().x - 4)
                 {
-                    char_map.DrawText(string(1, c), Vector2(col, row), Color::Black, Color::Transparent);
-                    if(col == char_map.GetSize().x - 4)
-                    {
-                        row+=2;
-                        col = 0;
-                    }
-                    col+=2;
+                    row+=2;
+                    col = 0;
                 }
-                console.DrawSpriteCenter(char_map, Vector2(console.GetSize().x / 2, 5));
-                console.Update();
-                input.WaitKey('P');
+                col+=2;
             }
-            break;
+            console.DrawSpriteCenter(char_map, Vector2(console.GetSize().x / 2, 5));
+            console.Update();
+            input.WaitKey('P');
+        }
+        break;
         case '+':
             current_color++;
             if(current_color == 17)
@@ -229,7 +233,11 @@ int main(int argc, char* argv[])
             break;
         case 'D':
             sprite_undo = *document;
-            document->FloodBackcolor(cursor, document->GetPixel(Vector2(cursor.x, cursor.y)).backcolor, current_color);
+            document->FloodBackcolor(cursor, current_color);
+            break;
+        case 'Y':
+            sprite_undo = *document;
+            document->FloodForecolor(cursor, current_color);
             break;
         case'U':
         {
@@ -255,7 +263,8 @@ int main(int argc, char* argv[])
 
                         sscanf(input_result.c_str(), "%hd", &interval);
                         Animation preview(*document, tilesize, start, count, interval);
-                        while(!input.GetKey(VK_RETURN))
+                        input.ClearKeyBuffer();
+                        while(!input.GetKey(Key::Enter))
                         {
                             console.Clear(Color::White);
                             console.DrawSpriteCenter(preview.CurrentFrame(), Vector2(console.GetSize().x / 2, 0));
@@ -295,7 +304,7 @@ int main(int argc, char* argv[])
             if(console.InputDialog("Open File", "Input the name of file!", input_result))
             {
                 sprite_undo = *document;
-                if(!FileExists(input_result))
+                if(!FileExists("./" + input_result + ".cges"))
                 {
                     console.MsgDialog("Error", "File not found");
                     break;
@@ -327,14 +336,14 @@ int main(int argc, char* argv[])
             current_char = document->GetPixel(Vector2(cursor.x, cursor.y)).character;
             break;
         case 'K':
+        {
+            int32_t result = 0;
+            if(console.InputDialog("Char code", "Input new char code", result))
             {
-                int32_t result = 0;
-                if(console.InputDialog("Char code", "Input new char code", result))
-                {
-                    current_char = static_cast<char>(result);
-                }
+                current_char = static_cast<char>(result);
             }
-            break;
+        }
+        break;
         case 'I':
             console.DrawText("Waiting input of new character..", Vector2(1, console.GetSize().y - 2), Color::Black, Color::White);
             console.Update();
@@ -412,9 +421,9 @@ int main(int argc, char* argv[])
         if(input.GetScrollLock())
         {
             if((input.GetPosition().x >= WORKSPACE_X && (input.GetPosition().x - WORKSPACE_X) < workspace.GetSize().x &&
-               input.GetPosition().x - WORKSPACE_X - doc_pos.x >= 0 && input.GetPosition().x - WORKSPACE_X - doc_pos.x < document->GetSize().x)
-               && (input.GetPosition().y >= WORKSPACE_Y && (input.GetPosition().y - WORKSPACE_Y) < workspace.GetSize().y &&
-               input.GetPosition().y - WORKSPACE_Y - doc_pos.y >= 0 && input.GetPosition().y - WORKSPACE_Y - doc_pos.y < document->GetSize().y))
+                    input.GetPosition().x - WORKSPACE_X - doc_pos.x >= 0 && input.GetPosition().x - WORKSPACE_X - doc_pos.x < document->GetSize().x)
+                    && (input.GetPosition().y >= WORKSPACE_Y && (input.GetPosition().y - WORKSPACE_Y) < workspace.GetSize().y &&
+                        input.GetPosition().y - WORKSPACE_Y - doc_pos.y >= 0 && input.GetPosition().y - WORKSPACE_Y - doc_pos.y < document->GetSize().y))
             {
                 cursor.x = input.GetPosition().x - WORKSPACE_X - doc_pos.x;
                 cursor.y = input.GetPosition().y - WORKSPACE_Y - doc_pos.y;
@@ -466,7 +475,7 @@ int main(int argc, char* argv[])
                             ((y+1) % grid_size.y == 0)) && x < document->GetSize().x)
                     {
                         workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).character = SELECTION_ICON;
-                        workspace(Vector2(doc_pos.y + x, doc_pos.y + y)).forecolor = Color::Gray;
+                        workspace(Vector2(doc_pos.y + x, doc_pos.y + y)).forecolor = 15-workspace(Vector2(doc_pos.y + x, doc_pos.y + y)).backcolor;//Color::Gray;
                     }
                 }
                 if(selecttool)
@@ -475,7 +484,7 @@ int main(int argc, char* argv[])
                             x == cursor.x || y == cursor.y)
                     {
                         workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).character = SELECTION_ICON;
-                        workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).forecolor = Color::Gray;
+                        workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).forecolor = 15-workspace(Vector2(doc_pos.x + x, doc_pos.y + y)).backcolor;//Color::Gray;
                     }
                 }
             }
@@ -503,7 +512,8 @@ int main(int argc, char* argv[])
         {
             for(uint8_t x = 0; x < 3; ++x)
             {
-                console(Vector2(x+(1+4*c), 3)).backcolor = (color)c;
+                console(Vector2(x+(1+4*c), 3)).backcolor = c;
+                console(Vector2(x+(1+4*c), 3)).forecolor = 15-c;
                 if(c == current_color)
                     console(Vector2(x+(1+4*c), 3)).character = COLOR_ICON;
             }

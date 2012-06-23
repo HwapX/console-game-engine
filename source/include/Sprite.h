@@ -5,6 +5,7 @@
 #include <cstdio>
 
 #include "Misc.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -35,11 +36,13 @@ public:
     Sprite &operator=(Sprite &sprite);
 
     Sprite(Sprite &sprite);
+    Sprite(const short resid);
     Sprite(const string &filename);
     Sprite(const Vector2 &sprite_size);
     Sprite(Sprite &tileset, const Vector2 &tilesize, const uint8_t index);
     Sprite(const string &filename, const Vector2 &tilesize, const uint8_t index);
 
+    void ReplaceCharacter(const char oldchar, const char newchar);
     void ReplaceBackcolor(const color oldcolor, const color newcolor);
     void ReplaceForecolor(const color oldcolor, const color newcolor);
 
@@ -68,9 +71,9 @@ public:
     void FillCharacter(const char character);
     void FillCharacter(const char character, const Rect &rect);
 
-    void FloodBackcolor(const Vector2 &position, const color oldcolor, const color newcolor);
-    void FloodForecolor(const Vector2 &position, const color oldcolor, const color newcolor);
-    void FloodCharacter(const Vector2 &position, const color oldchar, const color newchar);
+    void FloodBackcolor(const Vector2 &position, const color newcolor);
+    void FloodForecolor(const Vector2 &position, const color newcolor);
+    void FloodCharacter(const Vector2 &position, const char newchar);
 
     void Clear(color backcolor, color forecolor, char character);
     void Clear(color backcolor, char character);

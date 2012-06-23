@@ -50,7 +50,7 @@ private:
     uint32_t start_time;
     uint32_t delta_time;//uint16_t
     uint32_t last_time;
-    int16_t sleep_time;
+    int32_t sleep_time;//int16_t
 
     Vector2 position;
 
@@ -79,6 +79,7 @@ public:
     uint32_t GetLifeTime();
     uint16_t GetCurrentFps();
     void LockFps(uint8_t limit);
+    uint32_t GetRandom(int seed = 0);
 
     bool Resize(Vector2 size);
 

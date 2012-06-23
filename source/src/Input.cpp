@@ -147,7 +147,7 @@ bool Keyboard::GetKeyUp(const keycode key_code)
     {
         if(key_buffer[i].IsValid())//.code
         {
-            if(key_code == key_buffer[i].character || key_code == key_buffer[i].code)
+            if(key_code == key_buffer[i].code)
             {
                 if(!key_buffer[i].down)
                 {
@@ -170,7 +170,7 @@ bool Keyboard::GetKey(const keycode key_code)
     {
         if(key_buffer[i].IsValid())//.code
         {
-            if((key_code == key_buffer[i].code || key_code == key_buffer[i].character) && key_buffer[i].down)
+            if(key_code == key_buffer[i].code && key_buffer[i].down)
             {
                 return(true);
             }
@@ -392,7 +392,7 @@ void Input::ProcessEvents()
                         case FROM_LEFT_2ND_BUTTON_PRESSED:
                             mouse_info.middle = Mouse::ButtonClick;
                             break;
-                        //case 0:
+                            //case 0:
                             //any button up
                         }
                         break;
@@ -408,7 +408,7 @@ void Input::ProcessEvents()
                         case FROM_LEFT_2ND_BUTTON_PRESSED:
                             mouse_info.middle = Mouse::ButtonDoubleClick;
                             break;
-                        //case 0:
+                            //case 0:
                             //?
                         }
                         break;
@@ -425,7 +425,7 @@ void Input::ProcessEvents()
                         case FROM_LEFT_2ND_BUTTON_PRESSED:
                             mouse_info.middle = Mouse::ButtonPressed;
                             break;
-                        //case 0:
+                            //case 0:
                             //???????????????
                         }
                         break;
@@ -440,6 +440,7 @@ void Input::ProcessEvents()
                     }
                     mouse_info.position.x = events[i].Event.MouseEvent.dwMousePosition.X;
                     mouse_info.position.y = events[i].Event.MouseEvent.dwMousePosition.Y;
+                    this->MouseEventProc(mouse_info);
                     break;
                 }
             }
@@ -453,6 +454,6 @@ void Input::ProcessEvents()
 
     GetKeyboardState(key_state);
 
-    this->MouseEventProc(mouse_info);
+
     this->KeyEventProc(keys, key_state);
 }

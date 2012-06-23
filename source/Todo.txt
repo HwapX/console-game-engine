@@ -53,3 +53,7 @@ alterar as funções de leitura do teclado deixando o parametro key opcional com v
 fazer verificação do texto na função DrawText
 
 verificar oque eu posso fazer com o problema da função setposition
+
+load ascii fonts
+
+rand function on engine

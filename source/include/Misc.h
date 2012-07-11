@@ -87,6 +87,7 @@ public:
 
     Vector2();
     Vector2(int16_t x, int16_t y);
+    bool operator==(Vector2 &vector2);
 };
 
 class Rect

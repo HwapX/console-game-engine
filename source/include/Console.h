@@ -52,6 +52,8 @@ private:
     uint32_t last_time;
     int32_t sleep_time;//int16_t
 
+    string title;
+
     Vector2 position;
 
     static void ExceptionHandler();
@@ -78,6 +80,7 @@ public:
     uint32_t GetDeltaTime();//uint16_t
     uint32_t GetLifeTime();
     uint16_t GetCurrentFps();
+    string GetTitle();
     void LockFps(uint8_t limit);
     uint32_t GetRandom(int seed = 0);
 

@@ -586,6 +586,7 @@ bool Console::SetCursorPosition(Vector2 position)
 
 bool Console::SetTitle(const string &title)
 {
+    this->title = title;
     return SetConsoleTitle ((LPCSTR)title.c_str());
 }
 
@@ -650,6 +651,10 @@ void Console::Update()
         }
     }
     this->ProcessEvents();
+}
+
+string Console::GetTitle() {
+    return(this->title);
 }
 
 void Console::ExceptionHandler()

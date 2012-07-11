@@ -18,6 +18,16 @@ Vector2::Vector2(int16_t x, int16_t y)
     this->y = y;
 }
 
+bool Vector2::operator==(Vector2 &vector2) {
+    return(vector2.x == this->x && vector2.y == this->y);
+}
+/*
+Vector2& Vector2::operator=(Vector2 &vector2) {
+    this->x = vector2.x;
+    this->y = vector2.y;
+    return(*this);
+}
+*/
 /*-------------------------*/
 /*----------Rect-----------*/
 /*-------------------------*/

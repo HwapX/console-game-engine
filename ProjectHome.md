@@ -1,0 +1,3 @@
+![http://dl.dropbox.com/u/1227623/Imagens/Console%20Game%20Engine/CGE.gif](http://dl.dropbox.com/u/1227623/Imagens/Console%20Game%20Engine/CGE.gif)
+
+Have you ever played those really old games, but that makes you amused about how things were done in the past? Have you ever thought about creating one of them? Well, here's a good option! Based on c++, Console Engine helps you out on creating your own game on console. Have fun with it !
